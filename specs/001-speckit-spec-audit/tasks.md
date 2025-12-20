@@ -71,6 +71,8 @@
 - [ ] T017 [US2] Integrate audit entry creation on all guarded writes in `backend/src/services/audit_service.py`
 - [ ] T018 [US2] Add UI forms with preview/confirm flows for tasks/sessions in `frontend/src/app/projects/[projectId]/actions.tsx`
 - [ ] T019 [US2] Surface guard failure reasons and success audit summaries in `frontend/src/components/alerts/GuardResult.tsx`
+- [ ] T020 [P] [US2] Implement validation progress and re-run endpoints in `backend/src/api/routes/qa.py`
+- [ ] T021 [US2] Display validation rounds/evidence and re-run trigger in `frontend/src/app/projects/[projectId]/qa/page.tsx`
 
 **Checkpoint**: User Story 2 independently testable
 
@@ -84,10 +86,10 @@
 
 ### Implementation for User Story 3
 
-- [ ] T020 [P] [US3] Implement filesystem watcher event normalization and publish hook in `backend/src/services/watch_service.py`
-- [ ] T021 [US3] Provide polling/manual refresh endpoints and freshness timestamps in `backend/src/api/routes/events.py`
-- [ ] T022 [P] [US3] Add realtime subscriptions and fallback polling logic in `frontend/src/hooks/useRealtimeUpdates.ts`
-- [ ] T023 [US3] Display last-updated and staleness indicators on lists/detail views in `frontend/src/components/status/FreshnessBadge.tsx`
+- [ ] T022 [P] [US3] Implement filesystem watcher event normalization and publish hook in `backend/src/services/watch_service.py`
+- [ ] T023 [US3] Provide polling/manual refresh endpoints and freshness timestamps in `backend/src/api/routes/events.py`
+- [ ] T024 [P] [US3] Add realtime subscriptions and fallback polling logic in `frontend/src/hooks/useRealtimeUpdates.ts`
+- [ ] T025 [US3] Display last-updated and staleness indicators on lists/detail views in `frontend/src/components/status/FreshnessBadge.tsx`
 
 **Checkpoint**: User Story 3 independently testable
 
@@ -101,10 +103,10 @@
 
 ### Implementation for User Story 4
 
-- [ ] T024 [P] [US4] Implement search endpoints for tasks/sessions/projects with filters in `backend/src/api/routes/search.py`
-- [ ] T025 [US4] Add pack/config read surfaces with allowlisted edit preview/apply in `backend/src/api/routes/config.py`
-- [ ] T026 [P] [US4] Build frontend search bar and results navigation in `frontend/src/components/search/SearchBar.tsx`
-- [ ] T027 [US4] Render pack/config views with preview/rollback UI in `frontend/src/app/projects/[projectId]/config/page.tsx`
+- [ ] T026 [P] [US4] Implement search endpoints for tasks/sessions/projects with filters in `backend/src/api/routes/search.py`
+- [ ] T027 [US4] Add pack/config read surfaces with allowlisted edit preview/apply in `backend/src/api/routes/config.py`
+- [ ] T028 [P] [US4] Build frontend search bar and results navigation in `frontend/src/components/search/SearchBar.tsx`
+- [ ] T029 [US4] Render pack/config views with preview/rollback UI in `frontend/src/app/projects/[projectId]/config/page.tsx`
 
 **Checkpoint**: User Story 4 independently testable
 
@@ -114,10 +116,14 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T028 [P] Harden error taxonomy and redaction rules across APIs in `backend/src/api/middleware/error_handler.py`
-- [ ] T029 [P] Add performance instrumentation and logging for discovery/list endpoints in `backend/src/metrics/observability.py`
-- [ ] T030 Refine accessibility (keyboard focus, ARIA) across UI shells in `frontend/src/components/layout/`
-- [ ] T031 [P] Update documentation to reflect new flows in `specs/001-speckit-spec-audit/quickstart.md`
+- [ ] T030 [P] Harden error taxonomy and redaction rules across APIs in `backend/src/api/middleware/error_handler.py`
+- [ ] T031 [P] Add performance instrumentation and logging for discovery/list endpoints in `backend/src/metrics/observability.py`
+- [ ] T032 [P] Add secret/path redaction filters for API responses/logs in `backend/src/api/middleware/redaction.py`
+- [ ] T033 Add UI path/secret masking for evidence and config displays in `frontend/src/components/formatters/PathDisplay.tsx`
+- [ ] T034 [P] Add performance/freshness validation checks for discovery/list/watch flows in `backend/tests/performance/test_freshness.py`
+- [ ] T035 [P] Validate watcher/polling freshness timings in `frontend/tests/e2e/freshness.spec.ts`
+- [ ] T036 Refine accessibility (keyboard focus, ARIA) across UI shells in `frontend/src/components/layout/`
+- [ ] T037 [P] Update documentation to reflect new flows in `specs/001-speckit-spec-audit/quickstart.md`
 
 ---
 
@@ -133,7 +139,7 @@
 ### User Story Dependencies
 
 - **User Story 1 (P1)**: Independent once foundation is ready
-- **User Story 2 (P1)**: Independent once foundation is ready; may read data from US1 but should not be blocked by it
+- **User Story 2 (P1)**: Independent once foundation is ready; may read data from US1 but should not be blocked by it; validation progress/re-run tasks rely on QA route and UI locations
 - **User Story 3 (P2)**: Depends on foundational data access; can run in parallel after US1/US2 start
 - **User Story 4 (P3)**: Depends on foundational search/config scaffolding; can proceed after US1 visibility endpoints exist
 
@@ -142,7 +148,7 @@
 - Setup tasks T002–T003 can run in parallel.
 - Foundation tasks T006–T009 can run in parallel after T004/T005 begin.
 - Per-story: models/services/endpoints and UI tasks marked [P] can proceed concurrently when they touch different files.
-- Different user stories can be staffed in parallel after Foundation: e.g., US1 frontend (T012) and US2 backend (T015/T016) can proceed together.
+- Different user stories can be staffed in parallel after Foundation: e.g., US1 frontend (T012) and US2 backend (T015/T016) can proceed together; Polish performance/security tasks T030–T035 can run in parallel once core stories are stable.
 
 ---
 
