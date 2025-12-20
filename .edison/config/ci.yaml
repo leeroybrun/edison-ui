@@ -1,0 +1,9 @@
+# Edison UI CI Commands (used by templates via {{function:ci_command(...)}})
+
+ci:
+  commands:
+    lint: "make lint"
+    format: "make format"
+    type-check: "make type-check"
+    test: "make test"
+    test-coverage: "make test-coverage"

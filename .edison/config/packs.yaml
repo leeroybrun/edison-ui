@@ -1,0 +1,16 @@
+# Edison UI Pack Configuration
+#
+# Keep this minimal: packs enable Edison overlays (agents/validators/guidelines).
+# Project-specific implementation details live in the app code and specs.
+
+packs:
+  active:
+    - python
+    - typescript
+    - nextjs
+    - tailwind
+    - vitest
+    - zod
+    - e2e-web
+
+  autoActivate: true

@@ -1,0 +1,20 @@
+# Edison UI Project Configuration (Project Metadata)
+
+project:
+  name: edison-ui
+  description: "Local-first dashboard for Edison projects (FastAPI + Next.js)."
+  language: typescript
+
+  # Metadata used by templates/validators (no behavioral impact by itself).
+  tech_stack:
+    - nextjs
+    - react
+    - typescript
+    - tailwind
+    - vitest
+    - fastapi
+    - python
+
+  paths:
+    frontendDir: frontend
+    backendDir: backend
