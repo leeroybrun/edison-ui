@@ -1,0 +1,170 @@
+# Edison UI .gitignore
+
+# Edison project files
+.project/
+.edison/_generated/
+_tx/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+*.egg-info/
+dist/
+build/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Node.js
+node_modules/
+.next/
+out/
+dist/
+build/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+.npm
+.yarn
+.pnp.*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+backend/.env
+frontend/.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.coverage
+*.lcov
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Local caches / build artifacts
+.npm-cache/
+frontend/tsconfig.tsbuildinfo
+backend/.venv*
+
+# Docker
+docker-compose.override.yml
+
+# Redis
+dump.rdb
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Production builds
+/frontend/build
+/frontend/.next
+/backend/dist
+
+# Storybook
+/frontend/storybook-static
+
+# PWA files
+/frontend/public/sw.js
+/frontend/public/workbox-*.js
+
+# Local data
+/data/
+/uploads/
+
+# Monitoring
+/monitoring/data/
+
+# Backups
+*.backup
+*.bak
+
+# Certificates (for local HTTPS)
+*.pem
+*.key
+*.crt
+
+# Mac
+.AppleDouble
+.LSOverride
+Icon
+.DocumentRevisions-V100
+.fseventsd
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+.directory
+.Trash-*
+.nfs*
+/.codex/sessions
+.codex/version.json
+.codex/auth.json
