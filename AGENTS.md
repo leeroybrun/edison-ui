@@ -35,3 +35,11 @@
 ---
 
 **DO NOT PROCEED WITHOUT READING YOUR CONSTITUTION FIRST.**
+
+## Recent Changes
+- 001-speckit-spec-audit: Added Python 3.13 (backend), TypeScript/Next.js 14 (frontend) + FastAPI, Pydantic, Next.js App Router, Tailwind, Vitest/RTL, Playwrigh
+- 001-speckit-spec-audit: Added [if applicable, e.g., PostgreSQL, CoreData, files or N/A]
+
+## Active Technologies
+- Python 3.13 (backend), TypeScript/Next.js 14 (frontend) + FastAPI, Pydantic, Next.js App Router, Tailwind, Vitest/RTL, Playwrigh (001-speckit-spec-audit)
+- Local filesystem Edison project structure (source of truth); no external DB (001-speckit-spec-audit)
