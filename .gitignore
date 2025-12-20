@@ -168,3 +168,5 @@ $RECYCLE.BIN/
 /.codex/sessions
 .codex/version.json
 .codex/auth.json
+.codex/history.jsonl
+.codex/rules/default.rules
