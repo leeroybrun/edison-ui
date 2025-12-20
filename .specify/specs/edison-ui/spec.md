@@ -95,11 +95,50 @@ From the UI (desktop + mobile), a developer can:
 
 ## Correctness Requirements
 
-- State transitions must comply with Edison state machines (no “UI-only” shortcuts).
+- State transitions must comply with Edison state machines (no "UI-only" shortcuts).
 - Concurrent CLI usage must be handled:
   - explicit refresh always available
   - polling fallback when realtime is unavailable
-  - eventual realtime push (watchers) does not “invent” state
+  - eventual realtime push (watchers) does not "invent" state
+
+## Performance Requirements
+
+- **API Response Times** (p95):
+  - Read endpoints: < 200ms
+  - Write endpoints: < 500ms
+  - Search operations: < 1000ms
+- **Frontend Metrics**:
+  - First Contentful Paint: < 1.5s
+  - Time to Interactive: < 3.5s
+  - Bundle size: < 200KB gzipped (initial)
+- **Scalability**:
+  - Handle 100+ projects without degradation
+  - Support 10,000+ tasks per project
+  - 100+ concurrent WebSocket connections
+- **Real-time**:
+  - File change detection: < 100ms
+  - WebSocket latency: < 50ms
+
+## Security & Safety
+
+- **Input Validation**: All inputs validated with Pydantic/Zod before processing
+- **Path Traversal Protection**: Strict project root confinement
+- **Command Allowlisting**: Only explicitly allowed Edison CLI commands
+- **Audit Trail**: All state-changing operations logged with who/what/when/outcome
+- **Secret Redaction**: Environment variables and credentials never exposed in UI
+- **Rate Limiting**: Configurable limits on write operations
+- **CORS**: Explicit origin allowlisting
+
+## Error Handling Philosophy
+
+- **Graceful Degradation**: Features degrade cleanly when dependencies fail
+- **User-Friendly Messages**: Technical errors translated to actionable guidance
+- **Recovery Options**: Always provide next steps or fallback actions
+- **Error Classification**:
+  - Edison errors (state machine violations, guard failures)
+  - Validation errors (input constraints)
+  - System errors (file permissions, disk space)
+  - Network errors (connection lost, timeout)
 
 ## Milestones (incremental delivery)
 

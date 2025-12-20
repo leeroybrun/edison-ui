@@ -14,16 +14,22 @@ edison task import .specify/specs/edison-ui/tasks.md
 
 ### TASK-001: Backend FastAPI skeleton + health
 - Backend app + `/api/v1/health`.
-- Tests: health endpoint.
+- CORS middleware, error handler, logging setup.
+- Pydantic settings for env config.
+- Tests: health endpoint returns 200 + version info.
 
 ### TASK-002: Frontend Next.js skeleton + nav shell
-- App layout + “Projects” route.
-- Tests: header/nav renders.
+- Next.js 14 App Router + TypeScript + Tailwind.
+- App layout + "Projects" route placeholder.
+- Zustand store setup, TanStack Query provider.
+- Tests: header/nav renders, mobile responsive.
 
 ### TASK-003: Project discovery service (filesystem)
 - Scanner: configured roots, max depth, ignore dirs, permission-safe.
-- Stable `projectId` derived from absolute path hash.
-- Tests: discovery correctness + ignore rules.
+- Stable `projectId` derived from absolute path hash (hashlib.sha256).
+- Handle permission errors gracefully, skip inaccessible dirs.
+- Cache discovery results (5 min TTL).
+- Tests: discovery correctness + ignore rules + permission handling.
 
 ### TASK-004: Projects API (read-only)
 - `GET /api/v1/projects`, `GET /api/v1/projects/{projectId}`.
@@ -71,13 +77,19 @@ edison task import .specify/specs/edison-ui/tasks.md
 
 ### TASK-021: Write: create session (guarded)
 - Backend endpoint to create sessions (Edison API preferred; CLI fallback if required).
+- Input validation with Pydantic, sanitize session_id.
 - UI flow: form → preview → confirm → result + audit entry.
+- Audit log: timestamp, action, old/new state, outcome.
 - Tests: creation in fixture repo (or temp repo) and state visible after refresh.
+- Tests: duplicate session_id handling, invalid input rejection.
 
 ### TASK-022: Write: session transitions (guarded)
 - Endpoint to transition session state, respecting Edison guards.
+- Return guard results with can_override flags.
 - UI: show allowed transitions + guard explanations + confirmation.
-- Tests: invalid transition returns structured error.
+- For failed guards: show why and how to resolve.
+- Tests: invalid transition returns structured error with guard details.
+- Tests: force flag overrides soft guards only.
 
 ### TASK-023: Write: create task (guarded)
 - Endpoint to create tasks with required fields and optional QA creation.
@@ -96,14 +108,20 @@ edison task import .specify/specs/edison-ui/tasks.md
 ## Milestone v0.3 — Realtime (watchers + push)
 
 ### TASK-030: File watcher + event normalization
-- Watch `.project/` and relevant `.edison/_generated/` outputs.
+- Watch `.project/` and relevant `.edison/_generated/` outputs using Watchdog.
+- Debounce rapid changes (100ms window).
 - Normalize file events → domain events (task updated, session updated, QA round added).
+- Parse Edison file paths to extract entity type and ID.
 - Tests: simulated file writes produce expected events.
+- Tests: handles file move/rename correctly.
 
 ### TASK-031: Realtime transport
-- WebSocket (or SSE) endpoint with per-project subscriptions.
-- Client hook: reconnect, backoff, and fallback to polling.
+- WebSocket endpoint with per-project subscriptions (socket.io or native WS).
+- Message protocol: subscribe/unsubscribe/ping + entity updates.
+- Client hook: reconnect, exponential backoff (1s, 2s, 4s...), fallback to polling.
+- Connection manager: track subscriptions, broadcast to channels.
 - Tests: connect/sub/unsub and event delivery.
+- Tests: handles reconnection without duplicate events.
 
 ### TASK-032: UI reconciliation rules
 - Filesystem is truth; reconcile updates without UI-only state drift.
