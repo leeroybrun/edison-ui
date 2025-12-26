@@ -23,7 +23,9 @@ make test
 ```
 
 ## Feature Focus
-- Verify project discovery shows health for local Edison projects.
-- Exercise guarded writes (create/transition tasks and sessions) with previews and audit entries.
-- Confirm freshness via watchers; fall back to manual refresh/polling when watchers unavailable.
-- Validate search/navigation and pack/config visibility behave per spec.
+- Verify “zero setup” first-run flow (scan roots) and dashboard health for local Edison projects.
+- Validate the sidebar navigation shell (Dashboard / Sessions / Tasks / QA / Agents / Settings).
+- Validate Tasks & Sessions list/board views, session filtering in Tasks, hierarchical expand/collapse, and keyboard-first navigation.
+- Validate QA as a primary flow: per-task validation status, rounds, evidence, and validator details.
+- Confirm push-first realtime updates when available; fall back to manual refresh/polling when unavailable.
+- Validate remote mobile access (opt-in) pairing/auth flow and unauthenticated request rejection in remote mode.

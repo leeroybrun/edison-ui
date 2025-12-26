@@ -1,182 +1,130 @@
 # Tasks: Edison UI Speckit Audit & Consolidation
 
-**Input**: Design documents from `/specs/001-speckit-spec-audit/`
-**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/
-
+**Input**: Design documents from `/specs/001-speckit-spec-audit/`  
+**Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, contracts/  
 **Tests**: Not explicitly requested; include acceptance verification within story phases.
-
-**Organization**: Tasks are grouped by user story to enable independent implementation and testing.
 
 ## Format: `[ID] [P?] [Story] Description`
 
 - **[P]**: Can run in parallel (different files, no dependencies)
-- **[Story]**: Which user story this task belongs to (e.g., US1, US2, US3)
+- **[Story]**: Which user story this task belongs to (e.g., US1, US2)
 - Include exact file paths in descriptions
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-**Purpose**: Project initialization and basic structure
-
-- [ ] T001 Align plan.md with current repo structure and stack references in `specs/001-speckit-spec-audit/plan.md`
-- [ ] T002 Validate dev prerequisites and make targets in `README.md` and `Makefile` for backend/frontend startup
-- [ ] T003 [P] Document environment variables and defaults for scan roots/watchers in `backend/README.md`
+- [ ] T001 Align `specs/001-speckit-spec-audit/plan.md` with current repo structure and updated story set
+- [ ] T002 Validate dev entrypoints support “single command” local start (documented) in `Makefile` and `README.md`
+- [ ] T003 [P] Document environment variables and defaults for scan roots, exposure mode, and realtime in `backend/.env.example` and `backend/README.md`
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-**Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented
+**⚠️ CRITICAL**: No user story work should begin until this phase is complete.
 
-**⚠️ CRITICAL**: No user story work can begin until this phase is complete
+- [ ] T004 Define actor identity helper (OS user + display name) and audit entry shape in `backend/models/` (exact file per repo layout)
+- [ ] T005 Wire audit writer with filesystem confinement and redaction in `backend/services/` (exact file per repo layout)
+- [ ] T006 [P] Establish project discovery configuration (scan roots, ignores, pin storage) in `backend/core/` (settings)
+- [ ] T007 [P] Create shared error + guard response shapes for UI consumption in backend API schemas
+- [ ] T008 Implement frontend API client with consistent error/loading/stale handling in `frontend/lib/` or `frontend/services/`
+- [ ] T009 [P] Add navigation shell (sidebar + top bar), loading/error boundaries, and accessibility focus states in `frontend/app/`
 
-- [ ] T004 Define actor identity helper (OS user + display name) and audit entry shape in `backend/src/models/audit.py`
-- [ ] T005 Wire audit writer with filesystem confinement and redaction in `backend/src/services/audit_service.py`
-- [ ] T006 [P] Establish Edison project discovery configuration (scan roots, ignores, pin storage) in `backend/src/config/settings.py`
-- [ ] T007 [P] Create shared error and guard response shapes for UI consumption in `backend/src/api/schemas/common.py`
-- [ ] T008 Implement frontend data fetching clients with error/loading/stale handling in `frontend/src/services/apiClient.ts`
-- [ ] T009 [P] Add global layout loading/error/focus states for accessibility in `frontend/src/app/layout.tsx`
-
-**Checkpoint**: Foundation ready - user story implementation can now begin in parallel
+**Checkpoint**: Foundation ready
 
 ---
 
-## Phase 3: User Story 1 - Consolidated Edison project visibility (Priority: P1) 🎯 MVP
+## Phase 3: User Story 1 — Zero-setup project dashboard + navigation shell (P1)
 
-**Goal**: Surface all local Edison projects with health, tasks/sessions/QA counts, and detail pages.
+- [ ] T010 [US1] Implement project discovery/list/detail endpoints per `specs/001-speckit-spec-audit/contracts/api.md`
+- [ ] T011 [P] [US1] Implement first-run settings flow (scan roots + safe defaults) in backend settings endpoints
+- [ ] T012 [P] [US1] Build dashboard UI (projects, health counts, pins, recent activity) in `frontend/app/`
+- [ ] T013 [US1] Build project shell with sidebar navigation (Dashboard / Sessions / Tasks / QA / Agents / Settings) in `frontend/app/projects/[projectId]/`
 
-**Independent Test**: With two sample projects, dashboard lists both with counts; opening a project shows tasks/sessions/QA/agents/validators with clear loading/error/empty states.
-
-### Implementation for User Story 1
-
-- [ ] T010 [P] [US1] Implement project discovery endpoint per contract in `backend/src/api/routes/projects.py`
-- [ ] T011 [US1] Add project detail aggregation (health, counts, recent activity) in `backend/src/services/project_service.py`
-- [ ] T012 [P] [US1] Render projects dashboard with counts and pins in `frontend/src/app/page.tsx`
-- [ ] T013 [US1] Build project detail views (tasks/sessions/QA/agents/validators tabs) in `frontend/src/app/projects/[projectId]/page.tsx`
-- [ ] T014 [US1] Add empty/error/loading state components for lists in `frontend/src/components/state/`
-
-**Checkpoint**: User Story 1 independently testable
+**Checkpoint**: US1 independently testable (read-only)
 
 ---
 
-## Phase 4: User Story 2 - Guarded updates to Edison work (Priority: P1)
+## Phase 4: User Story 2 — Board-first + keyboard-first Tasks & Sessions workspace (P1)
 
-**Goal**: Enable guarded creates/edits/transitions for tasks and sessions with previews, guard messaging, and audit entries.
+- [ ] T020 [US2] Implement unified tasks listing endpoint: project-wide tasks + session filter + hierarchy fields
+- [ ] T021 [US2] Implement sessions listing endpoint supporting list + board views (state-based grouping)
+- [ ] T022 [P] [US2] Implement “why blocked”/readiness endpoint (dependencies + guard readiness) and ready/blocked summaries
+- [ ] T023 [P] [US2] Build Tasks view supporting `list|board|tree` and filters (including session filter) in `frontend/app/projects/[projectId]/tasks/`
+- [ ] T024 [P] [US2] Build Sessions view supporting `list|board` and session selection in `frontend/app/projects/[projectId]/sessions/`
+- [ ] T025 [US2] Ensure session tasks view reuses the same Tasks presentation + filter semantics as project Tasks view
+- [ ] T026 [US2] Implement keyboard navigation + command palette for core flows (open task, switch view, filter) in `frontend/components/`
 
-**Independent Test**: From UI, create a task and transition a session with preview/confirmation; invalid transition blocked with guard reason; audit entries recorded.
-
-### Implementation for User Story 2
-
-- [ ] T015 [P] [US2] Implement session create/transition endpoints with guard previews in `backend/src/api/routes/sessions.py`
-- [ ] T016 [P] [US2] Implement task create/edit/transition endpoints with guard previews in `backend/src/api/routes/tasks.py`
-- [ ] T017 [US2] Integrate audit entry creation on all guarded writes in `backend/src/services/audit_service.py`
-- [ ] T018 [US2] Add UI forms with preview/confirm flows for tasks/sessions in `frontend/src/app/projects/[projectId]/actions.tsx`
-- [ ] T019 [US2] Surface guard failure reasons and success audit summaries in `frontend/src/components/alerts/GuardResult.tsx`
-- [ ] T020 [P] [US2] Implement validation progress and re-run endpoints in `backend/src/api/routes/qa.py`
-- [ ] T021 [US2] Display validation rounds/evidence and re-run trigger in `frontend/src/app/projects/[projectId]/qa/page.tsx`
-
-**Checkpoint**: User Story 2 independently testable
+**Checkpoint**: US2 independently testable
 
 ---
 
-## Phase 5: User Story 3 - Timely awareness of changes (Priority: P2)
+## Phase 5: User Story 3 — QA as a primary pipeline flow (P1)
 
-**Goal**: Keep data fresh via watchers when available; fall back to polling/manual refresh with visible staleness indicators.
+- [ ] T030 [US3] Implement QA list + task QA detail endpoints (rounds, validators, reasons, evidence)
+- [ ] T031 [P] [US3] Add validation status summary onto task list payloads (for badges and filtering)
+- [ ] T032 [P] [US3] Build QA view (filters by verdict/status/validator/session) in `frontend/app/projects/[projectId]/qa/`
+- [ ] T033 [US3] Build task detail QA panel with rounds timeline, evidence links (redacted), and clear failure reasons in `frontend/app/projects/[projectId]/tasks/[taskId]/`
+- [ ] T034 [P] [US3] Add session-scoped QA view in session detail that reuses the same QA list component (equivalent to filtering global QA by `sessionId`)
 
-**Independent Test**: External file change updates UI within freshness windows; when watchers disabled, manual refresh/polling resolves staleness indicator.
-
-### Implementation for User Story 3
-
-- [ ] T022 [P] [US3] Implement filesystem watcher event normalization and publish hook in `backend/src/services/watch_service.py`
-- [ ] T023 [US3] Provide polling/manual refresh endpoints and freshness timestamps in `backend/src/api/routes/events.py`
-- [ ] T024 [P] [US3] Add realtime subscriptions and fallback polling logic in `frontend/src/hooks/useRealtimeUpdates.ts`
-- [ ] T025 [US3] Display last-updated and staleness indicators on lists/detail views in `frontend/src/components/status/FreshnessBadge.tsx`
-
-**Checkpoint**: User Story 3 independently testable
+**Checkpoint**: US3 independently testable
 
 ---
 
-## Phase 6: User Story 4 - Search, navigation, and pack/config awareness (Priority: P3)
+## Phase 6: User Story 4 — Safe, guarded actions with previews + audits (P2)
 
-**Goal**: Enable cross-project search/filter navigation and pack/config visibility with bounded edits.
+- [ ] T040 [P] [US4] Implement guarded task create/edit/transition endpoints (preview → confirm/apply) + audit writes
+- [ ] T041 [P] [US4] Implement guarded session create/transition endpoints (preview → confirm/apply) + audit writes
+- [ ] T042 [P] [US4] Implement guarded “trigger validation” endpoint (preview → confirm/apply) + audit writes
+- [ ] T043 [US4] Build UI mutation flows with preview/confirm dialogs and guard failure explanations in `frontend/app/projects/[projectId]/`
+- [ ] T044 [US4] Add audit log view and per-entity audit panels
 
-**Independent Test**: Search finds tasks/sessions across projects quickly; pack/config pages load; allowed config edit applies with rollback; unsupported edits blocked.
-
-### Implementation for User Story 4
-
-- [ ] T026 [P] [US4] Implement search endpoints for tasks/sessions/projects with filters in `backend/src/api/routes/search.py`
-- [ ] T027 [US4] Add pack/config read surfaces with allowlisted edit preview/apply in `backend/src/api/routes/config.py`
-- [ ] T028 [P] [US4] Build frontend search bar and results navigation in `frontend/src/components/search/SearchBar.tsx`
-- [ ] T029 [US4] Render pack/config views with preview/rollback UI in `frontend/src/app/projects/[projectId]/config/page.tsx`
-
-**Checkpoint**: User Story 4 independently testable
+**Checkpoint**: US4 independently testable
 
 ---
 
-## Phase 7: Polish & Cross-Cutting Concerns
+## Phase 7: User Story 5 — Push-first realtime updates + freshness (P2)
 
-**Purpose**: Improvements that affect multiple user stories
+- [ ] T050 [US5] Implement realtime WebSocket endpoint with `subscribe/unsubscribe` and push envelopes `snapshot/upsert/delete` with per-subscription revisioning
+- [ ] T051 [P] [US5] Implement backend watchers → refresh/diff → push pipeline with coalescing/backpressure controls
+- [ ] T052 [P] [US5] Implement frontend per-subscription stores that apply snapshot/upsert/delete in revision order
+- [ ] T053 [US5] Implement reconnect + resubscribe behavior, and fallback polling/manual refresh with staleness indicators
 
-- [ ] T030 [P] Harden error taxonomy and redaction rules across APIs in `backend/src/api/middleware/error_handler.py`
-- [ ] T031 [P] Add performance instrumentation and logging for discovery/list endpoints in `backend/src/metrics/observability.py`
-- [ ] T032 [P] Add secret/path redaction filters for API responses/logs in `backend/src/api/middleware/redaction.py`
-- [ ] T033 Add UI path/secret masking for evidence and config displays in `frontend/src/components/formatters/PathDisplay.tsx`
-- [ ] T034 [P] Add performance/freshness validation checks for discovery/list/watch flows in `backend/tests/performance/test_freshness.py`
-- [ ] T035 [P] Validate watcher/polling freshness timings in `frontend/tests/e2e/freshness.spec.ts`
-- [ ] T036 Refine accessibility (keyboard focus, ARIA) across UI shells in `frontend/src/components/layout/`
-- [ ] T037 [P] Update documentation to reflect new flows in `specs/001-speckit-spec-audit/quickstart.md`
+**Checkpoint**: US5 independently testable
 
 ---
 
-## Dependencies & Execution Order
+## Phase 8: User Story 6 — Remote mobile access with pairing (P2)
 
-### Phase Dependencies
+- [ ] T060 [US6] Implement server exposure modes (localhost vs network-exposed) and enforce auth when exposed
+- [ ] T061 [P] [US6] Implement pairing endpoints (start/complete) and token issuance/revocation
+- [ ] T062 [US6] Implement UI pairing wizard (show warning, code/QR, confirm paired device)
+- [ ] T063 [US6] Ensure realtime WS requires auth in remote mode; verify rejection behavior for unpaired clients
 
-- **Setup (Phase 1)**: No dependencies - can start immediately
-- **Foundational (Phase 2)**: Depends on Setup completion - BLOCKS all user stories
-- **User Stories (Phase 3–6)**: Depend on Foundational; US1 and US2 are both P1 and should start first (US1 establishes visibility, US2 adds guarded writes), followed by US3 (freshness) then US4 (search/config)
-- **Polish (Phase 7)**: Depends on completion of targeted user stories
-
-### User Story Dependencies
-
-- **User Story 1 (P1)**: Independent once foundation is ready
-- **User Story 2 (P1)**: Independent once foundation is ready; may read data from US1 but should not be blocked by it; validation progress/re-run tasks rely on QA route and UI locations
-- **User Story 3 (P2)**: Depends on foundational data access; can run in parallel after US1/US2 start
-- **User Story 4 (P3)**: Depends on foundational search/config scaffolding; can proceed after US1 visibility endpoints exist
-
-### Parallel Opportunities
-
-- Setup tasks T002–T003 can run in parallel.
-- Foundation tasks T006–T009 can run in parallel after T004/T005 begin.
-- Per-story: models/services/endpoints and UI tasks marked [P] can proceed concurrently when they touch different files.
-- Different user stories can be staffed in parallel after Foundation: e.g., US1 frontend (T012) and US2 backend (T015/T016) can proceed together; Polish performance/security tasks T030–T035 can run in parallel once core stories are stable.
+**Checkpoint**: US6 independently testable
 
 ---
 
-## Implementation Strategy
+## Phase 9: User Story 7 — Session context + memory + agent monitoring (P3)
 
-### MVP First (User Story 1 Only)
+- [ ] T070 [P] [US7] Implement session “next” and “context” read endpoints (wired to Edison CLI outputs when available)
+- [ ] T071 [US7] Build session detail panel for next/context outputs with timestamps and redaction
+- [ ] T072 [P] [US7] Implement Agents view endpoints for active/recent agent/validator runs (if available) and fallback “unknown/unavailable” states
+- [ ] T073 [US7] Build Agents view UI (active workers, session/task association, last heartbeat) with `sessionId` filtering
+- [ ] T073a [P] [US7] Add session-scoped Agents panel in session detail that reuses the same Agents list component (equivalent to filtering global Agents by `sessionId`)
+- [ ] T074 [P] [US7] Implement search endpoints for `projects|tasks|sessions|qa|memory` scopes
+- [ ] T075 [US7] Build search UI (global + project-scoped) with typed results and quick navigation
+- [ ] T076 [P] [US7] Implement pack/config read endpoints and allowlisted edit preview/apply endpoints
+- [ ] T077 [US7] Build pack/config UI (view + allowlisted edits with preview/rollback guidance)
+- [ ] T078 [P] [US7] Implement activity/audit endpoints to surface Edison core JSONL audit logs and session activity logs with filtering + pagination
+- [ ] T079 [US7] Build Activity UI: project timeline + session/task timelines, with “high-level vs raw audit” toggle and invocation drill-down
 
-1. Complete Phase 1: Setup
-2. Complete Phase 2: Foundational
-3. Complete Phase 3: User Story 1
-4. **STOP and VALIDATE**: Verify dashboard and project detail visibility per acceptance criteria
+**Checkpoint**: US7 independently testable
 
-### Incremental Delivery
+---
 
-1. Setup + Foundational → ready
-2. Add US1 (visibility) → validate
-3. Add US2 (guarded writes) → validate
-4. Add US3 (freshness) → validate
-5. Add US4 (search/config) → validate
+## Phase 10: Polish & Cross-Cutting
 
-### Parallel Team Strategy
-
-With multiple developers:
-
-1. Team completes Setup + Foundational together
-2. Parallel streams:
-   - Stream A: US1 backend/frontend (T010–T014)
-   - Stream B: US2 backend/frontend (T015–T019)
-   - Stream C: US3 realtime/polling (T020–T023)
-   - Stream D: US4 search/config (T024–T027)
-3. Reconvene for Polish tasks (T028–T031)
+- [ ] T080 [P] Harden redaction rules (API + UI) for evidence paths, settings, and logs
+- [ ] T081 [P] Performance instrumentation for list/board/qa endpoints (timings and payload sizes)
+- [ ] T082 [P] Accessibility pass (keyboard focus, ARIA, skip links) across navigation shell and board views
+- [ ] T083 [P] Update `specs/001-speckit-spec-audit/quickstart.md` with the latest “zero setup”, realtime, and remote pairing steps

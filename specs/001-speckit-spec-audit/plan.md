@@ -7,7 +7,7 @@
 
 ## Summary
 
-Provide a Speckit-aligned specification and planning assets for Edison UI, ensuring audited clarity across discovery, guarded writes, realtime freshness, search/navigation, and pack/config visibility. Technical approach is local-first: filesystem is the source of truth; guarded writes respect Edison state machines with previews/audit trails; freshness via watchers with polling fallback; actor identity is the local OS user plus per-session display name; frontend uses Next.js App Router with Tailwind, backend FastAPI bridging Edison APIs/filesystem.
+Provide Speckit-aligned specification and planning assets for Edison UI, focused on: near-zero-setup startup, a sidebar navigation shell, board-first + keyboard-first Tasks/Sessions workspace (including hierarchy and “ready/blocked” explanations), QA as a primary flow, guarded writes with audits, push-first realtime subscriptions (with polling fallback), and safe remote mobile access via pairing/auth. Technical approach remains local-first: filesystem is the source of truth; guarded writes respect Edison state machines with previews/audit trails; freshness via watchers feeding push updates with polling fallback; actor identity is the local OS user plus per-session display name.
 
 ## Technical Context
 
@@ -21,10 +21,10 @@ Provide a Speckit-aligned specification and planning assets for Edison UI, ensur
 **Primary Dependencies**: FastAPI, Pydantic, Next.js App Router, Tailwind, Vitest/RTL, Playwright  
 **Storage**: Local filesystem Edison project structure (source of truth); no external DB  
 **Testing**: pytest + FastAPI TestClient; Vitest + RTL; Playwright for journeys  
-**Target Platform**: Local host (desktop + mobile browsers), backend on localhost  
+**Target Platform**: Web-first (desktop + mobile browsers); localhost by default with opt-in network-exposed mode (paired/authenticated)  
 **Project Type**: Web (frontend + backend)  
 **Performance Goals**: Discovery <10s for 100 projects; list views <2s for 10k items; UI freshness <5s (watchers) / <30s (poll/manual)  
-**Constraints**: Local-first, safe-guarded writes; avoid secret/path leaks; responsive and accessible; watchers may be unavailable so polling/manual refresh required  
+**Constraints**: Local-first, safe-guarded writes; avoid secret/path leaks; responsive and accessible; push/watchers may be unavailable so polling/manual refresh required; remote access must be opt-in and authenticated  
 **Scale/Scope**: Up to 100 projects; 10k+ tasks per project; 100+ concurrent WebSocket connections target
 
 ## Constitution Check
