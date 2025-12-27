@@ -34,6 +34,8 @@ _edison_audit_event "hook.session-cleanup.start"
 _edison_audit_event "hook.session-cleanup.save-logs.requested"
 
 
+
+
 _edison_audit_event "hook.session-cleanup.end" --field "save_logs=True"
 
 exit 0

@@ -3,35 +3,12 @@
 # Type: SessionStart
 # Description: Initialize session context
 
-# Fast check: Skip if no Edison session file exists
+# Consume hook payload from stdin (Claude Code sends JSON); ignore it.
+cat >/dev/null 2>&1 || true
 
-SESSION_FILE=".project/.session-id"
-if [[ ! -f "$SESSION_FILE" ]]; then
-  exit 0  # No Edison session, skip hook
-fi
+command -v edison >/dev/null 2>&1 || exit 0
 
-# Get session ID (from file or edison command)
-SESSION_ID=$(cat "$SESSION_FILE" 2>/dev/null | head -1 || echo "")
-if [[ -z "$SESSION_ID" ]]; then
-  SESSION_ID=$(edison session status --json 2>/dev/null | jq -r '.id // empty' 2>/dev/null || echo "")
-fi
-
-_edison_audit_event() {
-  # Fail-open: audit must never break hooks.
-  local event="$1"
-  shift || true
-  edison audit event "$event" \
-    --repo-root "$PWD" \
-    --session "$SESSION_ID" \
-    --field "hook_id=session-init" \
-    --field "hook_type=SessionStart" \
-    "$@" 2>/dev/null || true
-}
-
-# Only output if we have a valid session
-if [[ -n "$SESSION_ID" ]]; then
-  echo "Edison Session: $SESSION_ID"
-  _edison_audit_event "hook.session-init" --field "session_id=$SESSION_ID"
-fi
+# Fail-open: hooks must never break the host toolchain.
+edison session context 2>/dev/null || true
 
 exit 0

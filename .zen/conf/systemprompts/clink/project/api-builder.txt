@@ -175,6 +175,7 @@ Later layers override earlier ones.
 ## Git Safety (Non-Negotiable)
 - **Never switch branches in the primary checkout.** Edison/LLMs MUST NOT run `git checkout` / `git switch` in the primary worktree.
 - **Branch creation/deletion is restricted.** Only create/delete branches via Edison session/worktree commands unless the user explicitly asks otherwise.
+- **NEVER use `git reset`, `git restore`, `git clean`, `git checkout -- <file>`, or any other destructive commands without user approval.** If you see unrelated changes/work to what you expect, NEVER discard them without explicit user confirmation. Many agents/LLMs may be working on the same task concurrently, so "unrelated" changes is expected and you should NEVER discard them, except via explicit user instruction.
 
 - Do **not** create ad-hoc summary/report/status files.
 - Task + QA files under `.project/tasks/` and `.project/qa/` are the only approved tracking artifacts.
@@ -291,7 +292,7 @@ make test
 Use Context7 to refresh your knowledge **before** implementing or validating when work touches any configured post-training package.
 
 - Project overrides live in `.edison/config/context7.yaml`.
-- To view the merged effective Context7 configuration (core → packs → project), run: `edison config show context7 --format yaml`.
+- To view the merged effective Context7 configuration (core → packs → user → project), run: `edison config show context7 --format yaml`.
 - If the task/change does not touch any configured package, do not spend context on Context7.
 - When required, record evidence using the project's configured evidence markers/locations (don’t invent new file names).
 
