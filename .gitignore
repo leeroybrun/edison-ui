@@ -170,3 +170,8 @@ $RECYCLE.BIN/
 .codex/auth.json
 .codex/history.jsonl
 .codex/rules/default.rules
+
+.edison/config.local/
+.project/sessions/
+.project/logs/
+.project/archive/
