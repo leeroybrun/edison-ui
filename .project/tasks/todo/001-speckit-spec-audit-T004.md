@@ -1,15 +1,15 @@
 ---
 id: 001-speckit-spec-audit-T004
 title: Define actor identity helper (OS user + display name) and audit entry shape
-  in `backend/src/models/audit.py`
+  in `backend/models/` (exact file per repo layout)
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 ---
-# Define actor identity helper (OS user + display name) and audit entry shape in `backend/src/models/audit.py`
+# Define actor identity helper (OS user + display name) and audit entry shape in `backend/models/` (exact file per repo layout)
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
@@ -17,9 +17,6 @@ tags:
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T004
 **Feature**: 001-speckit-spec-audit
 **Phase**: foundational
-
-## Implementation Target
-``backend/src/models/audit.py`
 
 ## Required Reading
 Before implementing this task, read:
@@ -29,7 +26,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T004 Define actor identity helper (OS user + display name) and audit entry shape in `backend/src/models/audit.py`
+> T004 Define actor identity helper (OS user + display name) and audit entry shape in `backend/models/` (exact file per repo layout)
 
 <!-- /EXTENSIBLE: Summary -->
 

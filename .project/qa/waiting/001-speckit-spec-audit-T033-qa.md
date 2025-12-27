@@ -4,8 +4,8 @@ task_id: 001-speckit-spec-audit-T033
 title: QA 001-speckit-spec-audit-T033
 round: 1
 validator_owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 ---
 # QA 001-speckit-spec-audit-T033
 

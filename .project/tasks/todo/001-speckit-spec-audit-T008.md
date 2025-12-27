@@ -1,15 +1,15 @@
 ---
 id: 001-speckit-spec-audit-T008
-title: Implement frontend data fetching clients with error/loading/stale handling
-  in `frontend/src/services/apiClient.ts`
+title: Implement frontend API client with consistent error/loading/stale handling
+  in `frontend/lib/` or `frontend/services/`
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 ---
-# Implement frontend data fetching clients with error/loading/stale handling in `frontend/src/services/apiClient.ts`
+# Implement frontend API client with consistent error/loading/stale handling in `frontend/lib/` or `frontend/services/`
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
@@ -17,9 +17,6 @@ tags:
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T008
 **Feature**: 001-speckit-spec-audit
 **Phase**: foundational
-
-## Implementation Target
-``frontend/src/services/apiClient.ts`
 
 ## Required Reading
 Before implementing this task, read:
@@ -29,7 +26,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T008 Implement frontend data fetching clients with error/loading/stale handling in `frontend/src/services/apiClient.ts`
+> T008 Implement frontend API client with consistent error/loading/stale handling in `frontend/lib/` or `frontend/services/`
 
 <!-- /EXTENSIBLE: Summary -->
 

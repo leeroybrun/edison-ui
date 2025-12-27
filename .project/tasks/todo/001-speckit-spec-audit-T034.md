@@ -1,35 +1,33 @@
 ---
 id: 001-speckit-spec-audit-T034
-title: Add performance/freshness validation checks for discovery/list/watch flows
-  in `backend/tests/performance/test_freshness.py`
+title: Add session-scoped QA view in session detail that reuses the same QA list component
+  (equivalent to filtering global QA by `sessionId`)
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
+- user-story-3
 ---
-# Add performance/freshness validation checks for discovery/list/watch flows in `backend/tests/performance/test_freshness.py`
+# Add session-scoped QA view in session detail that reuses the same QA list component (equivalent to filtering global QA by `sessionId`)
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T034
 **Feature**: 001-speckit-spec-audit
-**Phase**: polish | **Parallelizable**: Yes
-
-## Implementation Target
-``backend/tests/performance/test_freshness.py`
+**Phase**: user-story-3 | **User Story**: US3 | **Parallelizable**: Yes
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md`
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US3
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T034 [P] Add performance/freshness validation checks for discovery/list/watch flows in `backend/tests/performance/test_freshness.py`
+> T034 [P] [US3] Add session-scoped QA view in session detail that reuses the same QA list component (equivalent to filtering global QA by `sessionId`)
 
 <!-- /EXTENSIBLE: Summary -->
 

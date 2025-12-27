@@ -1,34 +1,33 @@
 ---
 id: 001-speckit-spec-audit-T030
-title: Harden error taxonomy and redaction rules across APIs in `backend/src/api/middleware/error_handler.py`
+title: Implement QA list + task QA detail endpoints (QARecord + evidence rounds, validators,
+  evidence artifacts)
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
+- user-story-3
 ---
-# Harden error taxonomy and redaction rules across APIs in `backend/src/api/middleware/error_handler.py`
+# Implement QA list + task QA detail endpoints (QARecord + evidence rounds, validators, evidence artifacts)
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T030
 **Feature**: 001-speckit-spec-audit
-**Phase**: polish | **Parallelizable**: Yes
-
-## Implementation Target
-``backend/src/api/middleware/error_handler.py`
+**Phase**: user-story-3 | **User Story**: US3
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md`
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US3
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T030 [P] Harden error taxonomy and redaction rules across APIs in `backend/src/api/middleware/error_handler.py`
+> T030 [US3] Implement QA list + task QA detail endpoints (QARecord + evidence rounds, validators, evidence artifacts)
 
 <!-- /EXTENSIBLE: Summary -->
 

@@ -1,14 +1,15 @@
 ---
 id: 001-speckit-spec-audit-T003
-title: Document environment variables and defaults for scan roots/watchers in `backend/README.md`
+title: Document environment variables and defaults for scan roots, exposure mode,
+  and realtime in `backend/.env.example` and `backend/README.md`
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 ---
-# Document environment variables and defaults for scan roots/watchers in `backend/README.md`
+# Document environment variables and defaults for scan roots, exposure mode, and realtime in `backend/.env.example` and `backend/README.md`
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
@@ -18,7 +19,7 @@ tags:
 **Phase**: setup | **Parallelizable**: Yes
 
 ## Implementation Target
-``backend/README.md`
+``backend/.env.example`
 
 ## Required Reading
 Before implementing this task, read:
@@ -28,7 +29,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T003 [P] Document environment variables and defaults for scan roots/watchers in `backend/README.md`
+> T003 [P] Document environment variables and defaults for scan roots, exposure mode, and realtime in `backend/.env.example` and `backend/README.md`
 
 <!-- /EXTENSIBLE: Summary -->
 

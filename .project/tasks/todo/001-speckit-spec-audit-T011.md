@@ -1,25 +1,23 @@
 ---
 id: 001-speckit-spec-audit-T011
-title: Add project detail aggregation (health, counts, recent activity) in `backend/src/services/project_service.py`
+title: Implement first-run settings flow (scan roots + safe defaults) in backend settings
+  endpoints
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 - user-story-1
 ---
-# Add project detail aggregation (health, counts, recent activity) in `backend/src/services/project_service.py`
+# Implement first-run settings flow (scan roots + safe defaults) in backend settings endpoints
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T011
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-1 | **User Story**: US1
-
-## Implementation Target
-``backend/src/services/project_service.py`
+**Phase**: setup | **User Story**: US1 | **Parallelizable**: Yes
 
 ## Required Reading
 Before implementing this task, read:
@@ -29,7 +27,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T011 [US1] Add project detail aggregation (health, counts, recent activity) in `backend/src/services/project_service.py`
+> T011 [P] [US1] Implement first-run settings flow (scan roots + safe defaults) in backend settings endpoints
 
 <!-- /EXTENSIBLE: Summary -->
 

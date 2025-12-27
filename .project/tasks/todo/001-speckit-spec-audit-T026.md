@@ -1,35 +1,33 @@
 ---
 id: 001-speckit-spec-audit-T026
-title: Implement search endpoints for tasks/sessions/projects with filters in `backend/src/api/routes/search.py`
+title: Implement keyboard navigation + command palette for core flows (open task,
+  switch view, filter) in `frontend/components/`
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
-- user-story-4
+- user-story-2
 ---
-# Implement search endpoints for tasks/sessions/projects with filters in `backend/src/api/routes/search.py`
+# Implement keyboard navigation + command palette for core flows (open task, switch view, filter) in `frontend/components/`
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T026
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-4 | **User Story**: US4 | **Parallelizable**: Yes
-
-## Implementation Target
-``backend/src/api/routes/search.py`
+**Phase**: user-story-2 | **User Story**: US2
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md` -> User Story US4
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US2
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T026 [P] [US4] Implement search endpoints for tasks/sessions/projects with filters in `backend/src/api/routes/search.py`
+> T026 [US2] Implement keyboard navigation + command palette for core flows (open task, switch view, filter) in `frontend/components/`
 
 <!-- /EXTENSIBLE: Summary -->
 

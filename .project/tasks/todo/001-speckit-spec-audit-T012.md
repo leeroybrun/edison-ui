@@ -1,25 +1,22 @@
 ---
 id: 001-speckit-spec-audit-T012
-title: Render projects dashboard with counts and pins in `frontend/src/app/page.tsx`
+title: Build dashboard UI (projects, health counts, pins, recent activity) in `frontend/app/`
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 - user-story-1
 ---
-# Render projects dashboard with counts and pins in `frontend/src/app/page.tsx`
+# Build dashboard UI (projects, health counts, pins, recent activity) in `frontend/app/`
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T012
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-1 | **User Story**: US1 | **Parallelizable**: Yes
-
-## Implementation Target
-``frontend/src/app/page.tsx`
+**Phase**: setup | **User Story**: US1 | **Parallelizable**: Yes
 
 ## Required Reading
 Before implementing this task, read:
@@ -29,7 +26,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T012 [P] [US1] Render projects dashboard with counts and pins in `frontend/src/app/page.tsx`
+> T012 [P] [US1] Build dashboard UI (projects, health counts, pins, recent activity) in `frontend/app/`
 
 <!-- /EXTENSIBLE: Summary -->
 

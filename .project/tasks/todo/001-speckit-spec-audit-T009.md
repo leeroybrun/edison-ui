@@ -1,14 +1,15 @@
 ---
 id: 001-speckit-spec-audit-T009
-title: Add global layout loading/error/focus states for accessibility in `frontend/src/app/layout.tsx`
+title: Add navigation shell (sidebar + top bar), loading/error boundaries, and accessibility
+  focus states in `frontend/app/`
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 ---
-# Add global layout loading/error/focus states for accessibility in `frontend/src/app/layout.tsx`
+# Add navigation shell (sidebar + top bar), loading/error boundaries, and accessibility focus states in `frontend/app/`
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
@@ -16,9 +17,6 @@ tags:
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T009
 **Feature**: 001-speckit-spec-audit
 **Phase**: foundational | **Parallelizable**: Yes
-
-## Implementation Target
-``frontend/src/app/layout.tsx`
 
 ## Required Reading
 Before implementing this task, read:
@@ -28,7 +26,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T009 [P] Add global layout loading/error/focus states for accessibility in `frontend/src/app/layout.tsx`
+> T009 [P] Add navigation shell (sidebar + top bar), loading/error boundaries, and accessibility focus states in `frontend/app/`
 
 <!-- /EXTENSIBLE: Summary -->
 

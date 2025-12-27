@@ -1,15 +1,15 @@
 ---
 id: 001-speckit-spec-audit-T002
-title: Validate dev prerequisites and make targets in `README.md` and `Makefile` for
-  backend/frontend startup
+title: Validate dev entrypoints support “single command” local start (documented)
+  in `Makefile` and `README.md`
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 ---
-# Validate dev prerequisites and make targets in `README.md` and `Makefile` for backend/frontend startup
+# Validate dev entrypoints support “single command” local start (documented) in `Makefile` and `README.md`
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
@@ -17,9 +17,6 @@ tags:
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T002
 **Feature**: 001-speckit-spec-audit
 **Phase**: setup
-
-## Implementation Target
-``README.md`
 
 ## Required Reading
 Before implementing this task, read:
@@ -29,7 +26,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T002 Validate dev prerequisites and make targets in `README.md` and `Makefile` for backend/frontend startup
+> T002 Validate dev entrypoints support “single command” local start (documented) in `Makefile` and `README.md`
 
 <!-- /EXTENSIBLE: Summary -->
 

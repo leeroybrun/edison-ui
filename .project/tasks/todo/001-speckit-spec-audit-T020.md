@@ -1,25 +1,23 @@
 ---
 id: 001-speckit-spec-audit-T020
-title: Implement validation progress and re-run endpoints in `backend/src/api/routes/qa.py`
+title: 'Implement unified tasks listing endpoint: project-wide tasks + session filter
+  + hierarchy fields'
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 - user-story-2
 ---
-# Implement validation progress and re-run endpoints in `backend/src/api/routes/qa.py`
+# Implement unified tasks listing endpoint: project-wide tasks + session filter + hierarchy fields
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T020
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-2 | **User Story**: US2 | **Parallelizable**: Yes
-
-## Implementation Target
-``backend/src/api/routes/qa.py`
+**Phase**: user-story-2 | **User Story**: US2
 
 ## Required Reading
 Before implementing this task, read:
@@ -29,7 +27,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T020 [P] [US2] Implement validation progress and re-run endpoints in `backend/src/api/routes/qa.py`
+> T020 [US2] Implement unified tasks listing endpoint: project-wide tasks + session filter + hierarchy fields
 
 <!-- /EXTENSIBLE: Summary -->
 

@@ -1,25 +1,23 @@
 ---
 id: 001-speckit-spec-audit-T013
-title: Build project detail views (tasks/sessions/QA/agents/validators tabs) in `frontend/src/app/projects/[projectId]/page.tsx`
+title: Build project shell with sidebar navigation (Dashboard / Sessions / Tasks /
+  QA / Agents / Settings) in `frontend/app/projects/[projectId]/`
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 - user-story-1
 ---
-# Build project detail views (tasks/sessions/QA/agents/validators tabs) in `frontend/src/app/projects/[projectId]/page.tsx`
+# Build project shell with sidebar navigation (Dashboard / Sessions / Tasks / QA / Agents / Settings) in `frontend/app/projects/[projectId]/`
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T013
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-1 | **User Story**: US1
-
-## Implementation Target
-``frontend/src/app/projects/[projectId]/page.tsx`
+**Phase**: setup | **User Story**: US1
 
 ## Required Reading
 Before implementing this task, read:
@@ -29,7 +27,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T013 [US1] Build project detail views (tasks/sessions/QA/agents/validators tabs) in `frontend/src/app/projects/[projectId]/page.tsx`
+> T013 [US1] Build project shell with sidebar navigation (Dashboard / Sessions / Tasks / QA / Agents / Settings) in `frontend/app/projects/[projectId]/`
 
 <!-- /EXTENSIBLE: Summary -->
 

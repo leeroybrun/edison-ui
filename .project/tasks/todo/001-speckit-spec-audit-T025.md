@@ -1,35 +1,33 @@
 ---
 id: 001-speckit-spec-audit-T025
-title: Display last-updated and staleness indicators on lists/detail views in `frontend/src/components/status/FreshnessBadge.tsx`
+title: Ensure session tasks view reuses the same Tasks presentation + filter semantics
+  as project Tasks view
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
-- user-story-3
+- user-story-2
 ---
-# Display last-updated and staleness indicators on lists/detail views in `frontend/src/components/status/FreshnessBadge.tsx`
+# Ensure session tasks view reuses the same Tasks presentation + filter semantics as project Tasks view
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T025
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-3 | **User Story**: US3
-
-## Implementation Target
-``frontend/src/components/status/FreshnessBadge.tsx`
+**Phase**: user-story-2 | **User Story**: US2
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md` -> User Story US3
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US2
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T025 [US3] Display last-updated and staleness indicators on lists/detail views in `frontend/src/components/status/FreshnessBadge.tsx`
+> T025 [US2] Ensure session tasks view reuses the same Tasks presentation + filter semantics as project Tasks view
 
 <!-- /EXTENSIBLE: Summary -->
 

@@ -1,34 +1,32 @@
 ---
 id: 001-speckit-spec-audit-T032
-title: Add secret/path redaction filters for API responses/logs in `backend/src/api/middleware/redaction.py`
+title: Build QA view (filters by verdict/status/validator/session) in `frontend/app/projects/[projectId]/qa/`
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
+- user-story-3
 ---
-# Add secret/path redaction filters for API responses/logs in `backend/src/api/middleware/redaction.py`
+# Build QA view (filters by verdict/status/validator/session) in `frontend/app/projects/[projectId]/qa/`
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T032
 **Feature**: 001-speckit-spec-audit
-**Phase**: polish | **Parallelizable**: Yes
-
-## Implementation Target
-``backend/src/api/middleware/redaction.py`
+**Phase**: user-story-3 | **User Story**: US3 | **Parallelizable**: Yes
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md`
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US3
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T032 [P] Add secret/path redaction filters for API responses/logs in `backend/src/api/middleware/redaction.py`
+> T032 [P] [US3] Build QA view (filters by verdict/status/validator/session) in `frontend/app/projects/[projectId]/qa/`
 
 <!-- /EXTENSIBLE: Summary -->
 

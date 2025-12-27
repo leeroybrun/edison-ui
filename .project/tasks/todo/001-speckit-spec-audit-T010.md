@@ -1,25 +1,22 @@
 ---
 id: 001-speckit-spec-audit-T010
-title: Implement project discovery endpoint per contract in `backend/src/api/routes/projects.py`
+title: Implement project discovery/list/detail endpoints per `specs/001-speckit-spec-audit/contracts/api.md`
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 - user-story-1
 ---
-# Implement project discovery endpoint per contract in `backend/src/api/routes/projects.py`
+# Implement project discovery/list/detail endpoints per `specs/001-speckit-spec-audit/contracts/api.md`
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T010
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-1 | **User Story**: US1 | **Parallelizable**: Yes
-
-## Implementation Target
-``backend/src/api/routes/projects.py`
+**Phase**: setup | **User Story**: US1
 
 ## Required Reading
 Before implementing this task, read:
@@ -29,7 +26,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T010 [P] [US1] Implement project discovery endpoint per contract in `backend/src/api/routes/projects.py`
+> T010 [US1] Implement project discovery/list/detail endpoints per `specs/001-speckit-spec-audit/contracts/api.md`
 
 <!-- /EXTENSIBLE: Summary -->
 

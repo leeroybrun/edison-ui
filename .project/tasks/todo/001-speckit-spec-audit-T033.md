@@ -1,34 +1,33 @@
 ---
 id: 001-speckit-spec-audit-T033
-title: Add UI path/secret masking for evidence and config displays in `frontend/src/components/formatters/PathDisplay.tsx`
+title: Build task detail QA panel with rounds timeline, evidence links (redacted),
+  and clear failure reasons in `frontend/app/projects/[projectId]/tasks/[taskId]/`
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
+- user-story-3
 ---
-# Add UI path/secret masking for evidence and config displays in `frontend/src/components/formatters/PathDisplay.tsx`
+# Build task detail QA panel with rounds timeline, evidence links (redacted), and clear failure reasons in `frontend/app/projects/[projectId]/tasks/[taskId]/`
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T033
 **Feature**: 001-speckit-spec-audit
-**Phase**: polish
-
-## Implementation Target
-``frontend/src/components/formatters/PathDisplay.tsx`
+**Phase**: user-story-3 | **User Story**: US3
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md`
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US3
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T033 Add UI path/secret masking for evidence and config displays in `frontend/src/components/formatters/PathDisplay.tsx`
+> T033 [US3] Build task detail QA panel with rounds timeline, evidence links (redacted), and clear failure reasons in `frontend/app/projects/[projectId]/tasks/[taskId]/`
 
 <!-- /EXTENSIBLE: Summary -->
 

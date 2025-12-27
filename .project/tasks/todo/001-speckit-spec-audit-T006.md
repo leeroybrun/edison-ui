@@ -1,15 +1,15 @@
 ---
 id: 001-speckit-spec-audit-T006
-title: Establish Edison project discovery configuration (scan roots, ignores, pin
-  storage) in `backend/src/config/settings.py`
+title: Establish project discovery configuration (scan roots, ignores, pin storage)
+  in `backend/core/` (settings)
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 ---
-# Establish Edison project discovery configuration (scan roots, ignores, pin storage) in `backend/src/config/settings.py`
+# Establish project discovery configuration (scan roots, ignores, pin storage) in `backend/core/` (settings)
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
@@ -17,9 +17,6 @@ tags:
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T006
 **Feature**: 001-speckit-spec-audit
 **Phase**: foundational | **Parallelizable**: Yes
-
-## Implementation Target
-``backend/src/config/settings.py`
 
 ## Required Reading
 Before implementing this task, read:
@@ -29,7 +26,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T006 [P] Establish Edison project discovery configuration (scan roots, ignores, pin storage) in `backend/src/config/settings.py`
+> T006 [P] Establish project discovery configuration (scan roots, ignores, pin storage) in `backend/core/` (settings)
 
 <!-- /EXTENSIBLE: Summary -->
 

@@ -1,14 +1,15 @@
 ---
 id: 001-speckit-spec-audit-T005
-title: Wire audit writer with filesystem confinement and redaction in `backend/src/services/audit_service.py`
+title: Wire audit writer with filesystem confinement and redaction in `backend/services/`
+  (exact file per repo layout)
 owner: speckit-import
-created_at: '2025-12-20T14:16:04Z'
-updated_at: '2025-12-20T14:16:04Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 ---
-# Wire audit writer with filesystem confinement and redaction in `backend/src/services/audit_service.py`
+# Wire audit writer with filesystem confinement and redaction in `backend/services/` (exact file per repo layout)
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
@@ -16,9 +17,6 @@ tags:
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T005
 **Feature**: 001-speckit-spec-audit
 **Phase**: foundational
-
-## Implementation Target
-``backend/src/services/audit_service.py`
 
 ## Required Reading
 Before implementing this task, read:
@@ -28,7 +26,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T005 Wire audit writer with filesystem confinement and redaction in `backend/src/services/audit_service.py`
+> T005 Wire audit writer with filesystem confinement and redaction in `backend/services/` (exact file per repo layout)
 
 <!-- /EXTENSIBLE: Summary -->
 

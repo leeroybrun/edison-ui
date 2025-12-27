@@ -1,14 +1,15 @@
 ---
 id: 001-speckit-spec-audit-T001
-title: Align plan.md with current repo structure and stack references in `specs/001-speckit-spec-audit/plan.md`
+title: Align `specs/001-speckit-spec-audit/plan.md` with current repo structure and
+  updated story set
 owner: speckit-import
-created_at: '2025-12-20T14:16:03Z'
-updated_at: '2025-12-20T14:16:03Z'
+created_at: '2025-12-27T13:24:28Z'
+updated_at: '2025-12-27T13:24:28Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
 ---
-# Align plan.md with current repo structure and stack references in `specs/001-speckit-spec-audit/plan.md`
+# Align `specs/001-speckit-spec-audit/plan.md` with current repo structure and updated story set
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
@@ -16,9 +17,6 @@ tags:
 **SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T001
 **Feature**: 001-speckit-spec-audit
 **Phase**: setup
-
-## Implementation Target
-``specs/001-speckit-spec-audit/plan.md`
 
 ## Required Reading
 Before implementing this task, read:
@@ -28,7 +26,7 @@ Before implementing this task, read:
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T001 Align plan.md with current repo structure and stack references in `specs/001-speckit-spec-audit/plan.md`
+> T001 Align `specs/001-speckit-spec-audit/plan.md` with current repo structure and updated story set
 
 <!-- /EXTENSIBLE: Summary -->
 
