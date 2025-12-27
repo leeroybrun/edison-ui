@@ -24,12 +24,23 @@ install-edison: ## Install Edison editable (EDISON_PATH=../edison)
 
 # --- Dev ---
 
+.PHONY: dev
+dev: ## Start backend + frontend (single command)
+	@echo "Starting Edison UI..."
+	@echo "  Backend:  http://localhost:8000"
+	@echo "  Frontend: http://localhost:3000"
+	@echo "Press Ctrl+C to stop all servers."
+	@trap 'kill 0' SIGINT; \
+	(cd backend && . .venv/bin/activate && uvicorn main:app --reload --host 0.0.0.0 --port 8000) & \
+	(cd frontend && npm run dev) & \
+	wait
+
 .PHONY: dev-backend
-dev-backend: ## Run backend (http://localhost:8000)
+dev-backend: ## Run backend only (http://localhost:8000)
 	@cd backend && . .venv/bin/activate && uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 .PHONY: dev-frontend
-dev-frontend: ## Run frontend (http://localhost:3000)
+dev-frontend: ## Run frontend only (http://localhost:3000)
 	@cd frontend && npm run dev
 
 # --- Quality ---

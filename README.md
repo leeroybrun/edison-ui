@@ -15,9 +15,19 @@ Edison UI provides a visual, mobile-friendly way to browse Edison projects on a 
 ## Quick Start
 
 ```bash
-make install            # uses PYTHON=python3.13 by default
-make dev-backend   # terminal 1
-make dev-frontend  # terminal 2
+make install   # Install dependencies (uses PYTHON=python3.13 by default)
+make dev       # Start backend + frontend (single command)
+```
+
+Open http://localhost:3000 in your browser.
+
+### Alternative: Separate Terminals
+
+If you prefer running backend and frontend separately:
+
+```bash
+make dev-backend   # Terminal 1: http://localhost:8000
+make dev-frontend  # Terminal 2: http://localhost:3000
 ```
 
 ## Project Structure
