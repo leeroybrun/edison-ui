@@ -12,6 +12,43 @@
 - Q: What actor identity should be recorded for guarded writes and audit entries? → A: Use the local OS user as actor and require an explicit per-session display name for audit logs.
 - Q: Should Edison UI be usable remotely (mobile)? → A: Yes — web app first; remote access must be safe by default (opt-in network exposure + pairing/auth).
 
+### Session 2025-12-27 (Analysis-Driven Clarifications)
+
+- Q: What are "memory providers" and how do they integrate with Edison UI?
+  → A: Memory providers are optional integrations that store/search long-lived information across sessions. Edison supports multiple provider types:
+    - **ExternalCliMemoryProvider**: CLI tools returning JSON (e.g., episodic-memory)
+    - **McpToolsMemoryProvider**: MCP servers exposing search tools
+    - **GraphitiPythonMemoryProvider**: Python async memory classes
+    - **FileStoreMemoryProvider**: Local file-based fallback (patterns.md, gotchas.md, codebase_map.json)
+  The UI should surface memory search when `memory.enabled=true` in Edison config and degrade gracefully when disabled or unavailable. Memory is fail-open: failures never break core workflows.
+
+- Q: What entities are session-scopable for the "global view + session filter" pattern (FR-014a)?
+  → A: At minimum: Tasks, QA, and Tracking Runs (agents/validators). The pattern means:
+    - A global view shows all entities across the project
+    - Session detail shows the same component filtered by `sessionId`
+    - Both views are functionally equivalent—session detail is just a pre-applied filter
+
+- Q: What constitutes "sensitive data" for redaction (FR-012)?
+  → A: The following categories MUST be redacted at the API boundary:
+    - Absolute filesystem paths outside configured project roots
+    - Environment variable values (keys may be shown)
+    - API keys, tokens, and credentials
+    - Private user data (email, identifiers) unless actor identity
+
+- Q: What are the pagination/virtualization thresholds for "large" artifacts?
+  → A: Per constitution:
+    - Lists with > 100 items MUST paginate (server-side)
+    - Lists with > 500 items SHOULD virtualize (client-side windowing)
+    - Full content (task body, evidence files) MUST NOT load until item is opened
+
+- Q: What evidence artifact types exist and how are they handled?
+  → A: Evidence lives under `.project/qa/validation-evidence/<task-id>/round-<n>/` and includes:
+    - `bundle-summary.md` — structured round summary
+    - `implementation-report.md` — agent implementation report
+    - `validator-<id>-report.md` — per-validator reports
+    - Command outputs, coverage files, screenshots (configured per project)
+  The UI should display markdown inline (with redaction) and link to other artifacts for download/preview.
+
 ## User Scenarios & Testing *(mandatory)*
 
 <!--

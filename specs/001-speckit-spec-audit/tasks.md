@@ -108,9 +108,9 @@
 
 - [ ] T070 [P] [US7] Implement session “next” and “context” endpoints as computed, structured payloads (mirroring `edison session next --json` and `edison session context --json`)
 - [ ] T071 [US7] Build session detail panel for next/context outputs (rendered markdown + structured JSON) with redaction
-- [ ] T072 [P] [US7] Implement Tracking endpoints: `tracking/active`, `tracking/processes`, and `tracking/process-events` (best-effort, fail-open)
-- [ ] T073 [US7] Build Tracking (Workers) view UI: active runs + tracked processes (session/task association, liveness/staleness, last heartbeat) with `sessionId` filtering
-- [ ] T073a [P] [US7] Add session-scoped Tracking panel in session detail that reuses the same Tracking list component (equivalent to filtering global Tracking by `sessionId`)
+- [ ] T072 [P] [US7] Implement Agents/Tracking endpoints: `agents/active`, `agents/processes`, and `agents/process-events` (best-effort, fail-open)
+- [ ] T073 [US7] Build Agents view UI: active runs + tracked processes (session/task association, liveness/staleness, last heartbeat) with `sessionId` filtering
+- [ ] T073a [P] [US7] Add session-scoped Agents panel in session detail that reuses the same Agents list component (equivalent to filtering global Agents by `sessionId`)
 - [ ] T074 [P] [US7] Implement search endpoints for `projects|tasks|sessions|qa|memory` scopes
 - [ ] T075 [US7] Build search UI (global + project-scoped) with typed results and quick navigation
 - [ ] T076 [P] [US7] Implement pack/config read endpoints and allowlisted edit preview/apply endpoints
@@ -127,4 +127,33 @@
 - [ ] T080 [P] Harden redaction rules (API + UI) for evidence paths, settings, and logs
 - [ ] T081 [P] Performance instrumentation for list/board/qa endpoints (timings and payload sizes)
 - [ ] T082 [P] Accessibility pass (keyboard focus, ARIA, skip links) across navigation shell and board views
-- [ ] T083 [P] Update `specs/001-speckit-spec-audit/quickstart.md` with the latest “zero setup”, realtime, and remote pairing steps
+- [ ] T083 [P] Update `specs/001-speckit-spec-audit/quickstart.md` with the latest "zero setup", realtime, and remote pairing steps
+
+---
+
+## Phase 11: Success Criteria Validation
+
+**Purpose**: Verify all success criteria (SC-001 through SC-008) are met before release.
+
+- [ ] T090 [P] [SC-001] Create performance test: project discovery < 10s for 100 projects (pytest-benchmark or custom harness)
+- [ ] T091 [P] [SC-002] Create performance test: list/board render < 2s for 10k items with < 1% failure rate over 30 min
+- [ ] T092 [P] [SC-003] Create integration test: 100% of state-changing actions generate audit entries visible in UI within 5s
+- [ ] T093 [P] [SC-004] Create negative test suite: guarded actions block invalid transitions with reasons in 95%+ cases
+- [ ] T094 [P] [SC-005] Create realtime test: push/watcher changes reflected < 5s; polling fallback < 30s
+- [ ] T095 [P] [SC-006] Create usability test script: locate task/session via search in < 30s (manual + recorded)
+- [ ] T096 [P] [SC-007] Create first-run test: fresh setup completes in < 60s without docs (manual + recorded)
+- [ ] T097 [P] [SC-008] Create security test: 100% unauthenticated requests rejected in remote mode; pairing < 60s
+
+**Checkpoint**: All success criteria validated
+
+---
+
+## Phase 12: Hierarchical Tasks (Optional Enhancement)
+
+**Purpose**: FR-019 (SHOULD) — Parent/child task expand/collapse in list view.
+
+- [ ] T100 [P] [FR-019] Add `parentId`/`childIds` fields to task list responses and ensure hierarchy is computed server-side
+- [ ] T101 [FR-019] Build collapsible tree component for task list view with expand/collapse all controls
+- [ ] T102 [FR-019] Ensure hierarchy preserves filtering/sorting (collapsed parent shows child count badge)
+
+**Checkpoint**: Hierarchical tasks optionally available

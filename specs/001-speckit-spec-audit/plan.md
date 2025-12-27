@@ -31,7 +31,28 @@ Provide Speckit-aligned specification and planning assets for Edison UI, focused
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Edison UI is an Edison Framework project with role constitutions under `.edison/_generated/constitutions/` (AGENTS/ORCHESTRATOR/VALIDATORS). Agent work is gated by: strict TDD (RED→GREEN→REFACTOR), “no mocks except at boundaries”, config-first behavior, and git safety rules (no branch switching in the primary checkout). No additional project-level constitution overrides were found; proceed.
+**Edison Constitutions** (`.edison/_generated/constitutions/`):
+- ✅ TDD (NON-NEGOTIABLE): RED→GREEN→REFACTOR cycle enforced
+- ✅ No Mocks: Real behavior testing; mock only at system boundaries
+- ✅ Configuration-First: All config from YAML, no hardcoded values
+- ✅ Git Safety: No branch switching in primary checkout; no destructive commands
+
+**Project Constitution** (`.specify/memory/constitution.md` v1.0.0):
+- ✅ Filesystem-First: Edison files are source of truth
+- ✅ Safe Guarded Writes: Preview/confirm, guards enforced, audit entries
+- ✅ Privacy/Redaction: Sensitive data never leaks
+- ✅ Accessibility: Keyboard nav, ARIA, responsive design
+
+**Technical Constraints Verified**:
+- ✅ Stack: Python 3.13 + FastAPI / TypeScript + Next.js 14 + Tailwind v4
+- ✅ Performance: Discovery <10s, list <2s, push <5s, poll <30s
+- ✅ Pagination: >100 items paginate, >500 virtualize
+- ✅ Remote Access: Localhost default, exposed requires pairing
+
+**Quality Gates** (per constitution):
+- Before implementation: Spec reviewed, plan approved, contracts defined
+- Before PR: Tests pass, coverage ≥90%, no TODOs, type-safe, accessible
+- Before release: E2E pass, performance verified, security reviewed
 
 ## Project Structure
 
