@@ -29,3 +29,4 @@ make test
 - Validate QA as a primary flow: per-task validation status, rounds, evidence, and validator details.
 - Confirm push-first realtime updates when available; fall back to manual refresh/polling when unavailable.
 - Validate remote mobile access (opt-in) pairing/auth flow and unauthenticated request rejection in remote mode.
+- Validate worker visibility via tracking: active implementation/validation runs + tracked processes (when available).

@@ -16,10 +16,13 @@ Notes:
 ## Sessions
 
 - `GET /projects/{projectId}/sessions` — list sessions; filters: state, search; pagination; supports `view=list|board`.
-- `GET /projects/{projectId}/sessions/{sessionId}` — session detail including history, linked tasks, and latest “next/context” outputs when available.
+- `GET /projects/{projectId}/sessions/{sessionId}` — session detail including history, git/worktree info, and optional session-scoped tasks/QA summaries when available.
 - `GET /projects/{projectId}/sessions/{sessionId}/tasks` — list tasks scoped to a session (same shape/filters as the project tasks endpoint).
-- `GET /projects/{projectId}/sessions/{sessionId}/next` — latest “session next” output (text + timestamp) when available.
-- `GET /projects/{projectId}/sessions/{sessionId}/context` — latest “session context” output (text + timestamp) when available.
+- `GET /projects/{projectId}/sessions/{sessionId}/next` — **computed** Edison “session next” payload.
+  - Returns a structured JSON payload (mirrors Edison’s `session next --json`), including `actions[]`, `blockers[]`, and a `context` object when available.
+- `GET /projects/{projectId}/sessions/{sessionId}/context` — **computed** Edison session context payload (hook-safe, deterministic).
+  - Returns the structured payload (`isEdisonProject`, `projectRoot`, `sessionId`, …).
+  - Optional: include a `render=markdown` query param to also return the rendered markdown block.
 
 Mutations (guarded):
 - `POST /projects/{projectId}/sessions` — create session; supports preview/confirm; audit entry on success.
@@ -32,7 +35,8 @@ Mutations (guarded):
   - Views: `view=list|board|tree`
   - Pagination required for list responses.
 - `GET /projects/{projectId}/tasks/{taskId}` — task detail including hierarchy (parent/children), dependencies, and QA linkage.
-- `GET /projects/{projectId}/tasks/{taskId}/blockers` — “why blocked” explanation (dependencies + guard readiness) when available.
+- `GET /projects/{projectId}/tasks/{taskId}/readiness` — readiness/blocked semantics computed from the task graph.
+  - Returns `ready: boolean` and `blockedBy[]` (structured unmet-dependency records).
 
 Mutations (guarded):
 - `POST /projects/{projectId}/tasks` — create task; preview/confirm; audit entry on success.
@@ -41,21 +45,26 @@ Mutations (guarded):
 
 ## QA / Validation (first-class)
 
-- `GET /projects/{projectId}/qa` — list QA rounds across the project; supports filters (taskId, verdict/status, validator, sessionId).
-- `GET /projects/{projectId}/tasks/{taskId}/qa` — all QA rounds for a task (including evidence links and validator details).
+- `GET /projects/{projectId}/qa` — list QA records across the project; supports filters (taskId, state, validatorOwner, sessionId).
+- `GET /projects/{projectId}/tasks/{taskId}/qa` — QA record for a task plus its evidence rounds (including artifact links and validator report summaries).
 - `GET /projects/{projectId}/sessions/{sessionId}/qa` — QA rounds scoped to a session (equivalent to filtering the project QA list by `sessionId`).
 - `GET /projects/{projectId}/validators` — list known validators (capabilities/metadata).
-- `GET /projects/{projectId}/validators/runs` — list recent/active validator runs; filters: taskId, sessionId, status.
+- `GET /projects/{projectId}/tasks/{taskId}/evidence` — list evidence rounds and key artifacts for a task (derived from `validation-evidence/`).
+  - Includes current round, artifact file paths (redacted), and per-validator report summaries when available.
 
 Mutations (guarded):
 - `POST /projects/{projectId}/tasks/{taskId}/validate` — trigger validation; preview/confirm; audit entry on success.
 
-## Agents (monitoring)
+## Tracking / Processes (monitoring)
 
-- `GET /projects/{projectId}/agents` — list known agents (capabilities/metadata).
-- `GET /projects/{projectId}/agents/runs` — list recent/active agent runs; filters: sessionId, taskId, status.
-- `GET /projects/{projectId}/sessions/{sessionId}/agents/runs` — agent runs scoped to a session (equivalent to filtering project agent runs by `sessionId`).
-- `GET /projects/{projectId}/sessions/{sessionId}/validators/runs` — validator runs scoped to a session (equivalent to filtering project validator runs by `sessionId`).
+Edison UI SHOULD treat “active agents/validators” as **tracking runs** derived from:
+- evidence reports’ `tracking` payloads, and
+- the append-only `process-events.jsonl` stream for liveness/staleness.
+
+- `GET /projects/{projectId}/tracking/active` — list active tracking runs (implementation + validation), with liveness fields (`isRunning`, `isStale`, `processEvent`) when available.
+- `GET /projects/{projectId}/tracking/processes` — list tracked processes computed from the process-events index.
+  - Query: `all=1` includes stopped processes; default is active only.
+- `GET /projects/{projectId}/tracking/process-events` — page through raw process events from the append-only JSONL stream.
 
 ## Search
 
@@ -77,6 +86,9 @@ These endpoints surface Edison core logs (append-only JSONL) and session activit
 
 - `GET /settings` — read UI/server settings (scan roots, pins, exposure mode, redaction policy summary).
 - `PATCH /settings` — update allowlisted settings with preview/confirm and audit entry where applicable.
+- `GET /projects/{projectId}/debug/resolve` — explain layer resolution for a composable entity (core → packs → user → project).
+  - Mirrors Edison’s `edison debug resolve <type> <name> --json`.
+  - Query: `type`, `name`, optional `packs[]`.
 
 ## Remote Access Pairing (opt-in)
 

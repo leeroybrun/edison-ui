@@ -134,6 +134,7 @@ Developers can monitor what sessions are doing by viewing “next” and “sess
 
 1. **Given** a session has “next” and “context” outputs available, **When** the user opens the session detail page, **Then** they can view the latest outputs with timestamps and safe redaction.
 2. **Given** agents/validators are currently working, **When** the user opens the Agents view, **Then** they can see active workers, which session/task they relate to, and last update/heartbeat.
+   - Note: “active workers” SHOULD be derived from Edison tracking metadata + the append-only process events stream when available.
 3. **Given** memory providers are configured, **When** the user searches for a concept, **Then** results include relevant tasks/sessions/QA and memory hits (clearly labeled by source).
 
 ## Edge Cases & Constraints
@@ -185,12 +186,14 @@ Developers can monitor what sessions are doing by viewing “next” and “sess
 - **Session**: A unit of Edison work with state, history, linked tasks, and optional git/worktree info.
 - **Task**: A work item with status, description, tags, timestamps, dependencies and hierarchy (parent/child), and related QA/validation data.
 - **QA Round**: Validation evidence and verdicts associated with a task, including round status and artifacts.
-- **Agent/Validator**: Edison-provided automation entries, displayed for visibility and selection where applicable.
+- **Validator / Agent (catalog)**: Edison-provided validator/agent definitions (composed artifacts), displayed for visibility and selection where applicable.
+- **Tracking Run**: Live/active work inferred from evidence tracking metadata and the append-only process events stream (implementation, validation, orchestrator).
+- **Process Event**: Append-only JSONL event used to compute the live “tracked processes” index (started/heartbeat/completed/stopped).
 - **Audit Entry**: Record of a state-changing action including actor, timestamp, action type, outcome, and context.
 - **Audit Event**: Edison core structured audit event (append-only JSONL) with event type, timestamp, correlation ids (invocation/session), and optional tool/command details.
 - **Realtime Subscription**: A client subscription for push updates (e.g., tasks list, session detail) including revisioning for stale-update protection.
 - **Pairing Session**: A time-limited pairing handshake that grants authorized access for remote clients.
-- **Session Context Output**: The latest “next” and “session context” payloads with timestamps.
+- **Session Context Payload**: Deterministic, hook-safe session/project context payload (rendered as markdown for humans, JSON for tooling).
 
 ## Success Criteria *(mandatory)*
 

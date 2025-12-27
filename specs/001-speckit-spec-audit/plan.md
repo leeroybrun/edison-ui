@@ -31,7 +31,7 @@ Provide Speckit-aligned specification and planning assets for Edison UI, focused
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-Project constitution file `.specify/memory/constitution.md` is placeholder-only (no enforceable rules). Default engineering guardrails apply (local-first safety, TDD, no mocks philosophy from Edison agent constitution). No explicit project-level gates violated; proceed.
+Edison UI is an Edison Framework project with role constitutions under `.edison/_generated/constitutions/` (AGENTS/ORCHESTRATOR/VALIDATORS). Agent work is gated by: strict TDD (RED→GREEN→REFACTOR), “no mocks except at boundaries”, config-first behavior, and git safety rules (no branch switching in the primary checkout). No additional project-level constitution overrides were found; proceed.
 
 ## Project Structure
 
@@ -57,18 +57,16 @@ specs/[###-feature]/
 
 ```text
 backend/
-├── src/
-│   ├── models/
-│   ├── services/
-│   └── api/
-└── tests/
+├── api/                # FastAPI routers
+├── core/               # Backend settings + shared utilities
+├── main.py             # FastAPI app entrypoint
+└── tests/              # pytest
 
 frontend/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   └── services/
-└── tests/
+├── app/                # Next.js App Router routes
+├── components/         # Shared UI components
+├── test/               # Vitest setup/utilities
+└── vitest.config.ts
 
 ```
 

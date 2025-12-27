@@ -48,7 +48,7 @@
 
 - [ ] T020 [US2] Implement unified tasks listing endpoint: project-wide tasks + session filter + hierarchy fields
 - [ ] T021 [US2] Implement sessions listing endpoint supporting list + board views (state-based grouping)
-- [ ] T022 [P] [US2] Implement “why blocked”/readiness endpoint (dependencies + guard readiness) and ready/blocked summaries
+- [ ] T022 [P] [US2] Implement readiness endpoint derived from task graph (dependencies) with structured `blockedBy[]` explanations
 - [ ] T023 [P] [US2] Build Tasks view supporting `list|board|tree` and filters (including session filter) in `frontend/app/projects/[projectId]/tasks/`
 - [ ] T024 [P] [US2] Build Sessions view supporting `list|board` and session selection in `frontend/app/projects/[projectId]/sessions/`
 - [ ] T025 [US2] Ensure session tasks view reuses the same Tasks presentation + filter semantics as project Tasks view
@@ -60,7 +60,7 @@
 
 ## Phase 5: User Story 3 — QA as a primary pipeline flow (P1)
 
-- [ ] T030 [US3] Implement QA list + task QA detail endpoints (rounds, validators, reasons, evidence)
+- [ ] T030 [US3] Implement QA list + task QA detail endpoints (QARecord + evidence rounds, validators, evidence artifacts)
 - [ ] T031 [P] [US3] Add validation status summary onto task list payloads (for badges and filtering)
 - [ ] T032 [P] [US3] Build QA view (filters by verdict/status/validator/session) in `frontend/app/projects/[projectId]/qa/`
 - [ ] T033 [US3] Build task detail QA panel with rounds timeline, evidence links (redacted), and clear failure reasons in `frontend/app/projects/[projectId]/tasks/[taskId]/`
@@ -106,11 +106,11 @@
 
 ## Phase 9: User Story 7 — Session context + memory + agent monitoring (P3)
 
-- [ ] T070 [P] [US7] Implement session “next” and “context” read endpoints (wired to Edison CLI outputs when available)
-- [ ] T071 [US7] Build session detail panel for next/context outputs with timestamps and redaction
-- [ ] T072 [P] [US7] Implement Agents view endpoints for active/recent agent/validator runs (if available) and fallback “unknown/unavailable” states
-- [ ] T073 [US7] Build Agents view UI (active workers, session/task association, last heartbeat) with `sessionId` filtering
-- [ ] T073a [P] [US7] Add session-scoped Agents panel in session detail that reuses the same Agents list component (equivalent to filtering global Agents by `sessionId`)
+- [ ] T070 [P] [US7] Implement session “next” and “context” endpoints as computed, structured payloads (mirroring `edison session next --json` and `edison session context --json`)
+- [ ] T071 [US7] Build session detail panel for next/context outputs (rendered markdown + structured JSON) with redaction
+- [ ] T072 [P] [US7] Implement Tracking endpoints: `tracking/active`, `tracking/processes`, and `tracking/process-events` (best-effort, fail-open)
+- [ ] T073 [US7] Build Tracking (Workers) view UI: active runs + tracked processes (session/task association, liveness/staleness, last heartbeat) with `sessionId` filtering
+- [ ] T073a [P] [US7] Add session-scoped Tracking panel in session detail that reuses the same Tracking list component (equivalent to filtering global Tracking by `sessionId`)
 - [ ] T074 [P] [US7] Implement search endpoints for `projects|tasks|sessions|qa|memory` scopes
 - [ ] T075 [US7] Build search UI (global + project-scoped) with typed results and quick navigation
 - [ ] T076 [P] [US7] Implement pack/config read endpoints and allowlisted edit preview/apply endpoints
