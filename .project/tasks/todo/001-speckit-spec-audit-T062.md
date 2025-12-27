@@ -1,35 +1,32 @@
 ---
-id: 001-speckit-spec-audit-T003
-title: Document environment variables and defaults for scan roots, exposure mode,
-  and realtime in `backend/.env.example` and `backend/README.md`
+id: 001-speckit-spec-audit-T062
+title: Implement UI pairing wizard (show warning, code/QR, confirm paired device)
 owner: speckit-import
 created_at: '2025-12-27T13:25:20Z'
 updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
+- user-story-6
 ---
-# Document environment variables and defaults for scan roots, exposure mode, and realtime in `backend/.env.example` and `backend/README.md`
+# Implement UI pairing wizard (show warning, code/QR, confirm paired device)
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
-**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T003
+**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T062
 **Feature**: 001-speckit-spec-audit
-**Phase**: setup | **Parallelizable**: Yes
-
-## Implementation Target
-``backend/.env.example`
+**Phase**: user-story-6 | **User Story**: US6
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md`
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US6
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T003 [P] Document environment variables and defaults for scan roots, exposure mode, and realtime in `backend/.env.example` and `backend/README.md`
+> T062 [US6] Implement UI pairing wizard (show warning, code/QR, confirm paired device)
 
 <!-- /EXTENSIBLE: Summary -->
 

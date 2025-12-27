@@ -1,32 +1,33 @@
 ---
-id: 001-speckit-spec-audit-T001
-title: Align `specs/001-speckit-spec-audit/plan.md` with current repo structure and
-  updated story set
+id: 001-speckit-spec-audit-T050
+title: Implement realtime WebSocket endpoint with `subscribe/unsubscribe` and push
+  envelopes `snapshot/upsert/delete` with per-subscription revisioning
 owner: speckit-import
-created_at: '2025-12-27T13:24:28Z'
-updated_at: '2025-12-27T13:24:28Z'
+created_at: '2025-12-27T13:25:20Z'
+updated_at: '2025-12-27T13:25:20Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
+- user-story-5
 ---
-# Align `specs/001-speckit-spec-audit/plan.md` with current repo structure and updated story set
+# Implement realtime WebSocket endpoint with `subscribe/unsubscribe` and push envelopes `snapshot/upsert/delete` with per-subscription revisioning
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
-**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T001
+**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T050
 **Feature**: 001-speckit-spec-audit
-**Phase**: setup
+**Phase**: user-story-5 | **User Story**: US5
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md`
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US5
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T001 Align `specs/001-speckit-spec-audit/plan.md` with current repo structure and updated story set
+> T050 [US5] Implement realtime WebSocket endpoint with `subscribe/unsubscribe` and push envelopes `snapshot/upsert/delete` with per-subscription revisioning
 
 <!-- /EXTENSIBLE: Summary -->
 
