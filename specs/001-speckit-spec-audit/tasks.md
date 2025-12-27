@@ -157,3 +157,18 @@
 - [ ] T102 [FR-019] Ensure hierarchy preserves filtering/sorting (collapsed parent shows child count badge)
 
 **Checkpoint**: Hierarchical tasks optionally available
+
+---
+
+## Phase 13: Desktop Wrapper (Optional — MAY)
+
+**Purpose**: FR-020 (MAY) — Optional desktop wrapper for native app experience.
+
+- [ ] T110 [P] [FR-020] Evaluate Tauri vs Electron for desktop wrapper (document decision in `docs/adr/desktop-wrapper.md`)
+- [ ] T111 [FR-020] Create desktop wrapper that launches backend server and opens frontend in webview
+- [ ] T112 [P] [FR-020] Add desktop build/package scripts to `Makefile` and CI workflow
+- [ ] T113 [FR-020] Test desktop wrapper on macOS/Windows/Linux with pairing flow
+
+**Checkpoint**: Desktop wrapper optionally available
+
+**Note**: This phase is MAY priority. Skip if web-only deployment is sufficient.

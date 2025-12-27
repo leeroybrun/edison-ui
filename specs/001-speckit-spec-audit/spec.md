@@ -194,8 +194,12 @@ Developers can monitor what sessions are doing by viewing “next” and “sess
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST detect Edison projects from configured scan roots, allow pinning/unpinning specific paths, and present per-project health (counts of tasks, sessions, QA, recent activity) on load.
-- **FR-002**: The system MUST provide project views that list and filter tasks (including tasks not associated with any session), sessions, QA rounds, and agents/validators with clear loading, error, and empty states.
+> **Requirement Relationships**:
+> - FR-001 (discovery) + FR-013 (zero-setup) are complementary: FR-001 defines *what* is discovered; FR-013 defines *how* users configure discovery on first run.
+> - FR-002 (views) + FR-014 (board/list) are complementary: FR-002 defines *which entities* have views; FR-014 specifies the *presentation modes* (board vs list).
+
+- **FR-001**: The system MUST detect Edison projects from configured scan roots, allow pinning/unpinning specific paths, and present per-project health (counts of tasks, sessions, QA, recent activity) on load. *(See also: FR-013 for first-run setup)*
+- **FR-002**: The system MUST provide project views that list and filter tasks (including tasks not associated with any session), sessions, QA rounds, and agents/validators with clear loading, error, and empty states. *(See also: FR-014 for board/list modes)*
 - **FR-003**: The system MUST show full detail for a selected task/session/QA round, including status, history, related entities, and evidence links without requiring external tools.
 - **FR-004**: The system MUST let users initiate guarded writes (create/edit/transition tasks and sessions; trigger validations) only after a preview/confirmation step and MUST block invalid actions with the guard reason.
 - **FR-005**: The system MUST record an audit entry for every state-changing action with actor (derived from local OS user plus required per-session display name), time, action, outcome, and context, and expose these entries in the UI.
@@ -204,10 +208,12 @@ Developers can monitor what sessions are doing by viewing “next” and “sess
 - **FR-008**: The system MUST surface validation progress and results as a primary flow, including per-round verdicts, validator identities, reasons, and evidence, and allow re-runs from the UI where supported.
 - **FR-009**: The system MUST offer search and saved filters across projects, tasks, sessions, QA, and memory (when configured), returning results within defined performance targets and enabling direct navigation.
 - **FR-010**: The system MUST provide pack/config visibility and allow bounded, reversible edits on an allowlist with backups and rollback guidance; unsupported edits must be declined with rationale.
+  - **Config Edit Allowlist**: `scanRoots`, `displayName`, `exposureMode`, `realtime.pollingIntervalMs`
+  - **Declined Edits**: Direct pack YAML changes, constitution edits, credential modifications
 - **FR-011**: The system MUST deliver responsive, accessible experiences on mobile and desktop, including keyboard navigation, a persistent sidebar navigation shell, and clear focus/error states.
 - **FR-012**: The system MUST avoid exposing secrets or sensitive paths in UI output or logs and confine operations to declared project roots.
-- **FR-013**: The system MUST support a near-zero-setup start experience, including a first-run scan-root setup flow, a single-command local start option, and clear runtime status (host/port, last refresh).
-- **FR-014**: The system MUST provide board and list views for Sessions and Tasks, with consistent filtering semantics between the project-wide Tasks view and per-session Tasks views.
+- **FR-013**: The system MUST support a near-zero-setup start experience, including a first-run scan-root setup flow, a single-command local start option, and clear runtime status (host/port, last refresh). *(See also: FR-001 for discovery behavior)*
+- **FR-014**: The system MUST provide board and list views for Sessions and Tasks, with consistent filtering semantics between the project-wide Tasks view and per-session Tasks views. *(See also: FR-002 for entity views)*
 - **FR-014a**: The system MUST apply the same “global view + session filter + session detail reuse” pattern to all entities that are or can be session-scoped (at minimum: Tasks, QA, Agents/Validators), so that session details views are consistent with filtering the corresponding global views by `sessionId`.
 - **FR-015**: The system MUST explain readiness/blocking using dependency and guard information when available, and SHOULD include an at-a-glance “Ready/Blocked” breakdown for Tasks.
 - **FR-016**: The system MUST support safe remote access by making network-exposed mode opt-in and requiring a pairing/auth flow for non-local clients.
