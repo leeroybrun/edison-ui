@@ -1,0 +1,294 @@
+---
+id: RULE.IMPLEMENTATION.REPORT_REQUIRED
+title: Implementation Report Markdown is required per round
+category: implementation
+blocking: false
+contexts:
+- guidance
+- implementation
+origins:
+- core
+source:
+  file: guidelines/agents/OUTPUT_FORMAT.md
+---
+
+# Implementation Report Markdown is required per round
+
+## Body
+Each implementation round must produce an implementation report Markdown file (YAML frontmatter + body) in the round evidence directory:
+- Include summary, changed files, automation outputs, Context7 packages queried, follow-ups, and blockers.
+- Do not invent new report paths or filenames; follow the project’s configured schema/locations.
+
+Reference: `guidelines/agents/OUTPUT_FORMAT.md`
+
+---
+id: RULE.NEXTJS.APP_ROUTER
+title: Use App Router
+category: implementation
+blocking: true
+contexts: []
+origins:
+- pack:nextjs
+source:
+  file: packs/nextjs/guidelines/includes/nextjs/app-router.md
+---
+
+# Use App Router
+
+## Body
+All routes must use App Router (app/ directory), not Pages Router. Organize routes under app/ using nested folders, page.tsx, and layout.tsx.
+
+---
+id: RULE.NEXTJS.COLOCATE_UI_STATES
+title: Co-locate Loading and Error UI
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:nextjs
+source:
+  file: packs/nextjs/guidelines/includes/nextjs/app-router.md
+---
+
+# Co-locate Loading and Error UI
+
+## Body
+Co-locate loading and error UI with loading.tsx and error.tsx files.
+
+---
+id: RULE.NEXTJS.METADATA
+title: Metadata API Best Practices
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:nextjs
+source:
+  file: packs/nextjs/guidelines/includes/nextjs/metadata.md
+---
+
+# Metadata API Best Practices
+
+## Body
+Implement Metadata API best practices including static metadata export and dynamic generateMetadata function.
+
+---
+id: RULE.NEXTJS.ROUTE_HANDLERS
+title: Route Handler Best Practices
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:nextjs
+source:
+  file: packs/nextjs/guidelines/includes/nextjs/route-handlers.md
+---
+
+# Route Handler Best Practices
+
+## Body
+Follow Next.js route handler conventions and best practices.
+
+---
+id: RULE.NEXTJS.SERVER_ACTIONS
+title: Server Actions Pattern
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:nextjs
+source:
+  file: packs/nextjs/guidelines/includes/nextjs/server-actions.md
+---
+
+# Server Actions Pattern
+
+## Body
+Use server actions for form submissions and data mutations when appropriate.
+
+---
+id: RULE.NEXTJS.SERVER_FIRST
+title: Server Components by Default
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:nextjs
+source:
+  file: packs/nextjs/guidelines/includes/nextjs/app-router.md
+---
+
+# Server Components by Default
+
+## Body
+Use Server Components unless client interactivity needed. Mark Client Components with 'use client' only when strictly necessary.
+
+---
+id: RULE.TAILWIND.ARBITRARY_VALUES_FOR_THEME
+title: Use arbitrary values for custom palette
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:tailwind
+source:
+  file: packs/tailwind/guidelines/includes/tailwind/TAILWIND_V4_RULES.md#arbitrary-values
+---
+
+# Use arbitrary values for custom palette
+
+## Body
+Use arbitrary values (e.g., bg-[#0a0a0a]) or theme tokens when colors are outside the design system; do not guess with default palette names.
+
+---
+id: RULE.TAILWIND.AVOID_APPLY
+title: Avoid Legacy @apply Usage
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:tailwind
+source:
+  file: packs/tailwind/guidelines/includes/tailwind/v4-syntax.md
+---
+
+# Avoid Legacy @apply Usage
+
+## Body
+Avoid legacy @apply usage in component files; prefer design tokens, utility classes, or @layer definitions instead.
+
+---
+id: RULE.TAILWIND.DESIGN_TOKENS
+title: Use Design Tokens
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:tailwind
+source:
+  file: packs/tailwind/guidelines/includes/tailwind/design-tokens.md
+---
+
+# Use Design Tokens
+
+## Body
+Use design tokens for consistent theming and maintainability.
+
+---
+id: RULE.TAILWIND.FONT_SANS_REQUIRED
+title: Apply font-sans explicitly
+category: implementation
+blocking: true
+contexts: []
+origins:
+- pack:tailwind
+source:
+  file: packs/tailwind/guidelines/includes/tailwind/TAILWIND_V4_RULES.md#font-sans
+---
+
+# Apply font-sans explicitly
+
+## Body
+Tailwind v4 does not inject a default font; add font-sans to body/layout and text elements to avoid Times New Roman fallbacks.
+
+---
+id: RULE.TAILWIND.POSTCSS_V4_PLUGIN
+title: Use @tailwindcss/postcss preset
+category: implementation
+blocking: true
+contexts: []
+origins:
+- pack:tailwind
+source:
+  file: packs/tailwind/guidelines/includes/tailwind/TAILWIND_V4_RULES.md#postcss-v4
+---
+
+# Use @tailwindcss/postcss preset
+
+## Body
+Configure PostCSS with '@tailwindcss/postcss' (v4 preset); the legacy tailwindcss plugin will not generate utilities in v4.
+
+---
+id: RULE.TAILWIND.RESPONSIVE_DESIGN
+title: Mobile-First Responsive Design
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:tailwind
+source:
+  file: packs/tailwind/guidelines/includes/tailwind/responsive.md
+---
+
+# Mobile-First Responsive Design
+
+## Body
+Follow mobile-first responsive design patterns using Tailwind's responsive prefixes.
+
+---
+id: RULE.TAILWIND.SEMANTIC_NAMING
+title: Semantic Class Organization
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:tailwind
+source:
+  file: packs/tailwind/guidelines/includes/tailwind/STYLING.md
+---
+
+# Semantic Class Organization
+
+## Body
+Organize utility classes semantically and consistently.
+
+---
+id: RULE.TAILWIND.THEME_TOKENS_IN_CSS
+title: Define tokens in @theme
+category: implementation
+blocking: true
+contexts: []
+origins:
+- pack:tailwind
+source:
+  file: packs/tailwind/guidelines/includes/tailwind/TAILWIND_V4_RULES.md#theme-tokens
+---
+
+# Define tokens in @theme
+
+## Body
+Declare design tokens inside an @theme block so components consume generated classes (bg-surface, border-border) instead of hardcoded values.
+
+---
+id: RULE.TAILWIND.UTILITY_FIRST
+title: Utility-First Approach
+category: implementation
+blocking: false
+contexts: []
+origins:
+- pack:tailwind
+source:
+  file: packs/tailwind/guidelines/includes/tailwind/STYLING.md
+---
+
+# Utility-First Approach
+
+## Body
+Favor Tailwind utility classes over custom CSS when appropriate.
+
+---
+id: RULE.TAILWIND.V4_SYNTAX
+title: Use Tailwind v4 Syntax
+category: implementation
+blocking: true
+contexts: []
+origins:
+- pack:tailwind
+source:
+  file: packs/tailwind/guidelines/includes/tailwind/v4-syntax.md
+---
+
+# Use Tailwind v4 Syntax
+
+## Body
+Use @import "tailwindcss" (v4 syntax), not @tailwind base/components/utilities (v3 syntax).
