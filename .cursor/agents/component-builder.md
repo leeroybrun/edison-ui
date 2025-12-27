@@ -2,7 +2,6 @@
 name: component-builder
 description: "UI component specialist for accessible, responsive interfaces"
 model: claude
-zenRole: "agent-component-builder"
 allowed_tools:
   - Read
   - Edit

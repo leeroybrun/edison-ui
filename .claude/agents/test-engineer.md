@@ -2,7 +2,6 @@
 name: test-engineer
 description: "Test automation and TDD guardian ensuring coverage and reliability"
 model: codex
-zenRole: "agent-test-engineer"
 allowed_tools:
   - Read
   - Edit

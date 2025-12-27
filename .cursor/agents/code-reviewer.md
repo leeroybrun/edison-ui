@@ -2,7 +2,6 @@
 name: code-reviewer
 description: "Code quality reviewer ensuring TDD compliance and actionable feedback"
 model: claude
-zenRole: "agent-code-reviewer"
 allowed_tools:
   - Read
   - Edit

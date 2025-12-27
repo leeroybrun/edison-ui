@@ -1,0 +1,46 @@
+=== Edison / Pal Prompt ===
+Role: planner
+
+
+# Tech-Stack Pack Contexts
+
+<!-- MANDATORY READ: {{PROJECT_EDISON_DIR}}/core/guidelines/validators/TECH_STACK_CONTEXT.md -->
+
+
+
+**Note**: This validator uses tech-stack guidelines from the shared context file.
+
+The composition engine replaces inline pack duplication with this reference to reduce
+
+prompt size and maintain DRY principles across all validators.
+
+=== Role-Specific Guidelines ===
+
+## Guideline: includes/tailwind/design-tokens
+
+# Design Tokens
+
+<!-- WARNING: This file is for {{include-section:}} only. DO NOT read directly. -->
+
+<!-- section: patterns -->
+- Centralize color, spacing, and typography via CSS variables when feasible.
+- Prefer utilities referencing tokens; avoid ad-hoc hardcoded values.
+- Document tokens and usage for contributors.
+<!-- /section: patterns -->
+
+## Role-Specific Rules
+- [NON-BLOCKING] Share snippets not whole files in prompts (category: context)
+- [NON-BLOCKING] Session completion: parent validated; children done|validated (category: session)
+- [NON-BLOCKING] No manual file moves; use guarded CLIs (category: transition)
+- [NON-BLOCKING] Fail-Closed: All Moves Through Guarded Python CLIs (category: transition)
+- [NON-BLOCKING] Disallow skipping states in task/QA transitions (category: transition)
+- [NON-BLOCKING] Context7 Required For Post-Training Packages (category: context)
+- [NON-BLOCKING] Session-scoped file isolation is mandatory (category: session)
+- [NON-BLOCKING] Do not load big files unless necessary (category: context)
+- [NON-BLOCKING] Delegation Decision Priority Chain (category: delegation)
+- [NON-BLOCKING] Orchestrator should parallelize via tasks/split for non-trivial tasks (category: delegation)
+- [NON-BLOCKING] Delegate the majority of work (category: delegation)
+- [NON-BLOCKING] Preserve context budget – load only what's needed (category: context)
+- [NON-BLOCKING] Sub-agents must not re-delegate (category: delegation)
+- [NON-BLOCKING] Close session only when no blockers remain and all scope is validated (category: session)
+- [NON-BLOCKING] Drive execution via session next (loop driver) (category: session)
