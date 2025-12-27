@@ -11,12 +11,6 @@ Provide Speckit-aligned specification and planning assets for Edison UI, focused
 
 ## Technical Context
 
-<!--
-  ACTION REQUIRED: Replace the content in this section with the technical details
-  for the project. The structure here is presented in advisory capacity to guide
-  the iteration process.
--->
-
 **Language/Version**: Python 3.13 (backend), TypeScript/Next.js 14 (frontend)  
 **Primary Dependencies**: FastAPI, Pydantic, Next.js App Router, Tailwind, Vitest/RTL, Playwright  
 **Storage**: Local filesystem Edison project structure (source of truth); no external DB  
@@ -69,29 +63,38 @@ specs/[###-feature]/
 ```
 
 ### Source Code (repository root)
-<!--
-  ACTION REQUIRED: Replace the placeholder tree below with the concrete layout
-  for this feature. Delete unused options and expand the chosen structure with
-  real paths (e.g., apps/admin, packages/something). The delivered plan must
-  not include Option labels.
--->
 
 ```text
 backend/
 ├── api/                # FastAPI routers
+│   ├── router.py       # Main API router
+│   └── routes/         # Route modules
+│       └── health.py   # Health check endpoint
 ├── core/               # Backend settings + shared utilities
+│   └── settings.py     # Configuration via environment
+├── models/             # Pydantic models (to be created: T004)
+├── services/           # Business logic services (to be created: T005)
 ├── main.py             # FastAPI app entrypoint
 └── tests/              # pytest
+    ├── conftest.py     # Test fixtures
+    └── test_health.py  # Health check tests
 
 frontend/
 ├── app/                # Next.js App Router routes
+│   ├── layout.tsx      # Root layout
+│   ├── page.tsx        # Home page
+│   ├── globals.css     # Global styles
+│   └── projects/       # Project-related routes (to be expanded)
 ├── components/         # Shared UI components
+│   ├── AppHeader.tsx   # Navigation header
+│   └── AppHeader.test.tsx
 ├── test/               # Vitest setup/utilities
-└── vitest.config.ts
+│   └── setup.ts        # Test configuration
+└── vitest.config.ts    # Vitest configuration
 
 ```
 
-**Structure Decision**: Use the existing web split with `backend/` (FastAPI) and `frontend/` (Next.js). Tests live under each project.
+**Structure Decision**: Use the existing web split with `backend/` (FastAPI) and `frontend/` (Next.js). Tests live under each project. Additional directories (`models/`, `services/`, `lib/`) will be created as needed during Phase 2 implementation.
 
 ## Complexity Tracking
 
