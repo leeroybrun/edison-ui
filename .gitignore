@@ -175,3 +175,4 @@ $RECYCLE.BIN/
 .project/sessions/
 .project/logs/
 .project/archive/
+.worktrees/
