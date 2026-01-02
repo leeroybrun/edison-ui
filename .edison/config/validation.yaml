@@ -1,0 +1,52 @@
+# Edison Validation Configuration
+# Customized for Phase 3 development: reduced validator set for faster iteration
+
+validation:
+  # Use a custom preset with global validators + browser-e2e for UI changes
+  defaultPreset: custom-minimal
+
+  # Disable Context7 enforcement due to bug (detection works but validation fails)
+  context7:
+    enabled: false
+
+  presets:
+    custom-minimal:
+      name: custom-minimal
+      description: Minimal validation with global validators + browser-e2e for UI changes
+      validators:
+        - global-codex
+        - global-claude
+        - browser-e2e
+      required_evidence:
+        - command-type-check.txt
+        - command-lint.txt
+        - command-test.txt
+        - command-build.txt
+      blocking_validators:
+        - global-codex
+        - global-claude
+        - browser-e2e
+      # browser-e2e runs in critical wave when triggered
+      waves:
+        critical:
+          - global-codex
+          - global-claude
+          - browser-e2e
+
+  # Validator-specific configuration
+  validators:
+    browser-e2e:
+      # Only trigger for UI-related file changes
+      triggers:
+        - "**/*.tsx"
+        - "**/*.jsx"
+        - "**/components/**/*"
+        - "**/app/**/*.tsx"
+        - "**/pages/**/*"
+        - "**/styles/**/*"
+        - "**/public/**/*"
+      # Require dev server URL for browser validation
+      config:
+        baseUrl: "http://localhost:3000"
+        # Skip if no UI files changed
+        skipIfNoTriggers: true
