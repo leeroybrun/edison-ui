@@ -101,10 +101,11 @@ def mock_scan_root(
 
 
 @pytest.fixture
-def app_with_scan_root(mock_scan_root: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
-    """Create app with mocked scan roots."""
-    # Set environment variable for scan roots
+def app_with_scan_root(mock_scan_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
+    """Create app with mocked scan roots and pin storage."""
+    # Set environment variables for scan roots and pin storage
     monkeypatch.setenv("SCAN_ROOTS", str(mock_scan_root))
+    monkeypatch.setenv("PIN_STORAGE_PATH", str(tmp_path / "pins.json"))
 
     # Clear settings cache to pick up new env
     from core.settings import get_settings
