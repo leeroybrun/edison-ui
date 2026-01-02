@@ -54,6 +54,11 @@ describe("Dashboard", () => {
     render(<Dashboard />);
 
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
+
+    // Wait for async state updates to complete
+    await waitFor(() => {
+      expect(screen.getByText("Alpha Project")).toBeInTheDocument();
+    });
   });
 
   it("shows loading state while fetching projects", () => {
@@ -152,7 +157,7 @@ describe("Dashboard", () => {
     });
   });
 
-  it("links to settings when no projects found", async () => {
+  it("shows empty state message when no projects found", async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ items: [], total: 0, limit: 100, offset: 0 }),
@@ -162,10 +167,9 @@ describe("Dashboard", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/no projects found/i)).toBeInTheDocument();
-      expect(screen.getByRole("link", { name: /configure/i })).toHaveAttribute(
-        "href",
-        "/settings",
-      );
+      expect(
+        screen.getByText(/configure scan roots/i),
+      ).toBeInTheDocument();
     });
   });
 });

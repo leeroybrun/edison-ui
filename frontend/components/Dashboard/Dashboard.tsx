@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
 import { ProjectList } from "./ProjectList";
@@ -81,7 +80,6 @@ export function Dashboard() {
   );
 
   const summary = calculateSummary(projects);
-  const hasNoProjects = !isLoading && !error && projects.length === 0;
 
   return (
     <div className="space-y-6">
@@ -136,16 +134,6 @@ export function Dashboard() {
           onPin={handlePin}
           projects={projects}
         />
-        {hasNoProjects && (
-          <div className="mt-4 text-center">
-            <Link
-              className="text-sm font-medium text-blue-600 hover:text-blue-800"
-              href="/settings"
-            >
-              Configure scan roots &rarr;
-            </Link>
-          </div>
-        )}
       </section>
 
       {/* Recent activity section */}
