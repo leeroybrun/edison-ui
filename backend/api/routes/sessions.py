@@ -60,7 +60,10 @@ async def list_sessions(
     project_path = get_project_path(project_id)
 
     session_reader = SessionReaderService(project_path)
-    all_sessions = session_reader.list_sessions(state=state)
+    try:
+        all_sessions = session_reader.list_sessions(state=state)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
     # Get total before pagination
     total = len(all_sessions)

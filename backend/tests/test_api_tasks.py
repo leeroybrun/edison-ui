@@ -924,3 +924,86 @@ class TestTaskReaderService:
         # T004 is in done state without QA
         status = service.get_validation_status("T004")
         assert status == "needs_validation"
+
+    def test_parse_yaml_block_sequences(
+        self, tmp_path: Path
+    ) -> None:
+        """Should correctly parse YAML block sequences (- item style)."""
+        from services.task_reader import TaskReaderService
+
+        # Create a task file with block sequence syntax
+        project = tmp_path / "test-project"
+        project.mkdir()
+        (project / ".edison").mkdir()
+        project_dir = project / ".project"
+        project_dir.mkdir()
+        tasks_dir = project_dir / "tasks"
+        tasks_dir.mkdir()
+        (tasks_dir / "todo").mkdir()
+
+        # Write task with YAML block sequences
+        task_content = """---
+id: T100
+title: Task with block sequences
+depends_on:
+  - T001
+  - T002
+  - T003
+tags:
+  - auth
+  - security
+  - backend
+child_ids:
+  - T101
+  - T102
+---
+# Task T100
+A task with block sequence YAML frontmatter.
+"""
+        (tasks_dir / "todo" / "T100.md").write_text(task_content)
+
+        service = TaskReaderService(str(project))
+        task = service.get_task("T100")
+
+        assert task is not None
+        assert task.task_id == "T100"
+        assert task.depends_on == ["T001", "T002", "T003"]
+        assert task.tags == ["auth", "security", "backend"]
+        assert task.child_ids == ["T101", "T102"]
+
+    def test_parse_mixed_yaml_formats(
+        self, tmp_path: Path
+    ) -> None:
+        """Should handle mix of inline and block YAML arrays."""
+        from services.task_reader import TaskReaderService
+
+        project = tmp_path / "test-project-mixed"
+        project.mkdir()
+        (project / ".edison").mkdir()
+        project_dir = project / ".project"
+        project_dir.mkdir()
+        tasks_dir = project_dir / "tasks"
+        tasks_dir.mkdir()
+        (tasks_dir / "wip").mkdir()
+
+        # Mix of inline array and block sequence
+        task_content = '''---
+id: T200
+title: Mixed format task
+depends_on: ["T001", "T002"]
+tags:
+  - feature
+  - phase1
+owner: "test-user"
+---
+# Task T200
+'''
+        (tasks_dir / "wip" / "T200.md").write_text(task_content)
+
+        service = TaskReaderService(str(project))
+        task = service.get_task("T200")
+
+        assert task is not None
+        assert task.depends_on == ["T001", "T002"]
+        assert task.tags == ["feature", "phase1"]
+        assert task.owner == "test-user"

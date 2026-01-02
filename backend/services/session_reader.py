@@ -102,15 +102,25 @@ class SessionReaderService:
         """List all sessions from the project.
 
         Args:
-            state: Optional filter by session state.
+            state: Optional filter by session state. Must be one of SESSION_STATES.
 
         Returns:
             List of sessions.
+
+        Raises:
+            ValueError: If state is not a valid session state.
         """
         sessions: list[Session] = []
 
         if not self.sessions_dir.exists():
             return sessions
+
+        # Validate state parameter to prevent directory traversal
+        if state is not None and state not in self.SESSION_STATES:
+            raise ValueError(
+                f"Invalid session state: '{state}'. "
+                f"Must be one of: {', '.join(self.SESSION_STATES)}"
+            )
 
         # Determine which states to scan
         states_to_scan = [state] if state else self.SESSION_STATES

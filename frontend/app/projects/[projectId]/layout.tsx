@@ -53,7 +53,8 @@ export default function ProjectLayout({ children }: ProjectLayoutProps) {
   const pathname = usePathname();
 
   const projectId = params.projectId;
-  // TODO: Fetch project name from API - using ID as fallback for now
+  // Future: fetch project name from GET /api/v1/projects/{projectId}
+  // For now, display the projectId which is human-readable
   const projectName = projectId;
   const activeItem = getActiveItem(pathname, projectId);
 

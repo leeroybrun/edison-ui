@@ -73,6 +73,8 @@ class TaskReaderService:
     def _parse_frontmatter(self, content: str) -> dict[str, str | list[str] | None]:
         """Parse YAML frontmatter from a markdown file.
 
+        Supports both inline YAML arrays ([a, b]) and block sequences (- item).
+
         Args:
             content: The file content.
 
@@ -87,18 +89,46 @@ class TaskReaderService:
             return result
 
         frontmatter = match.group(1)
+        lines = frontmatter.split("\n")
+        current_key: str | None = None
+        current_list: list[str] | None = None
 
-        for line in frontmatter.split("\n"):
-            line = line.strip()
-            if not line or line.startswith("#"):
+        for line in lines:
+            stripped = line.strip()
+
+            # Skip empty lines and comments
+            if not stripped or stripped.startswith("#"):
                 continue
 
+            # Check if this is a list item (starts with "- ")
+            if stripped.startswith("- ") and current_key is not None:
+                if current_list is None:
+                    current_list = []
+                # Get the item value, stripping quotes if present
+                item = stripped[2:].strip()
+                if (item.startswith("'") and item.endswith("'")) or (
+                    item.startswith('"') and item.endswith('"')
+                ):
+                    item = item[1:-1]
+                current_list.append(item)
+                result[current_key] = current_list
+                continue
+
+            # Check if this is a key: value line
             if ":" not in line:
                 continue
 
-            key, value = line.split(":", 1)
-            key = key.strip()
-            value = value.strip()
+            # Save any accumulated list before processing new key
+            if current_list is not None:
+                current_list = None
+
+            # Split only on first colon to handle values with colons
+            colon_idx = line.index(":")
+            key = line[:colon_idx].strip()
+            value = line[colon_idx + 1 :].strip()
+
+            current_key = key
+            current_list = None
 
             # Handle quoted strings
             if value.startswith("'") and value.endswith("'"):
@@ -106,16 +136,22 @@ class TaskReaderService:
             elif value.startswith('"') and value.endswith('"'):
                 value = value[1:-1]
 
-            # Handle JSON arrays
+            # Handle JSON/inline YAML arrays like [a, b, c]
             if value.startswith("[") and value.endswith("]"):
                 try:
                     import json
 
                     result[key] = json.loads(value)
                 except (json.JSONDecodeError, ValueError):
-                    result[key] = value
+                    # Try parsing as YAML-style inline list
+                    inner = value[1:-1]
+                    items = [i.strip().strip("'\"") for i in inner.split(",") if i.strip()]
+                    result[key] = items if items else value
+            elif value:
+                result[key] = value
             else:
-                result[key] = value if value else None
+                # Empty value - might be followed by block sequence
+                result[key] = None
 
         return result
 

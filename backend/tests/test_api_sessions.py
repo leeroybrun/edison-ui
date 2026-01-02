@@ -309,6 +309,26 @@ class TestListSessions:
         )
         assert response.status_code == 404
 
+    def test_list_sessions_rejects_invalid_state(
+        self, app_with_sessions: TestClient, project_id: str
+    ) -> None:
+        """Should return 400 for invalid state parameter (security: prevents path traversal)."""
+        response = app_with_sessions.get(
+            f"/api/v1/projects/{project_id}/sessions?state=../../../etc"
+        )
+        assert response.status_code == 400
+        assert "Invalid session state" in response.json()["detail"]
+
+    def test_list_sessions_rejects_unknown_state(
+        self, app_with_sessions: TestClient, project_id: str
+    ) -> None:
+        """Should return 400 for unknown state values."""
+        response = app_with_sessions.get(
+            f"/api/v1/projects/{project_id}/sessions?state=invalid_state"
+        )
+        assert response.status_code == 400
+        assert "Invalid session state" in response.json()["detail"]
+
 
 class TestSessionReaderService:
     """Tests for the session reader service."""
@@ -385,6 +405,33 @@ class TestSessionReaderService:
         sessions = service.list_sessions()
 
         assert sessions == []
+
+    def test_rejects_invalid_state_parameter(
+        self, mock_edison_project_with_sessions: Path
+    ) -> None:
+        """Should raise ValueError for invalid state parameter (security)."""
+        from services.session_reader import SessionReaderService
+
+        service = SessionReaderService(str(mock_edison_project_with_sessions))
+
+        with pytest.raises(ValueError) as exc_info:
+            service.list_sessions(state="../../../etc")
+
+        assert "Invalid session state" in str(exc_info.value)
+
+    def test_rejects_unknown_state_value(
+        self, mock_edison_project_with_sessions: Path
+    ) -> None:
+        """Should raise ValueError for unknown state values."""
+        from services.session_reader import SessionReaderService
+
+        service = SessionReaderService(str(mock_edison_project_with_sessions))
+
+        with pytest.raises(ValueError) as exc_info:
+            service.list_sessions(state="unknown_state")
+
+        assert "Invalid session state" in str(exc_info.value)
+        assert "unknown_state" in str(exc_info.value)
 
 
 class TestSessionSchemas:
