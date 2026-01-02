@@ -74,7 +74,7 @@ async def update_settings(body: SettingsUpdateRequest) -> SettingsUpdateResponse
 
     return SettingsUpdateResponse(
         updated=updated,
-        audit_entry_id=None,  # TODO: Add audit integration
+        audit_entry_id=None,  # Audit integration deferred to T040+
     )
 
 
@@ -108,5 +108,5 @@ async def complete_first_run(body: FirstRunRequest) -> SettingsUpdateResponse:
 
     return SettingsUpdateResponse(
         updated=updated,
-        audit_entry_id=None,  # TODO: Add audit integration
+        audit_entry_id=None,  # Audit integration deferred to T040+
     )

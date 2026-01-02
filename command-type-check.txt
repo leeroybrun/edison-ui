@@ -1,0 +1,6 @@
+All checks passed!
+Success: no issues found in 29 source files
+
+> edison-ui-frontend@0.1.0 type-check
+> tsc --noEmit
+
