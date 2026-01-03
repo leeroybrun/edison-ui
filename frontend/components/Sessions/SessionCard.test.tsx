@@ -1,0 +1,119 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+
+import { SessionCard } from "./SessionCard";
+import type { Session } from "./types";
+
+const mockSession: Session = {
+  sessionId: "happy-pid-12345",
+  state: "wip",
+  phase: "implementation",
+  owner: "alice",
+  taskCount: 5,
+  createdAt: "2025-12-27T10:00:00Z",
+  lastActiveAt: "2025-12-28T15:30:00Z",
+  git: {
+    branchName: "feature/new-ui",
+    baseBranch: "main",
+  },
+};
+
+describe("SessionCard", () => {
+  it("renders session ID", () => {
+    render(<SessionCard projectId="my-project" session={mockSession} />);
+
+    expect(screen.getByText("happy-pid-12345")).toBeInTheDocument();
+  });
+
+  it("renders state badge with correct styling for wip state", () => {
+    render(<SessionCard projectId="my-project" session={mockSession} />);
+
+    const badge = screen.getByText("wip");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("bg-yellow-100");
+  });
+
+  it("renders state badge with correct styling for done state", () => {
+    const doneSession: Session = { ...mockSession, state: "done" };
+    render(<SessionCard projectId="my-project" session={doneSession} />);
+
+    const badge = screen.getByText("done");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("bg-blue-100");
+  });
+
+  it("renders state badge with correct styling for validated state", () => {
+    const validatedSession: Session = { ...mockSession, state: "validated" };
+    render(<SessionCard projectId="my-project" session={validatedSession} />);
+
+    const badge = screen.getByText("validated");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("bg-green-100");
+  });
+
+  it("displays task count", () => {
+    render(<SessionCard projectId="my-project" session={mockSession} />);
+
+    expect(screen.getByText("5 tasks")).toBeInTheDocument();
+  });
+
+  it("displays last active time", () => {
+    render(<SessionCard projectId="my-project" session={mockSession} />);
+
+    // Should show relative or formatted time
+    expect(screen.getByText(/last active/i)).toBeInTheDocument();
+  });
+
+  it("displays branch name", () => {
+    render(<SessionCard projectId="my-project" session={mockSession} />);
+
+    expect(screen.getByText("feature/new-ui")).toBeInTheDocument();
+  });
+
+  it("calls onClick when clicked", () => {
+    const handleClick = vi.fn();
+    render(
+      <SessionCard
+        onClick={handleClick}
+        projectId="my-project"
+        session={mockSession}
+      />
+    );
+
+    const card = screen.getByRole("article");
+    fireEvent.click(card);
+
+    expect(handleClick).toHaveBeenCalledWith("happy-pid-12345");
+  });
+
+  it("shows selected state when isSelected is true", () => {
+    render(
+      <SessionCard isSelected projectId="my-project" session={mockSession} />
+    );
+
+    const card = screen.getByRole("article");
+    expect(card).toHaveClass("ring-2");
+  });
+
+  it("is keyboard accessible", () => {
+    const handleClick = vi.fn();
+    render(
+      <SessionCard
+        onClick={handleClick}
+        projectId="my-project"
+        session={mockSession}
+      />
+    );
+
+    const card = screen.getByRole("article");
+    fireEvent.keyDown(card, { key: "Enter" });
+
+    expect(handleClick).toHaveBeenCalledWith("happy-pid-12345");
+  });
+
+  it("displays phase information", () => {
+    render(<SessionCard projectId="my-project" session={mockSession} />);
+
+    expect(screen.getByText("implementation")).toBeInTheDocument();
+  });
+});
