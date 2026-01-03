@@ -139,14 +139,15 @@ describe("SessionsView", () => {
       ).toBeInTheDocument();
     });
 
-    it("navigates to session detail when row is clicked", () => {
+    it("navigates to tasks filtered by session when row is clicked", () => {
       render(<SessionsView projectId="my-project" sessions={mockSessions} />);
 
       const row = screen.getByText("session-1").closest("tr");
       fireEvent.click(row!);
 
+      // Per spec: selecting a session shows that session's tasks
       expect(mockPush).toHaveBeenCalledWith(
-        "/projects/my-project/sessions/session-1"
+        "/projects/my-project/tasks?sessionId=session-1"
       );
     });
 
@@ -156,8 +157,9 @@ describe("SessionsView", () => {
       const row = screen.getByText("session-1").closest("tr");
       fireEvent.keyDown(row!, { key: "Enter" });
 
+      // Per spec: selecting a session shows that session's tasks
       expect(mockPush).toHaveBeenCalledWith(
-        "/projects/my-project/sessions/session-1"
+        "/projects/my-project/tasks?sessionId=session-1"
       );
     });
   });

@@ -117,9 +117,10 @@ export function SessionsView({
     router.push(buildUrl(initialView, state));
   };
 
-  // Handle session click - navigate to detail
+  // Handle session click - navigate to Tasks view filtered by this session
+  // Per spec: "selecting a session shows that session's tasks"
   const handleSessionClick = (sessionId: string) => {
-    router.push(`/projects/${projectId}/sessions/${sessionId}`);
+    router.push(`/projects/${projectId}/tasks?sessionId=${sessionId}`);
   };
 
   // Handle row keyboard navigation
