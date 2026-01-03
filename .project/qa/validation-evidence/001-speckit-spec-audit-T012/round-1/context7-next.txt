@@ -1,0 +1,28 @@
+Package: next
+Topics: App Router, client components, useState, useEffect, client-side data fetching
+Retrieved: 2026-01-02
+Version: 14.2.0
+Docs: https://nextjs.org/docs
+
+Query: App Router client components using useState useEffect fetch data in React client components best practices
+
+Library: /vercel/next.js
+
+Key Patterns Applied:
+1. Client Component with "use client" directive
+2. useState for managing data, loading, and error states
+3. useEffect with fetch for client-side data loading
+4. Proper loading and error state handling
+
+Sources Consulted:
+- docs/02-pages/03-building-your-application/03-data-fetching/05-client-side.mdx
+- docs/01-app/02-guides/authentication.mdx
+- docs/01-app/01-getting-started/07-fetching-data.mdx
+- docs/01-app/02-guides/single-page-applications.mdx
+
+Implementation Alignment:
+- Dashboard.tsx uses "use client" directive as required for client components
+- Uses useState for projects, isLoading, and error state management
+- Uses useEffect with fetch for loading projects on mount
+- Follows the recommended pattern for client-side data fetching
+- Proper loading, error, and empty state handling

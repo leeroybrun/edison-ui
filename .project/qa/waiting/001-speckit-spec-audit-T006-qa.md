@@ -4,6 +4,7 @@ task_id: 001-speckit-spec-audit-T006
 title: QA 001-speckit-spec-audit-T006
 round: 1
 validator_owner: speckit-import
+session_id: auto-no-wt
 created_at: '2025-12-27T13:25:20Z'
 updated_at: '2025-12-27T13:25:20Z'
 ---

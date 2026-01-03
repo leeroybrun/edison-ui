@@ -1,0 +1,83 @@
+=== CLI Validator: global-claude ===
+Engine: claude-cli
+Command: claude
+Exit Code: 1
+
+=== STDOUT ===
+
+
+=== STDERR ===
+This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason:
+Error: EMFILE: too many open files, watch
+    at FSWatcher._handle.onchange (node:internal/fs/watchers:207:21)
+This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason:
+Error: EMFILE: too many open files, watch
+    at FSWatcher._handle.onchange (node:internal/fs/watchers:207:21)
+This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason:
+Error: EPERM: operation not permitted, open '/Users/leeroy/.claude.json'
+    at Module.openSync (node:fs:562:18)
+    at file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:999
+    at oI (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:8:8084)
+    at Object.writeFileSync (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:774)
+    at dR (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:4746:1175)
+    at EK9 (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:4725:11913)
+    at d0 (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:4725:10550)
+    at file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:237:22454
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+Error: EPERM: operation not permitted, open '/Users/leeroy/.claude/debug/da886598-364e-4372-9ae1-30fea1679c13.txt'
+    at Module.openSync (node:fs:562:18)
+    at file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1210
+    at oI (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:8:8084)
+    at Object.appendFileSync (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1139)
+    at writeFn (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:28619)
+    at X (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:27992)
+    at Object.write (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:28115)
+    at k (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:11:31)
+    at pY (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:13:325)
+    at PassThrough.J (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:1212:41573) {
+  errno: -1,
+  code: 'EPERM',
+  syscall: 'open',
+  path: '/Users/leeroy/.claude/debug/da886598-364e-4372-9ae1-30fea1679c13.txt'
+}
+This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason:
+Error: EPERM: operation not permitted, open '/Users/leeroy/.claude/debug/da886598-364e-4372-9ae1-30fea1679c13.txt'
+    at Module.openSync (node:fs:562:18)
+    at file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1210
+    at oI (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:8:8084)
+    at Object.appendFileSync (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1139)
+    at writeFn (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:28619)
+    at X (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:27992)
+    at Object.write (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:28115)
+    at k (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:11:31)
+    at file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:2577:855
+    at ChildProcess.exithandler (node:child_process:421:5)
+This error originated either by throwing inside of an async function without a catch block, or by rejecting a promise which was not handled with .catch(). The promise rejected with the reason:
+Error: EPERM: operation not permitted, open '/Users/leeroy/.claude/debug/da886598-364e-4372-9ae1-30fea1679c13.txt'
+    at Module.openSync (node:fs:562:18)
+    at file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1210
+    at oI (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:8:8084)
+    at Object.appendFileSync (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1139)
+    at writeFn (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:28619)
+    at X (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:27992)
+    at Object.write (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:28115)
+    at k (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:11:31)
+    at pY (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:13:325)
+    at file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:1212:50220
+Error: EPERM: operation not permitted, open '/Users/leeroy/.claude/debug/da886598-364e-4372-9ae1-30fea1679c13.txt'
+    at Module.openSync (node:fs:562:18)
+    at file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1210
+    at oI (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:8:8084)
+    at Object.appendFileSync (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:1139)
+    at writeFn (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:28619)
+    at X (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:27992)
+    at Object.write (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:9:28115)
+    at k (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:11:31)
+    at pY (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:13:325)
+    at PassThrough.J (file:///Users/leeroy/.nvm/versions/node/v22.14.0/lib/node_modules/@anthropic-ai/claude-code/cli.js:1212:41573) {
+  errno: -1,
+  code: 'EPERM',
+  syscall: 'open',
+  path: '/Users/leeroy/.claude/debug/da886598-364e-4372-9ae1-30fea1679c13.txt'
+}
+

@@ -1,0 +1,80 @@
+=== CLI Validator: global-gemini ===
+Engine: gemini-cli
+Command: gemini
+Exit Code: 0
+
+=== STDOUT ===
+{
+  "response": "I'm unable to proceed with validation. The `run_shell_command` tool, essential for file system interaction and validation checks, is consistently failing. This prevents me from inspecting changes, running tests, or performing any required steps.\n\nVerdict: blocked\nSummary: The `run_shell_command` tool is consistently failing to execute, preventing any interaction with the file system or execution of necessary validation commands (git status, git diff, lint, type-check, test).\nFindings:\n*   `run_shell_command` tool is not functioning.\n*   Unable to read git diff to understand changes.\n*   Unable to execute linting, type-checking, or testing commands.\nStrengths: (None, as the task is blocked)",
+  "stats": {
+    "models": {
+      "gemini-2.5-flash-lite": {
+        "api": {
+          "totalRequests": 1,
+          "totalErrors": 0,
+          "totalLatencyMs": 2309
+        },
+        "tokens": {
+          "prompt": 13638,
+          "candidates": 89,
+          "total": 14174,
+          "cached": 0,
+          "thoughts": 447,
+          "tool": 0
+        }
+      },
+      "gemini-2.5-flash": {
+        "api": {
+          "totalRequests": 4,
+          "totalErrors": 0,
+          "totalLatencyMs": 11715
+        },
+        "tokens": {
+          "prompt": 72035,
+          "candidates": 302,
+          "total": 73205,
+          "cached": 34716,
+          "thoughts": 868,
+          "tool": 0
+        }
+      }
+    },
+    "tools": {
+      "totalCalls": 3,
+      "totalSuccess": 0,
+      "totalFail": 3,
+      "totalDurationMs": 0,
+      "totalDecisions": {
+        "accept": 0,
+        "reject": 0,
+        "modify": 0,
+        "auto_accept": 0
+      },
+      "byName": {
+        "run_shell_command": {
+          "count": 3,
+          "success": 0,
+          "fail": 3,
+          "durationMs": 0,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        }
+      }
+    },
+    "files": {
+      "totalLinesAdded": 0,
+      "totalLinesRemoved": 0
+    }
+  }
+}
+
+=== STDERR ===
+Loaded cached credentials.
+Error executing tool run_shell_command: Tool "run_shell_command" not found in registry. Tools must use the exact names that are registered. Did you mean one of: "search_file_content", "read_file", "web_fetch"?
+Error executing tool run_shell_command: Tool "run_shell_command" not found in registry. Tools must use the exact names that are registered. Did you mean one of: "search_file_content", "read_file", "web_fetch"?
+Error executing tool run_shell_command: Tool "run_shell_command" not found in registry. Tools must use the exact names that are registered. Did you mean one of: "search_file_content", "read_file", "web_fetch"?
+

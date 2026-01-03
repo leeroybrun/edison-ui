@@ -1,0 +1,22 @@
+---
+evidenceVersion: 1
+evidenceKind: command
+taskId: 001-speckit-spec-audit-T021
+round: 4
+commandName: lint
+command: make lint
+cwd: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702
+shell: bash
+pipefail: true
+startedAt: '2026-01-02T17:32:45.455818Z'
+completedAt: '2026-01-02T17:32:47.811816Z'
+exitCode: 0
+runner: edison evidence capture
+---
+All checks passed!
+Success: no issues found in 37 source files
+
+> edison-ui-frontend@0.1.0 lint
+> next lint
+
+✔ No ESLint warnings or errors

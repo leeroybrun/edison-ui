@@ -1,0 +1,21 @@
+---
+evidenceVersion: 1
+evidenceKind: command
+taskId: 001-speckit-spec-audit-T022
+round: 3
+commandName: type-check
+command: make type-check
+cwd: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702
+shell: bash
+pipefail: true
+startedAt: '2026-01-02T17:33:06.577512Z'
+completedAt: '2026-01-02T17:33:07.763789Z'
+exitCode: 0
+runner: edison evidence capture
+---
+All checks passed!
+Success: no issues found in 37 source files
+
+> edison-ui-frontend@0.1.0 type-check
+> tsc --noEmit
+

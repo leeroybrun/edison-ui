@@ -1,0 +1,159 @@
+.FFFFFFFFFFFFFF                                                          [100%]
+=================================== FAILURES ===================================
+_ TestActorIdentity.test_get_current_actor_returns_actor_identity_with_os_user _
+
+self = <test_models_actor.TestActorIdentity object at 0x112752ad0>
+
+    def test_get_current_actor_returns_actor_identity_with_os_user(self) -> None:
+        """get_current_actor() should return ActorIdentity with os_user populated."""
+>       from models.actor import ActorIdentity, get_current_actor
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:20: ModuleNotFoundError
+__ TestActorIdentity.test_get_current_actor_has_none_display_name_by_default ___
+
+self = <test_models_actor.TestActorIdentity object at 0x112752c10>
+
+    def test_get_current_actor_has_none_display_name_by_default(self) -> None:
+        """get_current_actor() should return None for display_name by default."""
+>       from models.actor import get_current_actor
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:29: ModuleNotFoundError
+__________ TestActorIdentity.test_actor_identity_accepts_display_name __________
+
+self = <test_models_actor.TestActorIdentity object at 0x1126ebbb0>
+
+    def test_actor_identity_accepts_display_name(self) -> None:
+        """ActorIdentity can be created with a display_name."""
+>       from models.actor import ActorIdentity
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:37: ModuleNotFoundError
+___________ TestActorIdentity.test_actor_identity_serializes_to_dict ___________
+
+self = <test_models_actor.TestActorIdentity object at 0x1126ebce0>
+
+    def test_actor_identity_serializes_to_dict(self) -> None:
+        """ActorIdentity should serialize to dict via model_dump."""
+>       from models.actor import ActorIdentity
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:46: ModuleNotFoundError
+___________ TestActorIdentity.test_actor_identity_serializes_to_json ___________
+
+self = <test_models_actor.TestActorIdentity object at 0x1128b4710>
+
+    def test_actor_identity_serializes_to_json(self) -> None:
+        """ActorIdentity should serialize to JSON."""
+>       from models.actor import ActorIdentity
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:55: ModuleNotFoundError
+_______ TestAuditTarget.test_audit_target_has_entity_type_and_entity_id ________
+
+self = <test_models_actor.TestAuditTarget object at 0x1127525d0>
+
+    def test_audit_target_has_entity_type_and_entity_id(self) -> None:
+        """AuditTarget must have entity_type and entity_id fields."""
+>       from models.audit import AuditTarget
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:69: ModuleNotFoundError
+_____________ TestAuditTarget.test_audit_target_serializes_to_dict _____________
+
+self = <test_models_actor.TestAuditTarget object at 0x112752d50>
+
+    def test_audit_target_serializes_to_dict(self) -> None:
+        """AuditTarget should serialize to dict."""
+>       from models.audit import AuditTarget
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:78: ModuleNotFoundError
+___________ TestAuditEntry.test_audit_entry_creation_with_all_fields ___________
+
+self = <test_models_actor.TestAuditEntry object at 0x112752e90>
+
+    def test_audit_entry_creation_with_all_fields(self) -> None:
+        """AuditEntry can be created with all required fields."""
+>       from models.actor import ActorIdentity
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:91: ModuleNotFoundError
+______________ TestAuditEntry.test_audit_entry_with_context_dict _______________
+
+self = <test_models_actor.TestAuditEntry object at 0x112752fd0>
+
+    def test_audit_entry_with_context_dict(self) -> None:
+        """AuditEntry can include optional context dict."""
+>       from models.actor import ActorIdentity
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:118: ModuleNotFoundError
+________ TestAuditEntry.test_audit_entry_serializes_with_nested_models _________
+
+self = <test_models_actor.TestAuditEntry object at 0x1126eba80>
+
+    def test_audit_entry_serializes_with_nested_models(self) -> None:
+        """AuditEntry should serialize including nested ActorIdentity and AuditTarget."""
+>       from models.actor import ActorIdentity
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:142: ModuleNotFoundError
+______ TestModelsExport.test_actor_identity_exported_from_models_package _______
+
+self = <test_models_actor.TestModelsExport object at 0x112753110>
+
+    def test_actor_identity_exported_from_models_package(self) -> None:
+        """ActorIdentity should be importable from models package."""
+>       from models import ActorIdentity
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:175: ModuleNotFoundError
+_____ TestModelsExport.test_get_current_actor_exported_from_models_package _____
+
+self = <test_models_actor.TestModelsExport object at 0x112753250>
+
+    def test_get_current_actor_exported_from_models_package(self) -> None:
+        """get_current_actor should be importable from models package."""
+>       from models import get_current_actor
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:182: ModuleNotFoundError
+________ TestModelsExport.test_audit_entry_exported_from_models_package ________
+
+self = <test_models_actor.TestModelsExport object at 0x1126ebe10>
+
+    def test_audit_entry_exported_from_models_package(self) -> None:
+        """AuditEntry should be importable from models package."""
+>       from models import AuditEntry, AuditTarget, ActorIdentity
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:189: ModuleNotFoundError
+_______ TestModelsExport.test_audit_target_exported_from_models_package ________
+
+self = <test_models_actor.TestModelsExport object at 0x11282c050>
+
+    def test_audit_target_exported_from_models_package(self) -> None:
+        """AuditTarget should be importable from models package."""
+>       from models import AuditTarget
+E       ModuleNotFoundError: No module named 'models'
+
+tests/test_models_actor.py:208: ModuleNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_models_actor.py::TestActorIdentity::test_get_current_actor_returns_actor_identity_with_os_user
+FAILED tests/test_models_actor.py::TestActorIdentity::test_get_current_actor_has_none_display_name_by_default
+FAILED tests/test_models_actor.py::TestActorIdentity::test_actor_identity_accepts_display_name
+FAILED tests/test_models_actor.py::TestActorIdentity::test_actor_identity_serializes_to_dict
+FAILED tests/test_models_actor.py::TestActorIdentity::test_actor_identity_serializes_to_json
+FAILED tests/test_models_actor.py::TestAuditTarget::test_audit_target_has_entity_type_and_entity_id
+FAILED tests/test_models_actor.py::TestAuditTarget::test_audit_target_serializes_to_dict
+FAILED tests/test_models_actor.py::TestAuditEntry::test_audit_entry_creation_with_all_fields
+FAILED tests/test_models_actor.py::TestAuditEntry::test_audit_entry_with_context_dict
+FAILED tests/test_models_actor.py::TestAuditEntry::test_audit_entry_serializes_with_nested_models
+FAILED tests/test_models_actor.py::TestModelsExport::test_actor_identity_exported_from_models_package
+FAILED tests/test_models_actor.py::TestModelsExport::test_get_current_actor_exported_from_models_package
+FAILED tests/test_models_actor.py::TestModelsExport::test_audit_entry_exported_from_models_package
+FAILED tests/test_models_actor.py::TestModelsExport::test_audit_target_exported_from_models_package
+14 failed, 1 passed in 0.85s
+make: *** [backend-test] Error 1

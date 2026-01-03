@@ -1,0 +1,300 @@
+---
+evidenceVersion: 1
+evidenceKind: command
+taskId: 001-speckit-spec-audit-T022
+round: 3
+commandName: test
+command: make test
+cwd: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702
+shell: bash
+pipefail: true
+startedAt: '2026-01-02T17:33:09.243505Z'
+completedAt: '2026-01-02T17:33:13.083255Z'
+exitCode: 0
+runner: edison evidence capture
+---
+........................................................................ [ 33%]
+........................................................................ [ 67%]
+......................................................................   [100%]
+214 passed in 1.47s
+
+> edison-ui-frontend@0.1.0 test
+> vitest run
+
+
+ RUN  v1.6.1 /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend
+
+ ✓ lib/api-client.test.ts  (27 tests) 32ms
+ ✓ app/loading.test.tsx  (3 tests) 36ms
+ ✓ components/AppHeader.test.tsx  (1 test) 39ms
+ ✓ app/not-found.test.tsx  (4 tests) 50ms
+ ✓ components/NavSidebar.test.tsx  (5 tests) 69ms
+ ✓ components/Dashboard/ProjectList.test.tsx  (8 tests) 97ms
+ ✓ app/error.test.tsx  (5 tests) 91ms
+ ✓ components/Dashboard/Dashboard.test.tsx  (8 tests) 144ms
+ ✓ components/Dashboard/ProjectCard.test.tsx  (11 tests) 158ms
+ ✓ app/projects/[projectId]/layout.test.tsx  (15 tests) 218ms
+ ✓ components/ProjectSidebar.test.tsx  (12 tests) 262ms
+
+ Test Files  11 passed (11)
+      Tests  99 passed (99)
+   Start at  18:33:11
+   Duration  1.36s (transform 319ms, setup 816ms, collect 2.15s, tests 1.20s, environment 4.95s, prepare 759ms)
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+stderr | components/Dashboard/ProjectCard.test.tsx > ProjectCard > calls onPin when pin button is clicked
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at div
+    at article
+    at ProjectCard (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/Dashboard/ProjectCard.tsx:28:24)
+
+stderr | components/Dashboard/ProjectCard.test.tsx > ProjectCard > calls onPin with false when unpin button is clicked
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at div
+    at article
+    at ProjectCard (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/Dashboard/ProjectCard.tsx:28:24)
+
+stderr | components/ProjectSidebar.test.tsx > ProjectSidebar > keyboard accessibility > all navigation links are focusable
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at div
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+
+stderr | components/ProjectSidebar.test.tsx > ProjectSidebar > responsive behavior > calls onCollapsedChange when toggle is clicked
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at div
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+Warning: An update to ForwardRef(LinkComponent) inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://reactjs.org/link/wrap-tests-with-act
+    at LinkComponent (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/node_modules/next/dist/client/link.js:121:19)
+    at li
+    at ul
+    at nav
+    at aside
+    at ProjectSidebar (/Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702/frontend/components/ProjectSidebar.tsx:261:3)
+

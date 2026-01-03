@@ -1,0 +1,13 @@
+=== CLI Validator: global-codex ===
+Engine: codex-cli
+Command: codex
+Exit Code: 1
+
+=== STDOUT ===
+
+
+=== STDERR ===
+2026-01-02T16:35:14.854128Z ERROR codex_core::codex: failed to initialize rollout recorder: Operation not permitted (os error 1)
+2026-01-02T16:35:14.854154Z ERROR codex_core::codex: Failed to create session: Operation not permitted (os error 1)
+Error: Fatal error: Codex cannot access session files at /Users/leeroy/.codex/sessions (permission denied). If sessions were created using sudo, fix ownership: sudo chown -R $(whoami) /Users/leeroy/.codex (underlying error: Operation not permitted (os error 1))
+

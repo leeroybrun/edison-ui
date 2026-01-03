@@ -1,0 +1,91 @@
+=== CLI Validator: global-gemini ===
+Engine: gemini-cli
+Command: gemini
+Exit Code: 0
+
+=== STDOUT ===
+{
+  "response": "I apologize for the repeated error. I have re-examined my available tools and confirmed that `run_shell_command` is not among them, despite being referenced in the constitution. This means I cannot execute any shell commands, including `git diff` to view code changes, nor the necessary type-checking, linting, and testing commands for both the backend and frontend.\n\nGiven these limitations, I am blocked from performing the validation as outlined in my constitution and cannot ensure production-ready quality.\n\n**Verdict: blocked**\n\n## Summary\nI am unable to perform the requested validation because the `run_shell_command` tool is not available, which prevents me from executing `git diff` and the required type-checking, linting, and testing commands.\n\n## Findings (bullets)\n*   Cannot obtain `git diff` to review code changes.\n*   Cannot execute backend quality checks (mypy, ruff, pytest).\n*   Cannot execute frontend quality checks (npm lint, npm test, npm run type-check).\n*   The validator constitution explicitly requires running these commands to ensure production-ready quality.\n\n## Strengths (bullets)\n*   N/A - I am blocked.",
+  "stats": {
+    "models": {
+      "gemini-2.5-flash-lite": {
+        "api": {
+          "totalRequests": 1,
+          "totalErrors": 0,
+          "totalLatencyMs": 2235
+        },
+        "tokens": {
+          "prompt": 13653,
+          "candidates": 64,
+          "total": 14093,
+          "cached": 0,
+          "thoughts": 376,
+          "tool": 0
+        }
+      },
+      "gemini-2.5-flash": {
+        "api": {
+          "totalRequests": 5,
+          "totalErrors": 0,
+          "totalLatencyMs": 20014
+        },
+        "tokens": {
+          "prompt": 93903,
+          "candidates": 910,
+          "total": 96936,
+          "cached": 52029,
+          "thoughts": 2123,
+          "tool": 0
+        }
+      }
+    },
+    "tools": {
+      "totalCalls": 4,
+      "totalSuccess": 2,
+      "totalFail": 2,
+      "totalDurationMs": 3,
+      "totalDecisions": {
+        "accept": 0,
+        "reject": 0,
+        "modify": 0,
+        "auto_accept": 2
+      },
+      "byName": {
+        "read_file": {
+          "count": 2,
+          "success": 2,
+          "fail": 0,
+          "durationMs": 3,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 2
+          }
+        },
+        "run_shell_command": {
+          "count": 2,
+          "success": 0,
+          "fail": 2,
+          "durationMs": 0,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        }
+      }
+    },
+    "files": {
+      "totalLinesAdded": 0,
+      "totalLinesRemoved": 0
+    }
+  }
+}
+
+=== STDERR ===
+Loaded cached credentials.
+Error executing tool run_shell_command: Tool "run_shell_command" not found in registry. Tools must use the exact names that are registered. Did you mean one of: "search_file_content", "read_file", "web_fetch"?
+Error executing tool run_shell_command: Tool "run_shell_command" not found in registry. Tools must use the exact names that are registered. Did you mean one of: "search_file_content", "read_file", "web_fetch"?
+

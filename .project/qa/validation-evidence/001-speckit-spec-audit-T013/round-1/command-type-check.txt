@@ -1,0 +1,13 @@
+# Type Check Output
+# Command: make type-check
+# Timestamp: 2026-01-02T16:46:00Z
+
+## Backend (mypy)
+All checks passed!
+Success: no issues found in 37 source files
+
+## Frontend (tsc)
+> edison-ui-frontend@0.1.0 type-check
+> tsc --noEmit
+
+No errors.

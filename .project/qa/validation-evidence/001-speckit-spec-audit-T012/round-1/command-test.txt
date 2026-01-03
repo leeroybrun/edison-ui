@@ -1,0 +1,23 @@
+RUNNER: validation/round-1
+START: 2026-01-02T13:16:15Z
+CMD: pnpm test
+OUTPUT:
+> edison-ui-frontend@0.1.0 test
+> vitest run
+
+ RUN  v1.6.1
+
+ ✓ lib/api-client.test.ts  (27 tests) 25ms
+ ✓ app/loading.test.tsx  (3 tests) 34ms
+ ✓ components/AppHeader.test.tsx  (1 test) 38ms
+ ✓ app/not-found.test.tsx  (4 tests) 52ms
+ ✓ components/NavSidebar.test.tsx  (5 tests) 63ms
+ ✓ app/error.test.tsx  (5 tests) 76ms
+ ✓ components/Dashboard/ProjectList.test.tsx  (8 tests) 94ms
+ ✓ components/Dashboard/Dashboard.test.tsx  (8 tests) 133ms
+ ✓ components/Dashboard/ProjectCard.test.tsx  (11 tests) 123ms
+
+ Test Files  9 passed (9)
+      Tests  72 passed (72)
+EXIT_CODE: 0
+END

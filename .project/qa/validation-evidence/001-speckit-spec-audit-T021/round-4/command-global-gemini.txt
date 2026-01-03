@@ -1,0 +1,125 @@
+=== CLI Validator: global-gemini ===
+Engine: gemini-cli
+Command: gemini
+Exit Code: 0
+
+=== STDOUT ===
+{
+  "response": "# Global Validation Report\n\n**Task**: 001-speckit-spec-audit-T021\n**Status**: ❌ REJECTED\n**Timestamp**: Friday, January 2, 2026\n\n## Summary\nThe implementation for Sessions (T021) and Tasks (T020/T022) is logically sound, comprehensive, and well-tested with new tests. However, the changes appear to have caused a regression in the existing project tests (`test_api_projects.py`), which are now failing with `PermissionError` when trying to write to the real file system.\n\n## Validation Results\n\n### 1. Task Completion\n- **PASS**: Endpoints for `list_sessions`, `list_tasks`, and `readiness` are implemented.\n- **PASS**: Pydantic schemas match the API requirements (camelCase aliases, etc.).\n- **PASS**: Frontend sidebar updated.\n\n### 2. Code Quality\n- **PASS**: Code is type-safe and follows project patterns.\n- **PASS**: Linting passed (`command-lint.txt`).\n\n### 3. Security\n- **PASS**: Path traversal prevention implemented in `list_sessions` (`state` validation).\n\n### 4. Performance\n- **PASS**: Pagination implemented for lists.\n\n### 5. Error Handling\n- **PASS**: Proper 404s and 400s for invalid inputs.\n\n### 6. TDD Compliance\n- **PASS**: New tests `test_api_sessions.py` and `test_api_tasks.py` are comprehensive and pass.\n\n### 7. Architecture\n- **PASS**: Service layer (`SessionReaderService`, `TaskReaderService`) separates logic from API.\n\n### 8. Best Practices\n- **PASS**: \"No Mocks\" policy followed for internal file reading logic.\n\n### 9. Regression Testing\n- **FAIL**: `tests/test_api_projects.py` is failing with 3 errors.\n  - `PermissionError: [Errno 1] Operation not permitted: '/Users/leeroy/.edison-ui/pins.json'`\n  - It appears `ProjectDiscoveryService` or `core/settings.py` changes have caused existing tests to attempt writes to the real user home directory instead of a test fixture. The new tests patch `PIN_STORAGE_PATH`, but existing tests seemingly do not (or the service defaults changed).\n\n### 10. Documentation\n- **PASS**: Docstrings present.\n\n## Critical Issues (Blockers)\n- **Regression in `test_api_projects.py`**: Existing tests are failing. The `ProjectDiscoveryService` is attempting to write to the user's home directory during tests, which is a violation of test isolation and causes CI failures.\n\n## Evidence\n- Type-Check: ✅ PASS (inferred from lack of errors in `command-type-check.txt` list, though file content not fully verified, lint passed)\n- Lint: ✅ PASS\n- Tests: ❌ FAIL (`tests/test_api_projects.py`)\n- Build: ✅ SUCCESS (Frontend build implied by lint/test success, though explicit build log not read)\n\n## Final Decision\n**Status**: ❌ REJECTED\n**Reasoning**: While the new feature work is excellent, the task introduced a regression in existing tests (`test_api_projects.py`). The `PermissionError` indicates that file system isolation is broken for those tests, likely due to shared service changes. This must be fixed before merging to ensure a green test suite. Suggest applying the same `PIN_STORAGE_PATH` patching used in the new tests to `test_api_projects.py` or updating the `ProjectDiscoveryService` to handle defaults more safely in test environments.",
+  "stats": {
+    "models": {
+      "gemini-2.5-flash-lite": {
+        "api": {
+          "totalRequests": 1,
+          "totalErrors": 0,
+          "totalLatencyMs": 2880
+        },
+        "tokens": {
+          "prompt": 14917,
+          "candidates": 103,
+          "total": 15384,
+          "cached": 0,
+          "thoughts": 364,
+          "tool": 0
+        }
+      },
+      "gemini-3-pro-preview": {
+        "api": {
+          "totalRequests": 11,
+          "totalErrors": 0,
+          "totalLatencyMs": 124167
+        },
+        "tokens": {
+          "prompt": 348515,
+          "candidates": 1887,
+          "total": 358040,
+          "cached": 211266,
+          "thoughts": 7638,
+          "tool": 0
+        }
+      }
+    },
+    "tools": {
+      "totalCalls": 31,
+      "totalSuccess": 19,
+      "totalFail": 12,
+      "totalDurationMs": 75,
+      "totalDecisions": {
+        "accept": 0,
+        "reject": 0,
+        "modify": 0,
+        "auto_accept": 19
+      },
+      "byName": {
+        "run_shell_command": {
+          "count": 1,
+          "success": 0,
+          "fail": 1,
+          "durationMs": 0,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 0
+          }
+        },
+        "list_directory": {
+          "count": 5,
+          "success": 3,
+          "fail": 2,
+          "durationMs": 20,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 3
+          }
+        },
+        "read_file": {
+          "count": 23,
+          "success": 14,
+          "fail": 9,
+          "durationMs": 43,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 14
+          }
+        },
+        "glob": {
+          "count": 2,
+          "success": 2,
+          "fail": 0,
+          "durationMs": 12,
+          "decisions": {
+            "accept": 0,
+            "reject": 0,
+            "modify": 0,
+            "auto_accept": 2
+          }
+        }
+      }
+    },
+    "files": {
+      "totalLinesAdded": 0,
+      "totalLinesRemoved": 0
+    }
+  }
+}
+
+=== STDERR ===
+Loaded cached credentials.
+Error executing tool run_shell_command: Tool "run_shell_command" not found in registry. Tools must use the exact names that are registered. Did you mean one of: "search_file_content", "read_file", "web_fetch"?
+Error executing tool list_directory: Path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702
+Error executing tool read_file: File path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702 or within the project temp directory: /Users/leeroy/.gemini/tmp/5b9e85d9fcc610cc69e6f7282da152ac5b96003d4e01da8a00b6767624819016
+Error executing tool read_file: File path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702 or within the project temp directory: /Users/leeroy/.gemini/tmp/5b9e85d9fcc610cc69e6f7282da152ac5b96003d4e01da8a00b6767624819016
+Error executing tool list_directory: Path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702
+Error executing tool read_file: File path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702 or within the project temp directory: /Users/leeroy/.gemini/tmp/5b9e85d9fcc610cc69e6f7282da152ac5b96003d4e01da8a00b6767624819016
+Error executing tool read_file: File path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702 or within the project temp directory: /Users/leeroy/.gemini/tmp/5b9e85d9fcc610cc69e6f7282da152ac5b96003d4e01da8a00b6767624819016
+Error executing tool read_file: File path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702 or within the project temp directory: /Users/leeroy/.gemini/tmp/5b9e85d9fcc610cc69e6f7282da152ac5b96003d4e01da8a00b6767624819016
+Error executing tool read_file: File path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702 or within the project temp directory: /Users/leeroy/.gemini/tmp/5b9e85d9fcc610cc69e6f7282da152ac5b96003d4e01da8a00b6767624819016
+Error executing tool read_file: File path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702 or within the project temp directory: /Users/leeroy/.gemini/tmp/5b9e85d9fcc610cc69e6f7282da152ac5b96003d4e01da8a00b6767624819016
+Error executing tool read_file: File path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702 or within the project temp directory: /Users/leeroy/.gemini/tmp/5b9e85d9fcc610cc69e6f7282da152ac5b96003d4e01da8a00b6767624819016
+Error executing tool read_file: File path must be within one of the workspace directories: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702 or within the project temp directory: /Users/leeroy/.gemini/tmp/5b9e85d9fcc610cc69e6f7282da152ac5b96003d4e01da8a00b6767624819016
+

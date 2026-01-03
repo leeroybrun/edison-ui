@@ -1,0 +1,26 @@
+RUNNER: validation/round-2
+START: 2026-01-02T14:26:00Z
+CMD: pnpm build
+OUTPUT:
+> edison-ui-frontend@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+ ✓ Generating static pages (5/5)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    3.9 kB         99.9 kB
+├ ○ /_not-found                          146 B          87.5 kB
+└ ○ /projects                            146 B          87.5 kB
++ First Load JS shared by all            87.3 kB
+
+○  (Static)  prerendered as static content
+EXIT_CODE: 0
+END

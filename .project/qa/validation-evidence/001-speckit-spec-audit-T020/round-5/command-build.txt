@@ -1,0 +1,20 @@
+---
+evidenceVersion: 1
+evidenceKind: command
+taskId: 001-speckit-spec-audit-T020
+round: 5
+commandName: build
+command: npm run build
+cwd: /Users/leeroy/Documents/Development/edison-ui/.worktrees/happy-pid-34702
+shell: bash
+pipefail: true
+startedAt: '2026-01-02T17:32:54.175875Z'
+completedAt: '2026-01-02T17:32:54.308162Z'
+exitCode: 1
+runner: edison evidence capture
+---
+npm error Missing script: "build"
+npm error
+npm error To see a list of scripts, run:
+npm error   npm run
+npm error A complete log of this run can be found in: /Users/leeroy/.npm/_logs/2026-01-02T17_32_54_255Z-debug-0.log

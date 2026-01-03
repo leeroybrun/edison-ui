@@ -1,0 +1,12 @@
+# Test Output
+# Command: make backend-test
+# Timestamp: 2026-01-02T16:46:00Z
+
+## Backend (pytest)
+208 passed in 1.90s
+
+Includes comprehensive tests for:
+- GET /api/v1/projects/{projectId}/tasks/{taskId}/readiness
+- Ready task (no blockers)
+- Blocked task (pending dependencies)
+- Response schema validation

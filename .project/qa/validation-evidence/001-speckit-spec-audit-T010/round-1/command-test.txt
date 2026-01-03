@@ -1,0 +1,36 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.7, pytest-8.4.2, pluggy-1.6.0 -- /Users/leeroy/Documents/Development/edison-ui/.worktrees/phase3-foundation/backend/.venv/bin/python3.13
+cachedir: .pytest_cache
+rootdir: /Users/leeroy/Documents/Development/edison-ui/.worktrees/phase3-foundation/backend
+plugins: anyio-4.12.0, cov-6.3.0
+collecting ... collected 27 items
+
+tests/test_api_projects.py::TestListProjects::test_list_projects_returns_200 PASSED [  3%]
+tests/test_api_projects.py::TestListProjects::test_list_projects_returns_items_array PASSED [  7%]
+tests/test_api_projects.py::TestListProjects::test_list_projects_includes_edison_projects_only PASSED [ 11%]
+tests/test_api_projects.py::TestListProjects::test_list_projects_includes_health_counts PASSED [ 14%]
+tests/test_api_projects.py::TestListProjects::test_list_projects_includes_project_id PASSED [ 18%]
+tests/test_api_projects.py::TestListProjects::test_list_projects_includes_pagination_info PASSED [ 22%]
+tests/test_api_projects.py::TestListProjects::test_list_projects_pagination_limit PASSED [ 25%]
+tests/test_api_projects.py::TestListProjects::test_list_projects_pagination_offset PASSED [ 29%]
+tests/test_api_projects.py::TestListProjects::test_list_projects_filter_by_pinned PASSED [ 33%]
+tests/test_api_projects.py::TestListProjects::test_list_projects_has_git_field PASSED [ 37%]
+tests/test_api_projects.py::TestListProjects::test_list_projects_redacts_path PASSED [ 40%]
+tests/test_api_projects.py::TestGetProjectDetail::test_get_project_returns_200 PASSED [ 44%]
+tests/test_api_projects.py::TestGetProjectDetail::test_get_project_returns_404_for_unknown PASSED [ 48%]
+tests/test_api_projects.py::TestGetProjectDetail::test_get_project_includes_all_fields PASSED [ 51%]
+tests/test_api_projects.py::TestGetProjectDetail::test_get_project_config_includes_scan_roots PASSED [ 55%]
+tests/test_api_projects.py::TestPinProject::test_pin_project_returns_200 PASSED [ 59%]
+tests/test_api_projects.py::TestPinProject::test_pin_project_returns_updated_status PASSED [ 62%]
+tests/test_api_projects.py::TestPinProject::test_unpin_project PASSED    [ 66%]
+tests/test_api_projects.py::TestPinProject::test_pin_project_returns_404_for_unknown PASSED [ 70%]
+tests/test_api_projects.py::TestProjectDiscoveryService::test_discovers_edison_projects PASSED [ 74%]
+tests/test_api_projects.py::TestProjectDiscoveryService::test_ignores_non_edison_projects PASSED [ 77%]
+tests/test_api_projects.py::TestProjectDiscoveryService::test_generates_stable_project_id PASSED [ 81%]
+tests/test_api_projects.py::TestProjectDiscoveryService::test_counts_tasks_by_state PASSED [ 85%]
+tests/test_api_projects.py::TestProjectDiscoveryService::test_counts_active_sessions PASSED [ 88%]
+tests/test_api_projects.py::TestProjectSchemas::test_project_health_schema PASSED [ 92%]
+tests/test_api_projects.py::TestProjectSchemas::test_project_list_item_schema PASSED [ 96%]
+tests/test_api_projects.py::TestProjectSchemas::test_project_list_response_schema PASSED [100%]
+
+============================== 27 passed in 0.47s ==============================
