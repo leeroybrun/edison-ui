@@ -8,6 +8,16 @@
 export type TaskState = "todo" | "wip" | "blocked" | "done" | "validated";
 
 /**
+ * Represents a dependency that is blocking a task
+ */
+export interface BlockedByItem {
+  dependencyId: string;
+  dependencyState: string | null;
+  requiredStates: string[];
+  reason: string;
+}
+
+/**
  * Single task item
  */
 export interface Task {
@@ -17,6 +27,8 @@ export interface Task {
   sessionId: string | null;
   parentId: string | null;
   dependsOn: string[];
+  ready: boolean;
+  blockedBy: BlockedByItem[];
   createdAt: string;
   updatedAt: string;
 }
