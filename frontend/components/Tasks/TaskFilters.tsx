@@ -81,28 +81,27 @@ export function TaskFilters({
         </select>
       </div>
 
-      {/* Session filter - only show if sessions are available */}
-      {sessions.length > 0 && (
-        <div className="flex flex-col">
-          <label className="sr-only" htmlFor="session-filter">
-            Filter by session
-          </label>
-          <select
-            aria-label="Filter by session"
-            className="h-9 rounded-md border border-gray-300 bg-white px-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            id="session-filter"
-            onChange={handleSessionChange}
-            value={filters.sessionId || ""}
-          >
-            <option value="">All sessions</option>
-            {sessions.map((session) => (
-              <option key={session.sessionId} value={session.sessionId}>
-                {session.name || session.sessionId}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+      {/* Session filter - always show, with "Unscoped" option for tasks without session */}
+      <div className="flex flex-col">
+        <label className="sr-only" htmlFor="session-filter">
+          Filter by session
+        </label>
+        <select
+          aria-label="Filter by session"
+          className="h-9 rounded-md border border-gray-300 bg-white px-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          id="session-filter"
+          onChange={handleSessionChange}
+          value={filters.sessionId || ""}
+        >
+          <option value="">All sessions</option>
+          <option value="none">Unscoped (no session)</option>
+          {sessions.map((session) => (
+            <option key={session.sessionId} value={session.sessionId}>
+              {session.name || session.sessionId}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 }

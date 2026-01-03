@@ -148,4 +148,34 @@ describe("TaskFilters", () => {
 
     expect(handleChange).toHaveBeenCalledWith({ state: undefined });
   });
+
+  it("renders session filter with Unscoped option even without sessions", () => {
+    render(
+      <TaskFilters
+        filters={{}}
+        sessions={[]}
+        onFiltersChange={() => {}}
+      />,
+    );
+
+    const select = screen.getByLabelText(/session/i);
+    expect(select).toBeInTheDocument();
+    expect(screen.getByText("Unscoped (no session)")).toBeInTheDocument();
+  });
+
+  it("calls onFiltersChange with 'none' when Unscoped option selected", () => {
+    const handleChange = vi.fn();
+    render(
+      <TaskFilters
+        filters={{}}
+        sessions={mockSessions}
+        onFiltersChange={handleChange}
+      />,
+    );
+
+    const select = screen.getByLabelText(/session/i);
+    fireEvent.change(select, { target: { value: "none" } });
+
+    expect(handleChange).toHaveBeenCalledWith({ sessionId: "none" });
+  });
 });
