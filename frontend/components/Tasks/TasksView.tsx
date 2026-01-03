@@ -128,9 +128,16 @@ export function TasksView({
         return false;
       }
 
-      // Session filter
-      if (filters.sessionId && task.sessionId !== filters.sessionId) {
-        return false;
+      // Session filter - "none" means unscoped tasks (sessionId is null)
+      if (filters.sessionId) {
+        if (filters.sessionId === "none") {
+          // Filter for unscoped tasks (no session)
+          if (task.sessionId !== null) {
+            return false;
+          }
+        } else if (task.sessionId !== filters.sessionId) {
+          return false;
+        }
       }
 
       // Search filter

@@ -338,6 +338,43 @@ describe("TasksView", () => {
       });
     });
 
+    it("filters for unscoped tasks when sessionId=none is selected", async () => {
+      const tasksWithUnscoped: Task[] = [
+        ...mockTasks,
+        {
+          taskId: "T005",
+          title: "Unscoped global task",
+          state: "todo",
+          sessionId: null,
+          parentId: null,
+          dependsOn: [],
+          createdAt: "2025-01-04T10:00:00Z",
+          updatedAt: "2025-01-04T10:00:00Z",
+        },
+      ];
+
+      render(
+        <TasksView
+          tasks={tasksWithUnscoped}
+          sessions={mockSessions}
+          initialView="list"
+        />,
+      );
+
+      const sessionSelect = screen.getByLabelText(/session/i);
+      fireEvent.change(sessionSelect, { target: { value: "none" } });
+
+      await waitFor(() => {
+        // Only the unscoped task should be visible
+        expect(screen.getByText("T005")).toBeInTheDocument();
+        expect(screen.getByText("Unscoped global task")).toBeInTheDocument();
+        // Session-scoped tasks should be hidden
+        expect(screen.queryByText("T001")).not.toBeInTheDocument();
+        expect(screen.queryByText("T002")).not.toBeInTheDocument();
+        expect(screen.queryByText("T003")).not.toBeInTheDocument();
+      });
+    });
+
     it("updates URL query params when filters change", () => {
       render(
         <TasksView
