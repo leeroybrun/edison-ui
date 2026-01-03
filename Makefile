@@ -90,4 +90,11 @@ format: backend-format frontend-format ## Format all
 .PHONY: type-check
 type-check: backend-lint frontend-type-check ## Type check (backend via mypy)
 
+.PHONY: frontend-build
+frontend-build: ## Build frontend for production
+	@cd frontend && npm run build
+
+.PHONY: build
+build: frontend-build ## Build all (frontend production build)
+
 .DEFAULT_GOAL := help
