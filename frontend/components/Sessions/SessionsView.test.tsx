@@ -15,7 +15,7 @@ vi.mock("next/navigation", () => ({
 const mockSessions: Session[] = [
   {
     sessionId: "session-1",
-    state: "wip",
+    state: "active",
     phase: "implementation",
     owner: "alice",
     taskCount: 5,
@@ -25,7 +25,7 @@ const mockSessions: Session[] = [
   },
   {
     sessionId: "session-2",
-    state: "done",
+    state: "completed",
     phase: "review",
     owner: "bob",
     taskCount: 3,
@@ -35,8 +35,8 @@ const mockSessions: Session[] = [
   },
   {
     sessionId: "session-3",
-    state: "validated",
-    phase: "complete",
+    state: "paused",
+    phase: "waiting",
     owner: null,
     taskCount: 8,
     createdAt: "2025-12-25T10:00:00Z",
@@ -163,7 +163,7 @@ describe("SessionsView", () => {
   });
 
   describe("Board View", () => {
-    it("renders three columns for wip, done, validated states", () => {
+    it("renders five columns for draft, active, paused, completed, abandoned states", () => {
       render(
         <SessionsView
           initialView="board"
@@ -172,9 +172,12 @@ describe("SessionsView", () => {
         />
       );
 
-      expect(screen.getByText("WIP")).toBeInTheDocument();
-      expect(screen.getByText("Done")).toBeInTheDocument();
-      expect(screen.getByText("Validated")).toBeInTheDocument();
+      // Check for column headings (h2 elements inside board columns)
+      expect(screen.getByTestId("column-draft")).toBeInTheDocument();
+      expect(screen.getByTestId("column-active")).toBeInTheDocument();
+      expect(screen.getByTestId("column-paused")).toBeInTheDocument();
+      expect(screen.getByTestId("column-completed")).toBeInTheDocument();
+      expect(screen.getByTestId("column-abandoned")).toBeInTheDocument();
     });
 
     it("places sessions in correct columns based on state", () => {
@@ -186,18 +189,18 @@ describe("SessionsView", () => {
         />
       );
 
-      // Find the WIP column and verify session-1 is there
-      const wipColumn = screen.getByTestId("column-wip");
-      expect(within(wipColumn).getByText("session-1")).toBeInTheDocument();
+      // Find the Active column and verify session-1 is there
+      const activeColumn = screen.getByTestId("column-active");
+      expect(within(activeColumn).getByText("session-1")).toBeInTheDocument();
 
-      // Find the Done column and verify session-2 is there
-      const doneColumn = screen.getByTestId("column-done");
-      expect(within(doneColumn).getByText("session-2")).toBeInTheDocument();
+      // Find the Completed column and verify session-2 is there
+      const completedColumn = screen.getByTestId("column-completed");
+      expect(within(completedColumn).getByText("session-2")).toBeInTheDocument();
 
-      // Find the Validated column and verify session-3 is there
-      const validatedColumn = screen.getByTestId("column-validated");
+      // Find the Paused column and verify session-3 is there
+      const pausedColumn = screen.getByTestId("column-paused");
       expect(
-        within(validatedColumn).getByText("session-3")
+        within(pausedColumn).getByText("session-3")
       ).toBeInTheDocument();
     });
 
@@ -223,34 +226,36 @@ describe("SessionsView", () => {
       expect(
         screen.getByRole("button", { name: /all states/i })
       ).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^wip$/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /^draft$/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /^active$/i })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /^paused$/i })).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /^done$/i })
+        screen.getByRole("button", { name: /^completed$/i })
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /^validated$/i })
+        screen.getByRole("button", { name: /^abandoned$/i })
       ).toBeInTheDocument();
     });
 
     it("filters sessions by state when filter is clicked", () => {
       render(<SessionsView projectId="my-project" sessions={mockSessions} />);
 
-      const wipFilter = screen.getByRole("button", { name: /^wip$/i });
-      fireEvent.click(wipFilter);
+      const activeFilter = screen.getByRole("button", { name: /^active$/i });
+      fireEvent.click(activeFilter);
 
-      expect(mockPush).toHaveBeenCalledWith(expect.stringContaining("state=wip"));
+      expect(mockPush).toHaveBeenCalledWith(expect.stringContaining("state=active"));
     });
 
     it("uses initial state filter from props", () => {
       render(
         <SessionsView
-          initialStateFilter="done"
+          initialStateFilter="completed"
           projectId="my-project"
           sessions={mockSessions}
         />
       );
 
-      // Only done sessions should be visible
+      // Only completed sessions should be visible
       expect(screen.queryByText("session-1")).not.toBeInTheDocument();
       expect(screen.getByText("session-2")).toBeInTheDocument();
       expect(screen.queryByText("session-3")).not.toBeInTheDocument();
@@ -259,7 +264,7 @@ describe("SessionsView", () => {
     it("clears filter when All States is clicked", () => {
       render(
         <SessionsView
-          initialStateFilter="wip"
+          initialStateFilter="active"
           projectId="my-project"
           sessions={mockSessions}
         />

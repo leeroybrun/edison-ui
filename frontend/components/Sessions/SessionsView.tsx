@@ -7,21 +7,30 @@ import { SessionCard } from "./SessionCard";
 import type { Session, SessionsViewProps, SessionState, ViewMode } from "./types";
 
 /**
+ * All valid session states matching backend SESSION_STATES
+ */
+const SESSION_STATES: SessionState[] = ["draft", "active", "paused", "completed", "abandoned"];
+
+/**
  * State badge color mappings for list view
  */
 const STATE_COLORS: Record<SessionState, string> = {
-  wip: "bg-yellow-100 text-yellow-800",
-  done: "bg-blue-100 text-blue-800",
-  validated: "bg-green-100 text-green-800",
+  draft: "bg-gray-100 text-gray-800",
+  active: "bg-blue-100 text-blue-800",
+  paused: "bg-yellow-100 text-yellow-800",
+  completed: "bg-green-100 text-green-800",
+  abandoned: "bg-red-100 text-red-800",
 };
 
 /**
  * Column display names for board view
  */
 const COLUMN_LABELS: Record<SessionState, string> = {
-  wip: "WIP",
-  done: "Done",
-  validated: "Validated",
+  draft: "Draft",
+  active: "Active",
+  paused: "Paused",
+  completed: "Completed",
+  abandoned: "Abandoned",
 };
 
 /**
@@ -48,7 +57,7 @@ function formatRelativeTime(isoDate: string): string {
  *
  * Features:
  * - Toggle between list (table) and board (kanban) views
- * - Filter by session state (wip, done, validated)
+ * - Filter by session state (draft, active, paused, completed, abandoned)
  * - URL-based view and filter state
  * - Clickable sessions navigate to detail view
  * - Loading, error, and empty states
@@ -86,9 +95,11 @@ export function SessionsView({
   // Group sessions by state for board view
   const sessionsByState = useMemo(() => {
     const grouped: Record<SessionState, Session[]> = {
-      wip: [],
-      done: [],
-      validated: [],
+      draft: [],
+      active: [],
+      paused: [],
+      completed: [],
+      abandoned: [],
     };
     filteredSessions.forEach((session) => {
       grouped[session.state].push(session);
@@ -198,7 +209,7 @@ export function SessionsView({
         >
           All States
         </button>
-        {(["wip", "done", "validated"] as SessionState[]).map((state) => (
+        {SESSION_STATES.map((state) => (
           <button
             key={state}
             aria-pressed={initialStateFilter === state}
@@ -210,7 +221,7 @@ export function SessionsView({
             onClick={() => handleStateFilter(state)}
             type="button"
           >
-            {state}
+            {COLUMN_LABELS[state]}
           </button>
         ))}
       </div>
@@ -302,8 +313,8 @@ export function SessionsView({
 
       {/* Board view */}
       {initialView === "board" && filteredSessions.length > 0 && (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {(["wip", "done", "validated"] as SessionState[]).map((state) => (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
+          {SESSION_STATES.map((state) => (
             <div
               key={state}
               className="rounded-lg border bg-gray-50 p-4"

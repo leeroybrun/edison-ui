@@ -2,7 +2,11 @@
  * Session types matching backend API schemas.
  */
 
-export type SessionState = "wip" | "done" | "validated";
+/**
+ * Session states from backend SessionReaderService.
+ * These match the directory names under .project/sessions/
+ */
+export type SessionState = "draft" | "active" | "paused" | "completed" | "abandoned";
 
 export type ViewMode = "list" | "board";
 

@@ -5,12 +5,14 @@ import type { KeyboardEvent } from "react";
 import type { SessionCardProps, SessionState } from "./types";
 
 /**
- * State badge color mappings
+ * State badge color mappings matching backend SESSION_STATES
  */
 const STATE_COLORS: Record<SessionState, string> = {
-  wip: "bg-yellow-100 text-yellow-800",
-  done: "bg-blue-100 text-blue-800",
-  validated: "bg-green-100 text-green-800",
+  draft: "bg-gray-100 text-gray-800",
+  active: "bg-blue-100 text-blue-800",
+  paused: "bg-yellow-100 text-yellow-800",
+  completed: "bg-green-100 text-green-800",
+  abandoned: "bg-red-100 text-red-800",
 };
 
 /**

@@ -6,7 +6,7 @@ import type { Session } from "./types";
 
 const mockSession: Session = {
   sessionId: "happy-pid-12345",
-  state: "wip",
+  state: "active",
   phase: "implementation",
   owner: "alice",
   taskCount: 5,
@@ -25,30 +25,48 @@ describe("SessionCard", () => {
     expect(screen.getByText("happy-pid-12345")).toBeInTheDocument();
   });
 
-  it("renders state badge with correct styling for wip state", () => {
+  it("renders state badge with correct styling for active state", () => {
     render(<SessionCard projectId="my-project" session={mockSession} />);
 
-    const badge = screen.getByText("wip");
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass("bg-yellow-100");
-  });
-
-  it("renders state badge with correct styling for done state", () => {
-    const doneSession: Session = { ...mockSession, state: "done" };
-    render(<SessionCard projectId="my-project" session={doneSession} />);
-
-    const badge = screen.getByText("done");
+    const badge = screen.getByText("active");
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveClass("bg-blue-100");
   });
 
-  it("renders state badge with correct styling for validated state", () => {
-    const validatedSession: Session = { ...mockSession, state: "validated" };
-    render(<SessionCard projectId="my-project" session={validatedSession} />);
+  it("renders state badge with correct styling for paused state", () => {
+    const pausedSession: Session = { ...mockSession, state: "paused" };
+    render(<SessionCard projectId="my-project" session={pausedSession} />);
 
-    const badge = screen.getByText("validated");
+    const badge = screen.getByText("paused");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("bg-yellow-100");
+  });
+
+  it("renders state badge with correct styling for completed state", () => {
+    const completedSession: Session = { ...mockSession, state: "completed" };
+    render(<SessionCard projectId="my-project" session={completedSession} />);
+
+    const badge = screen.getByText("completed");
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveClass("bg-green-100");
+  });
+
+  it("renders state badge with correct styling for draft state", () => {
+    const draftSession: Session = { ...mockSession, state: "draft" };
+    render(<SessionCard projectId="my-project" session={draftSession} />);
+
+    const badge = screen.getByText("draft");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("bg-gray-100");
+  });
+
+  it("renders state badge with correct styling for abandoned state", () => {
+    const abandonedSession: Session = { ...mockSession, state: "abandoned" };
+    render(<SessionCard projectId="my-project" session={abandonedSession} />);
+
+    const badge = screen.getByText("abandoned");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("bg-red-100");
   });
 
   it("displays task count", () => {
