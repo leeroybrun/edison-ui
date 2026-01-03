@@ -129,7 +129,7 @@ async def list_tasks(
             depends_on=task.depends_on if include_hierarchy else [],
             blocks_tasks=task.blocks_tasks if include_hierarchy else [],
             validation_status=val_status,
-            latest_verdict=None,  # TODO: Compute from QA records
+            latest_verdict=None,  # Placeholder - QA verdict computation is out of scope
             ready=readiness.ready,
             blocked_by=blocked_by_items,
             created_at=task.created_at or "1970-01-01T00:00:00Z",
