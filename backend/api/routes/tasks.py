@@ -14,6 +14,7 @@ from api.schemas.tasks import (
     TaskListItem,
     TaskListResponse,
     TaskReadinessResponse,
+    ValidationSummary,
 )
 from core.settings import get_settings
 from services.project_discovery import ProjectDiscoveryService
@@ -116,8 +117,14 @@ async def list_tasks(
             for b in readiness.blocked_by
         ]
 
-        # Get validation status
-        val_status = task_service.get_validation_status(task.task_id)
+        # Get validation info
+        val_summary = task_service.get_validation_summary(task.task_id)
+        validation = ValidationSummary(
+            status=val_summary.status,
+            last_round=val_summary.last_round,
+            validator_count=val_summary.validator_count,
+            last_updated=val_summary.last_updated,
+        )
 
         item = TaskListItem(
             task_id=task.task_id,
@@ -128,7 +135,8 @@ async def list_tasks(
             child_ids=task.child_ids if include_hierarchy else [],
             depends_on=task.depends_on if include_hierarchy else [],
             blocks_tasks=task.blocks_tasks if include_hierarchy else [],
-            validation_status=val_status,
+            validation_status=val_summary.status,
+            validation=validation,
             latest_verdict=None,  # Placeholder - QA verdict computation is out of scope
             ready=readiness.ready,
             blocked_by=blocked_by_items,

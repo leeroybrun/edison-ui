@@ -8,12 +8,26 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from services.qa_reader import QAReaderService
+
 
 # States that satisfy a dependency (task is considered "done")
-COMPLETED_STATES = frozenset({"done", "validated"})
+# Use tuple for deterministic ordering in API responses
+COMPLETED_STATES_LIST = ("done", "validated")
+COMPLETED_STATES = frozenset(COMPLETED_STATES_LIST)
 
 # All valid task states
 VALID_STATES = frozenset({"todo", "wip", "blocked", "done", "validated"})
+
+
+@dataclass
+class ValidationSummaryInfo:
+    """Summary of validation status."""
+
+    status: str  # none, pending, passed, failed
+    last_round: int | None
+    validator_count: int
+    last_updated: str
 
 
 @dataclass
@@ -68,7 +82,7 @@ class TaskReaderService:
         self.project_path = Path(project_path)
         self.project_dir = self.project_path / ".project"
         self._task_cache: dict[str, TaskData] | None = None
-        self._qa_cache: dict[str, dict[str, str]] | None = None
+        self.qa_service = QAReaderService(project_path)
 
     def _parse_frontmatter(self, content: str) -> dict[str, str | list[str] | None]:
         """Parse YAML frontmatter from a markdown file.
@@ -320,42 +334,6 @@ class TaskReaderService:
         self._task_cache = tasks
         return tasks
 
-    def _load_qa_records(self) -> dict[str, dict[str, str]]:
-        """Load QA records to determine validation status.
-
-        Returns:
-            Dictionary mapping task_id to QA state info.
-        """
-        if self._qa_cache is not None:
-            return self._qa_cache
-
-        qa_records: dict[str, dict[str, str]] = {}
-
-        qa_dir = self.project_dir / "qa"
-        if not qa_dir.exists():
-            self._qa_cache = qa_records
-            return qa_records
-
-        qa_states = ["waiting", "todo", "wip", "done", "validated"]
-        for qa_state in qa_states:
-            state_dir = qa_dir / qa_state
-            if not state_dir.exists():
-                continue
-
-            for qa_file in state_dir.glob("*.md"):
-                try:
-                    content = qa_file.read_text(encoding="utf-8")
-                except OSError:
-                    continue
-
-                fm = self._parse_frontmatter(content)
-                task_id = fm.get("task_id")
-                if task_id and isinstance(task_id, str):
-                    qa_records[task_id] = {"qa_state": qa_state}
-
-        self._qa_cache = qa_records
-        return qa_records
-
     def list_tasks(
         self,
         session_id: str | None = None,
@@ -423,15 +401,59 @@ class TaskReaderService:
         all_tasks = self._load_all_tasks()
         return all_tasks.get(task_id)
 
+    def get_validation_summary(self, task_id: str) -> ValidationSummaryInfo:
+        """Compute the validation summary for a task.
+
+        Status values per spec (data-model.md):
+        - needs_validation: Task has no QA or needs validation
+        - in_progress: QA exists but not yet completed
+        - validated: QA passed/approved
+        - rejected: QA failed/rejected
+        - unknown: Unable to determine status
+
+        Args:
+            task_id: The task ID.
+
+        Returns:
+            Validation summary info.
+        """
+        all_qa = self.qa_service._load_all_qa()
+        qa_record = next((r for r in all_qa if r.task_id == task_id), None)
+
+        if not qa_record:
+            return ValidationSummaryInfo(
+                status="needs_validation",
+                last_round=None,
+                validator_count=0,
+                last_updated="1970-01-01T00:00:00Z",
+            )
+
+        status = "in_progress"
+        # Determine status based on QA state and verdict
+        if qa_record.state == "validated":
+            status = "validated"
+        elif qa_record.verdict:
+            v = qa_record.verdict.lower()
+            if v in ("pass", "passed", "approved"):
+                status = "validated"
+            elif v in ("fail", "failed", "reject", "rejected"):
+                status = "rejected"
+            else:
+                status = "in_progress"
+        else:
+            status = "in_progress"
+
+        return ValidationSummaryInfo(
+            status=status,
+            last_round=qa_record.round,
+            validator_count=len(qa_record.validators),
+            last_updated=qa_record.updated_at,
+        )
+
     def get_validation_status(self, task_id: str) -> str:
         """Compute the validation status for a task.
 
-        Returns one of:
-        - "validated": Task is in validated state
-        - "in_progress": Task has QA record in wip
-        - "rejected": Task has QA record in done with rejection
-        - "needs_validation": Task is in done state without QA
-        - "unknown": Task not found or not applicable
+        Returns one of: needs_validation, in_progress, validated, rejected, unknown.
 
         Args:
             task_id: The task ID.
@@ -439,36 +461,7 @@ class TaskReaderService:
         Returns:
             Validation status string.
         """
-        task = self.get_task(task_id)
-        if not task:
-            return "unknown"
-
-        # If task is in validated state, it's validated
-        if task.state == "validated":
-            return "validated"
-
-        # Check QA records
-        qa_records = self._load_qa_records()
-        qa_info = qa_records.get(task_id)
-
-        if qa_info:
-            qa_state = qa_info.get("qa_state", "")
-            if qa_state == "validated":
-                return "validated"
-            elif qa_state == "wip":
-                return "in_progress"
-            elif qa_state == "done":
-                # Could check for rejection here
-                return "in_progress"
-            elif qa_state in ("waiting", "todo"):
-                return "needs_validation"
-
-        # If task is done but no QA record, needs validation
-        if task.state == "done":
-            return "needs_validation"
-
-        # For other states, unknown/not applicable
-        return "unknown"
+        return self.get_validation_summary(task_id).status
 
     def compute_readiness(self, task_id: str) -> TaskReadiness:
         """Compute the readiness status for a task.
@@ -500,7 +493,7 @@ class TaskReaderService:
                     BlockedByInfo(
                         dependency_id=dep_id,
                         dependency_state="unknown",
-                        required_states=list(COMPLETED_STATES),
+                        required_states=list(COMPLETED_STATES_LIST),
                         reason=f"Dependency {dep_id} not found",
                     )
                 )
@@ -511,7 +504,7 @@ class TaskReaderService:
                     BlockedByInfo(
                         dependency_id=dep_id,
                         dependency_state=dep_task.state,
-                        required_states=list(COMPLETED_STATES),
+                        required_states=list(COMPLETED_STATES_LIST),
                         reason=f"Dependency {dep_id} must be done or validated",
                     )
                 )
@@ -528,4 +521,5 @@ class TaskReaderService:
     def invalidate_cache(self) -> None:
         """Clear the internal cache to force reload on next access."""
         self._task_cache = None
-        self._qa_cache = None
+        # Invalidate QA cache too
+        self.qa_service._qa_cache = None

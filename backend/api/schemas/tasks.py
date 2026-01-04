@@ -33,6 +33,17 @@ class GuardBlock(BaseModel):
     reason: str
 
 
+class ValidationSummary(BaseModel):
+    """Summary of validation status."""
+
+    status: str  # needs_validation, in_progress, validated, rejected, unknown
+    last_round: int | None = Field(None, alias="lastRound")
+    validator_count: int = Field(0, alias="validatorCount")
+    last_updated: str = Field(..., alias="lastUpdated")
+
+    model_config = {"populate_by_name": True}
+
+
 class TaskListItem(BaseModel):
     """A task in the list response.
 
@@ -48,6 +59,7 @@ class TaskListItem(BaseModel):
     depends_on: list[str] = Field(default_factory=list, alias="dependsOn")
     blocks_tasks: list[str] = Field(default_factory=list, alias="blocksTasks")
     validation_status: str = Field(..., alias="validationStatus")
+    validation: ValidationSummary
     latest_verdict: str | None = Field(None, alias="latestVerdict")
     ready: bool
     blocked_by: list[BlockedByItem] = Field(default_factory=list, alias="blockedBy")

@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { KeyboardEvent } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 import { TaskCard } from "./TaskCard";
 import { TaskFilters } from "./TaskFilters";
+import { useKeyboardShortcuts } from "../CommandPalette/KeyboardShortcuts";
 import type {
   Task,
   Session,
@@ -27,7 +29,7 @@ const STATE_COLORS: Record<TaskState, string> = {
 /**
  * Board column states (ordered)
  */
-const BOARD_COLUMNS: TaskState[] = ["todo", "wip", "done", "validated"];
+const BOARD_COLUMNS: TaskState[] = ["todo", "wip", "blocked", "done", "validated"];
 
 export interface TasksViewProps {
   /** Tasks to display */
@@ -40,6 +42,13 @@ export interface TasksViewProps {
   error?: string;
   /** Whether data is loading */
   isLoading?: boolean;
+  /**
+   * When provided, locks the view to a specific session.
+   * The session filter dropdown is hidden and tasks are pre-filtered.
+   */
+  lockedSessionId?: string;
+  /** Callback when a task is selected via keyboard or click */
+  onTaskSelect?: (taskId: string) => void;
 }
 
 /**
@@ -65,6 +74,8 @@ export function TasksView({
   initialView = "list",
   error,
   isLoading,
+  lockedSessionId,
+  onTaskSelect,
 }: TasksViewProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -79,12 +90,18 @@ export function TasksView({
   const [viewMode, setViewMode] = useState<ViewMode>(urlView);
   const [filters, setFilters] = useState<TaskFiltersType>({
     state: urlState || undefined,
-    sessionId: urlSession || undefined,
+    // If lockedSessionId is provided, use it and ignore URL param
+    sessionId: lockedSessionId || urlSession || undefined,
     search: urlSearch || undefined,
   });
 
   // Track collapsed tree nodes
   const [collapsedNodes, setCollapsedNodes] = useState<Set<string>>(new Set());
+
+  // Keyboard navigation state
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [selectedColumnIndex, setSelectedColumnIndex] = useState(0);
+  const regionRef = useRef<HTMLElement>(null);
 
   // Update URL when view or filters change
   const updateUrl = useCallback(
@@ -92,13 +109,16 @@ export function TasksView({
       const params = new URLSearchParams();
       if (newView !== "list") params.set("view", newView);
       if (newFilters.state) params.set("state", newFilters.state);
-      if (newFilters.sessionId) params.set("sessionId", newFilters.sessionId);
+      // Don't add sessionId to URL if it's locked (managed by page context)
+      if (newFilters.sessionId && !lockedSessionId) {
+        params.set("sessionId", newFilters.sessionId);
+      }
       if (newFilters.search) params.set("search", newFilters.search);
 
       const queryString = params.toString();
       router.push(queryString ? `${pathname}?${queryString}` : pathname);
     },
-    [router, pathname],
+    [router, pathname, lockedSessionId],
   );
 
   // Handle view mode change
@@ -109,6 +129,16 @@ export function TasksView({
     },
     [filters, updateUrl],
   );
+
+  // Register keyboard shortcuts for view switching (1/2/3)
+  // Using stable callbacks to avoid re-registering on every render
+  const setListView = useCallback(() => handleViewChange("list"), [handleViewChange]);
+  const setBoardView = useCallback(() => handleViewChange("board"), [handleViewChange]);
+  const setTreeView = useCallback(() => handleViewChange("tree"), [handleViewChange]);
+
+  useKeyboardShortcuts("1", setListView);
+  useKeyboardShortcuts("2", setBoardView);
+  useKeyboardShortcuts("3", setTreeView);
 
   // Handle filter changes
   const handleFiltersChange = useCallback(
@@ -190,15 +220,191 @@ export function TasksView({
     });
   }, []);
 
+  // Reset selection when filtered tasks change
+  useEffect(() => {
+    setSelectedIndex(-1);
+    setSelectedColumnIndex(0);
+  }, [filteredTasks.length, viewMode]);
+
+  // Get tasks organized by board columns for board view navigation
+  const boardColumnTasks = useMemo(() => {
+    return BOARD_COLUMNS.map((state) =>
+      filteredTasks.filter((t) => t.state === state),
+    );
+  }, [filteredTasks]);
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLElement>) => {
+      const key = event.key.toLowerCase();
+
+      // List view navigation
+      if (viewMode === "list") {
+        if (key === "arrowdown" || key === "j") {
+          event.preventDefault();
+          setSelectedIndex((prev) => {
+            const next = prev + 1;
+            return next >= filteredTasks.length ? 0 : next;
+          });
+        } else if (key === "arrowup" || key === "k") {
+          event.preventDefault();
+          setSelectedIndex((prev) => {
+            const next = prev - 1;
+            return next < 0 ? filteredTasks.length - 1 : next;
+          });
+        } else if (key === "enter") {
+          event.preventDefault();
+          if (selectedIndex >= 0 && selectedIndex < filteredTasks.length) {
+            onTaskSelect?.(filteredTasks[selectedIndex].taskId);
+          }
+        } else if (key === "escape") {
+          event.preventDefault();
+          setSelectedIndex(-1);
+        }
+      }
+
+      // Board view navigation
+      if (viewMode === "board") {
+        if (key === "arrowdown" || key === "j") {
+          event.preventDefault();
+          const columnTasks = boardColumnTasks[selectedColumnIndex];
+          if (columnTasks.length > 0) {
+            setSelectedIndex((prev) => {
+              const next = prev + 1;
+              return next >= columnTasks.length ? 0 : next;
+            });
+          }
+        } else if (key === "arrowup" || key === "k") {
+          event.preventDefault();
+          const columnTasks = boardColumnTasks[selectedColumnIndex];
+          if (columnTasks.length > 0) {
+            setSelectedIndex((prev) => {
+              const next = prev - 1;
+              return next < 0 ? columnTasks.length - 1 : next;
+            });
+          }
+        } else if (key === "tab") {
+          event.preventDefault();
+          if (event.shiftKey) {
+            // Move to previous column
+            setSelectedColumnIndex((prev) => {
+              const next = prev - 1;
+              return next < 0 ? BOARD_COLUMNS.length - 1 : next;
+            });
+            setSelectedIndex(0);
+          } else {
+            // Move to next column
+            setSelectedColumnIndex((prev) => {
+              const next = prev + 1;
+              return next >= BOARD_COLUMNS.length ? 0 : next;
+            });
+            setSelectedIndex(0);
+          }
+        } else if (key === "enter") {
+          event.preventDefault();
+          const columnTasks = boardColumnTasks[selectedColumnIndex];
+          if (selectedIndex >= 0 && selectedIndex < columnTasks.length) {
+            onTaskSelect?.(columnTasks[selectedIndex].taskId);
+          }
+        } else if (key === "escape") {
+          event.preventDefault();
+          setSelectedIndex(-1);
+        }
+      }
+
+      // Tree view navigation
+      if (viewMode === "tree") {
+        if (key === "arrowdown" || key === "j") {
+          event.preventDefault();
+          setSelectedIndex((prev) => {
+            const next = prev + 1;
+            return next >= filteredTasks.length ? 0 : next;
+          });
+        } else if (key === "arrowup" || key === "k") {
+          event.preventDefault();
+          setSelectedIndex((prev) => {
+            const next = prev - 1;
+            return next < 0 ? filteredTasks.length - 1 : next;
+          });
+        } else if (key === "arrowright") {
+          event.preventDefault();
+          // Expand node or move to first child
+          if (selectedIndex >= 0 && selectedIndex < filteredTasks.length) {
+            const task = filteredTasks[selectedIndex];
+            const hasChildren = taskHierarchy.children.has(task.taskId);
+            if (hasChildren && collapsedNodes.has(task.taskId)) {
+              toggleNode(task.taskId);
+            }
+          }
+        } else if (key === "arrowleft") {
+          event.preventDefault();
+          // Collapse node or move to parent
+          if (selectedIndex >= 0 && selectedIndex < filteredTasks.length) {
+            const task = filteredTasks[selectedIndex];
+            const hasChildren = taskHierarchy.children.has(task.taskId);
+            if (hasChildren && !collapsedNodes.has(task.taskId)) {
+              toggleNode(task.taskId);
+            } else if (task.parentId) {
+              // Move to parent
+              const parentIndex = filteredTasks.findIndex(
+                (t) => t.taskId === task.parentId,
+              );
+              if (parentIndex >= 0) {
+                setSelectedIndex(parentIndex);
+              }
+            }
+          }
+        } else if (key === "enter") {
+          event.preventDefault();
+          if (selectedIndex >= 0 && selectedIndex < filteredTasks.length) {
+            onTaskSelect?.(filteredTasks[selectedIndex].taskId);
+          }
+        } else if (key === "escape") {
+          event.preventDefault();
+          setSelectedIndex(-1);
+        }
+      }
+    },
+    [
+      viewMode,
+      filteredTasks,
+      selectedIndex,
+      selectedColumnIndex,
+      boardColumnTasks,
+      taskHierarchy,
+      collapsedNodes,
+      toggleNode,
+      onTaskSelect,
+    ],
+  );
+
+  // Get the currently selected task for accessibility
+  const selectedTaskId = useMemo(() => {
+    if (selectedIndex < 0) return undefined;
+    if (viewMode === "board") {
+      const columnTasks = boardColumnTasks[selectedColumnIndex];
+      return columnTasks[selectedIndex]?.taskId;
+    }
+    return filteredTasks[selectedIndex]?.taskId;
+  }, [viewMode, selectedIndex, selectedColumnIndex, boardColumnTasks, filteredTasks]);
+
   // Render tree item recursively
   const renderTreeItem = (task: Task, depth: number = 0): React.ReactNode => {
     const children = taskHierarchy.children.get(task.taskId) || [];
     const hasChildren = children.length > 0;
     const isCollapsed = collapsedNodes.has(task.taskId);
+    const taskIndex = filteredTasks.findIndex((t) => t.taskId === task.taskId);
+    const isSelected = selectedIndex === taskIndex;
 
     return (
-      <div key={task.taskId} style={{ paddingLeft: depth * 24 }}>
-        <div className="flex items-center gap-2 rounded py-2 hover:bg-gray-50">
+      <div
+        data-selected={isSelected || undefined}
+        key={task.taskId}
+        style={{ paddingLeft: depth * 24 }}
+      >
+        <div
+          className={`flex items-center gap-2 rounded py-2 hover:bg-gray-50 ${isSelected ? "bg-blue-50" : ""}`}
+        >
           {/* Expand/collapse button */}
           {hasChildren ? (
             <button
@@ -288,16 +494,48 @@ export function TasksView({
           ))}
         </div>
 
+        {/* Locked session indicator */}
+        {lockedSessionId && (
+          <div
+            className="flex items-center gap-2 rounded-md bg-blue-50 px-3 py-1.5"
+            data-testid="locked-session-indicator"
+          >
+            <svg
+              className="h-4 w-4 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="text-sm font-medium text-blue-700">
+              Session: {lockedSessionId}
+            </span>
+          </div>
+        )}
+
         {/* Filters */}
         <TaskFilters
           filters={filters}
+          hideSessionFilter={!!lockedSessionId}
           onFiltersChange={handleFiltersChange}
           sessions={sessions}
         />
       </div>
 
       {/* Tasks region */}
-      <section aria-label="Tasks" role="region">
+      <section
+        aria-label="Tasks"
+        onKeyDown={handleKeyDown}
+        ref={regionRef}
+        role="region"
+        tabIndex={0}
+      >
         {/* Empty state */}
         {tasks.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded-lg border bg-white py-12">
@@ -315,7 +553,12 @@ export function TasksView({
         {/* List View */}
         {viewMode === "list" && filteredTasks.length > 0 && (
           <div className="overflow-hidden rounded-lg border bg-white">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table
+              aria-activedescendant={
+                selectedTaskId ? `row-${selectedTaskId}` : undefined
+              }
+              className="min-w-full divide-y divide-gray-200"
+            >
               <thead className="bg-gray-50">
                 <tr>
                   <th
@@ -351,29 +594,38 @@ export function TasksView({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {filteredTasks.map((task) => (
-                  <tr key={task.taskId} className="hover:bg-gray-50">
-                    <td className="whitespace-nowrap px-4 py-3 font-mono text-sm text-gray-900">
-                      {task.taskId}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-900">
-                      {task.title}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3">
-                      <span
-                        className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATE_COLORS[task.state]}`}
-                      >
-                        {task.state}
-                      </span>
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
-                      {task.sessionId || "-"}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
-                      {formatDate(task.updatedAt)}
-                    </td>
-                  </tr>
-                ))}
+                {filteredTasks.map((task, index) => {
+                  const isSelected = selectedIndex === index;
+                  return (
+                    <tr
+                      aria-selected={isSelected}
+                      className={`hover:bg-gray-50 ${isSelected ? "bg-blue-50" : ""}`}
+                      data-selected={isSelected || undefined}
+                      id={`row-${task.taskId}`}
+                      key={task.taskId}
+                    >
+                      <td className="whitespace-nowrap px-4 py-3 font-mono text-sm text-gray-900">
+                        {task.taskId}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-900">
+                        {task.title}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <span
+                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATE_COLORS[task.state]}`}
+                        >
+                          {task.state}
+                        </span>
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                        {task.sessionId || "-"}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                        {formatDate(task.updatedAt)}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -382,17 +634,30 @@ export function TasksView({
         {/* Board View */}
         {viewMode === "board" && filteredTasks.length > 0 && (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {BOARD_COLUMNS.map((state) => {
+            {BOARD_COLUMNS.map((state, columnIndex) => {
               const columnTasks = filteredTasks.filter((t) => t.state === state);
+              const isActiveColumn = selectedColumnIndex === columnIndex;
               return (
-                <div key={state} className="rounded-lg border bg-gray-50 p-3">
+                <div
+                  className="rounded-lg border bg-gray-50 p-3"
+                  data-column={state}
+                  key={state}
+                >
                   <h3 className="mb-3 text-sm font-semibold uppercase text-gray-700">
                     {state} ({columnTasks.length})
                   </h3>
                   <div className="space-y-2">
-                    {columnTasks.map((task) => (
-                      <TaskCard key={task.taskId} task={task} />
-                    ))}
+                    {columnTasks.map((task, taskIndex) => {
+                      const isSelected =
+                        isActiveColumn && selectedIndex === taskIndex;
+                      return (
+                        <TaskCard
+                          isSelected={isSelected}
+                          key={task.taskId}
+                          task={task}
+                        />
+                      );
+                    })}
                     {columnTasks.length === 0 && (
                       <p className="py-4 text-center text-sm text-gray-400">
                         No tasks

@@ -193,20 +193,52 @@ def mock_edison_project_with_tasks(tmp_path: Path) -> Path:
     for state in ["waiting", "todo", "wip", "done", "validated"]:
         (qa_dir / state).mkdir()
 
-    # QA record for T005 (validated task)
-    (qa_dir / "validated" / "QA-T005.md").write_text(
-        "---\nid: QA-T005\ntask_id: T005\nround: 1\n---\n# QA for T005"
+    # QA record for T005 (validated; passed)
+    (qa_dir / "validated" / "T005-qa.md").write_text(
+        "---\n"
+        "id: T005-qa\n"
+        "task_id: T005\n"
+        "round: 1\n"
+        "validators:\n"
+        "  - validator-a\n"
+        "  - validator-b\n"
+        "---\n"
+        "# QA for T005\n"
     )
 
-    # QA record for T002 (in_progress validation)
-    (qa_dir / "wip" / "QA-T002.md").write_text(
-        "---\nid: QA-T002\ntask_id: T002\nround: 1\n---\n# QA for T002"
+    # QA record for T002 (pending)
+    (qa_dir / "wip" / "T002-qa.md").write_text(
+        "---\n"
+        "id: T002-qa\n"
+        "task_id: T002\n"
+        "round: 1\n"
+        "validators:\n"
+        "  - validator-a\n"
+        "---\n"
+        "# QA for T002\n"
+    )
+
+    # QA record for T006 (done; failed)
+    (qa_dir / "done" / "T006-qa.md").write_text(
+        "---\n"
+        "id: T006-qa\n"
+        "task_id: T006\n"
+        "round: 2\n"
+        "validators:\n"
+        "  - validator-a\n"
+        "  - validator-b\n"
+        "---\n"
+        "# QA for T006\n"
     )
 
     # Create validation evidence directory
     evidence_dir = qa_dir / "validation-evidence" / "T005" / "round-1"
     evidence_dir.mkdir(parents=True)
     (evidence_dir / "bundle-summary.md").write_text("# Validation passed")
+
+    failed_evidence_dir = qa_dir / "validation-evidence" / "T006" / "round-2"
+    failed_evidence_dir.mkdir(parents=True)
+    (failed_evidence_dir / "bundle-summary.md").write_text("# Validation failed")
 
     # Create .git directory
     (project_path / ".git").mkdir()
@@ -322,6 +354,7 @@ class TestListTasks:
             "title",
             "state",
             "sessionId",
+            "validation",
             "validationStatus",
             "ready",
             "blockedBy",
@@ -695,7 +728,14 @@ class TestTaskSchemas:
 
     def test_task_list_item_schema(self) -> None:
         """Should validate TaskListItem schema."""
-        from api.schemas.tasks import TaskListItem
+        from api.schemas.tasks import TaskListItem, ValidationSummary
+
+        validation = ValidationSummary(
+            status="needs_validation",
+            last_round=None,
+            validator_count=0,
+            last_updated="1970-01-01T00:00:00Z",
+        )
 
         item = TaskListItem(
             task_id="T001",
@@ -703,6 +743,7 @@ class TestTaskSchemas:
             state="todo",
             session_id=None,
             validation_status="needs_validation",
+            validation=validation,
             ready=True,
             blocked_by=[],
             created_at="2025-12-27T10:00:00Z",
@@ -713,7 +754,14 @@ class TestTaskSchemas:
 
     def test_task_list_item_with_hierarchy(self) -> None:
         """Should validate TaskListItem with hierarchy fields."""
-        from api.schemas.tasks import TaskListItem
+        from api.schemas.tasks import TaskListItem, ValidationSummary
+
+        validation = ValidationSummary(
+            status="needs_validation",
+            last_round=None,
+            validator_count=0,
+            last_updated="1970-01-01T00:00:00Z",
+        )
 
         item = TaskListItem(
             task_id="T001",
@@ -725,6 +773,7 @@ class TestTaskSchemas:
             depends_on=["T003"],
             blocks_tasks=["T004"],
             validation_status="needs_validation",
+            validation=validation,
             ready=True,
             blocked_by=[],
             created_at="2025-12-27T10:00:00Z",

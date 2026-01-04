@@ -458,4 +458,121 @@ describe("TasksView", () => {
       expect(listButton).toHaveAttribute("aria-pressed", "false");
     });
   });
+
+  describe("Locked Session Mode", () => {
+    it("hides session filter dropdown when lockedSessionId is provided", () => {
+      render(
+        <TasksView
+          lockedSessionId="session-1"
+          sessions={mockSessions}
+          tasks={mockTasks}
+        />,
+      );
+
+      // Session filter should not be rendered
+      expect(
+        screen.queryByLabelText(/session/i)
+      ).not.toBeInTheDocument();
+    });
+
+    it("displays locked session indicator when lockedSessionId is provided", () => {
+      render(
+        <TasksView
+          lockedSessionId="session-1"
+          sessions={mockSessions}
+          tasks={mockTasks}
+        />,
+      );
+
+      // Should show a badge/indicator for the locked session
+      const indicator = screen.getByTestId("locked-session-indicator");
+      expect(indicator).toBeInTheDocument();
+      expect(indicator).toHaveTextContent(/session: session-1/i);
+    });
+
+    it("filters tasks to only show those matching lockedSessionId", async () => {
+      render(
+        <TasksView
+          lockedSessionId="session-1"
+          sessions={mockSessions}
+          tasks={mockTasks}
+        />,
+      );
+
+      // Tasks from session-1 should be visible
+      expect(screen.getByText("T001")).toBeInTheDocument();
+      expect(screen.getByText("T002")).toBeInTheDocument();
+      // Tasks from session-2 should NOT be visible
+      expect(screen.queryByText("T003")).not.toBeInTheDocument();
+    });
+
+    it("still allows state filtering when in locked session mode", async () => {
+      render(
+        <TasksView
+          lockedSessionId="session-1"
+          sessions={mockSessions}
+          tasks={mockTasks}
+        />,
+      );
+
+      const stateFilter = screen.getByLabelText(/state/i);
+      fireEvent.change(stateFilter, { target: { value: "done" } });
+
+      await waitFor(() => {
+        // Only done tasks from session-1 should be visible
+        expect(screen.getByText("T001")).toBeInTheDocument();
+        expect(screen.queryByText("T002")).not.toBeInTheDocument();
+      });
+    });
+
+    it("still allows search when in locked session mode", async () => {
+      render(
+        <TasksView
+          lockedSessionId="session-1"
+          sessions={mockSessions}
+          tasks={mockTasks}
+        />,
+      );
+
+      const searchInput = screen.getByPlaceholderText(/search/i);
+      fireEvent.change(searchInput, { target: { value: "authentication" } });
+
+      await waitFor(() => {
+        expect(screen.getByText("T001")).toBeInTheDocument();
+        expect(screen.queryByText("T002")).not.toBeInTheDocument();
+      });
+    });
+
+    it("shows no tasks message when locked session has no tasks", () => {
+      render(
+        <TasksView
+          lockedSessionId="non-existent-session"
+          sessions={mockSessions}
+          tasks={mockTasks}
+        />,
+      );
+
+      expect(screen.getByText(/no tasks match/i)).toBeInTheDocument();
+    });
+
+    it("does not update URL with sessionId when lockedSessionId is used", async () => {
+      render(
+        <TasksView
+          lockedSessionId="session-1"
+          sessions={mockSessions}
+          tasks={mockTasks}
+        />,
+      );
+
+      // The URL should not contain sessionId param since it's locked
+      const stateFilter = screen.getByLabelText(/state/i);
+      fireEvent.change(stateFilter, { target: { value: "done" } });
+
+      await waitFor(() => {
+        // When state filter is applied, sessionId should NOT appear in URL
+        const pushedUrl = mockPush.mock.calls[0]?.[0] || "";
+        expect(pushedUrl).not.toContain("sessionId=");
+      });
+    });
+  });
 });
