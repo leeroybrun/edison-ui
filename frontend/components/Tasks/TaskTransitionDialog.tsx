@@ -182,9 +182,9 @@ export function TaskTransitionDialog({
         <div className="text-center">
           <div className="text-xs text-gray-500">From</div>
           <span
-            className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${STATE_COLORS[preview.from] || "bg-gray-100 text-gray-800"}`}
+            className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${STATE_COLORS[preview.currentState || ""] || "bg-gray-100 text-gray-800"}`}
           >
-            {preview.from}
+            {preview.currentState || "unknown"}
           </span>
         </div>
         <svg
@@ -203,9 +203,9 @@ export function TaskTransitionDialog({
         <div className="text-center">
           <div className="text-xs text-gray-500">To</div>
           <span
-            className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${STATE_COLORS[preview.to] || "bg-gray-100 text-gray-800"}`}
+            className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${STATE_COLORS[preview.toState] || "bg-gray-100 text-gray-800"}`}
           >
-            {preview.to}
+            {preview.toState}
           </span>
         </div>
       </div>

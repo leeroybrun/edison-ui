@@ -86,11 +86,10 @@ describe("TaskCreateDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          taskId: "T099",
-          title: "New Task",
+          valid: true,
           guardFailures: [],
           guardWarnings: [],
+          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
         }),
       });
 
@@ -117,11 +116,10 @@ describe("TaskCreateDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          taskId: "T099",
-          title: "New Task",
+          valid: true,
           guardFailures: [],
           guardWarnings: [],
+          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
         }),
       });
 
@@ -142,11 +140,10 @@ describe("TaskCreateDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          taskId: "T099",
-          title: "New Task",
+          valid: true,
           guardFailures: [],
           guardWarnings: [],
+          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
         }),
       });
 
@@ -172,11 +169,10 @@ describe("TaskCreateDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          taskId: "T099",
-          title: "New Task",
+          valid: true,
           guardFailures: [],
           guardWarnings: [],
+          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
         }),
       });
 
@@ -204,13 +200,12 @@ describe("TaskCreateDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: false,
-          taskId: "T099",
-          title: "New Task",
+          valid: false,
           guardFailures: [
             { guard: "session_required", reason: "No active session" },
           ],
           guardWarnings: [],
+          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
         }),
       });
 
@@ -231,13 +226,12 @@ describe("TaskCreateDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: false,
-          taskId: "T099",
-          title: "New Task",
+          valid: false,
           guardFailures: [
             { guard: "session_required", reason: "No active session" },
           ],
           guardWarnings: [],
+          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
         }),
       });
 
@@ -261,11 +255,10 @@ describe("TaskCreateDialog", () => {
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
-            allowed: true,
-            taskId: "T099",
-            title: "New Task",
+            valid: true,
             guardFailures: [],
             guardWarnings: [],
+            preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
           }),
         })
         .mockResolvedValueOnce({
@@ -309,11 +302,10 @@ describe("TaskCreateDialog", () => {
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
-            allowed: true,
-            taskId: "T099",
-            title: "New Task",
+            valid: true,
             guardFailures: [],
             guardWarnings: [],
+            preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
           }),
         })
         .mockResolvedValueOnce({
@@ -403,11 +395,10 @@ describe("TaskCreateDialog", () => {
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
-            allowed: true,
-            taskId: "T099",
-            title: "New Task",
+            valid: true,
             guardFailures: [],
             guardWarnings: [],
+            preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
           }),
         })
         .mockImplementation(() => new Promise(() => {})); // Never resolves
@@ -458,11 +449,10 @@ describe("TaskCreateDialog", () => {
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({
-            allowed: true,
-            taskId: "T099",
-            title: "New Task",
+            valid: true,
             guardFailures: [],
             guardWarnings: [],
+            preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
           }),
         })
         .mockResolvedValueOnce({

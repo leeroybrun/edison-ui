@@ -19,26 +19,36 @@ export interface GuardWarning {
 }
 
 /**
- * Preview response from a transition/mutation endpoint
+ * Preview response from a transition/mutation endpoint.
+ * Matches backend TaskTransitionPreviewResponse schema.
  */
 export interface TransitionPreview {
-  allowed: boolean;
-  from: string;
-  to: string;
+  valid: boolean;
+  currentState: string | null;
+  toState: string;
   guardFailures: GuardFailure[];
   guardWarnings: GuardWarning[];
-  requiresConfirmation: boolean;
 }
 
 /**
- * Task creation preview response
+ * Task preview data (nested in TaskCreatePreview)
  */
-export interface TaskCreatePreview {
-  allowed: boolean;
+export interface TaskPreviewData {
   taskId: string;
   title: string;
+  description: string;
+  state: string;
+}
+
+/**
+ * Task creation preview response.
+ * Matches backend TaskCreatePreviewResponse schema.
+ */
+export interface TaskCreatePreview {
+  valid: boolean;
   guardFailures: GuardFailure[];
   guardWarnings: GuardWarning[];
+  preview: TaskPreviewData | null;
 }
 
 /**

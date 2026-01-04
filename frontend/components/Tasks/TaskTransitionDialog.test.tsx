@@ -38,9 +38,9 @@ describe("TaskTransitionDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          from: "todo",
-          to: "wip",
+          valid: true,
+          currentState: "todo",
+          toState: "wip",
           guardFailures: [],
           guardWarnings: [],
         }),
@@ -77,9 +77,9 @@ describe("TaskTransitionDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          from: "todo",
-          to: "wip",
+          valid: true,
+          currentState: "todo",
+          toState: "wip",
           guardFailures: [],
           guardWarnings: [],
         }),
@@ -97,9 +97,9 @@ describe("TaskTransitionDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          from: "todo",
-          to: "wip",
+          valid: true,
+          currentState: "todo",
+          toState: "wip",
           guardFailures: [],
           guardWarnings: [],
         }),
@@ -118,9 +118,9 @@ describe("TaskTransitionDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: false,
-          from: "wip",
-          to: "done",
+          valid: false,
+          currentState: "wip",
+          toState: "done",
           guardFailures: [
             { guard: "evidence_required", reason: "Missing test evidence" },
           ],
@@ -139,9 +139,9 @@ describe("TaskTransitionDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: false,
-          from: "wip",
-          to: "done",
+          valid: false,
+          currentState: "wip",
+          toState: "done",
           guardFailures: [
             { guard: "evidence_required", reason: "Missing test evidence" },
           ],
@@ -164,9 +164,9 @@ describe("TaskTransitionDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          from: "todo",
-          to: "wip",
+          valid: true,
+          currentState: "todo",
+          toState: "wip",
           guardFailures: [],
           guardWarnings: [
             { guard: "session_scope", message: "Task is outside current session" },
@@ -187,9 +187,9 @@ describe("TaskTransitionDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          from: "todo",
-          to: "wip",
+          valid: true,
+          currentState: "todo",
+          toState: "wip",
           guardFailures: [],
           guardWarnings: [
             { guard: "session_scope", message: "Warning" },
@@ -338,9 +338,9 @@ describe("TaskTransitionDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          from: "todo",
-          to: "wip",
+          valid: true,
+          currentState: "todo",
+          toState: "wip",
           guardFailures: [],
           guardWarnings: [],
         }),
@@ -421,9 +421,9 @@ describe("TaskTransitionDialog", () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
-          allowed: true,
-          from: "todo",
-          to: "wip",
+          valid: true,
+          currentState: "todo",
+          toState: "wip",
           guardFailures: [],
           guardWarnings: [],
         }),

@@ -253,17 +253,17 @@ export function TaskCreateDialog({
           </form>
 
           {/* Preview display */}
-          {preview && step !== "input" && (
+          {preview?.preview && step !== "input" && (
             <div className="rounded-lg bg-gray-50 p-4">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-500">Task ID:</span>
                 <span className="font-mono font-medium text-gray-900">
-                  {preview.taskId}
+                  {preview.preview.taskId}
                 </span>
               </div>
               <div className="mt-1 flex items-center gap-2">
                 <span className="text-sm text-gray-500">Title:</span>
-                <span className="text-sm text-gray-900">{preview.title}</span>
+                <span className="text-sm text-gray-900">{preview.preview.title}</span>
               </div>
               {sessionId && (
                 <div className="mt-1 flex items-center gap-2">
