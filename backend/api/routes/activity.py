@@ -9,10 +9,7 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException, Query
 
 from api.schemas.activity import (
-    ActivityItem,
     ActivityResponse,
-    Actor,
-    AuditEvent,
     AuditResponse,
 )
 from core.settings import get_settings
