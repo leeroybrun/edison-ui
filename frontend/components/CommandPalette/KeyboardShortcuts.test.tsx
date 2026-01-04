@@ -15,6 +15,7 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: mockPush,
   }),
+  usePathname: () => "/projects/default",
 }));
 
 // Test component that uses the hooks
@@ -179,7 +180,7 @@ describe("KeyboardShortcutsProvider", () => {
       const user = userEvent.setup();
       render(
         <KeyboardShortcutsProvider>
-          <input data-testid="search-input" id="search-input" type="text" />
+          <input data-testid="search-input" id="task-search" type="text" />
         </KeyboardShortcutsProvider>,
       );
 

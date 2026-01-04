@@ -10,9 +10,18 @@ import {
   useState,
 } from "react";
 import type { ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import type { ViewMode } from "../Tasks/types";
+
+/**
+ * Extract project ID from current URL path
+ * Returns "default" if not in a project context
+ */
+function extractProjectIdFromPath(pathname: string): string {
+  const match = pathname.match(/^\/projects\/([^/]+)/);
+  return match?.[1] ?? "default";
+}
 
 /**
  * Shortcut handler function
@@ -100,10 +109,16 @@ export function KeyboardShortcutsProvider({
   onViewChange,
 }: KeyboardShortcutsProviderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
-  const [sequence, setSequence] = useState("");
+  // Use ref for sequence to avoid state update timing issues
+  // State updates are async, but we need immediate access to current sequence
+  const sequenceRef = useRef("");
   const sequenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const handlersRef = useRef<Map<string, ShortcutHandler>>(new Map());
+
+  // Get current project ID from URL
+  const currentProjectId = extractProjectIdFromPath(pathname);
 
   // Register a shortcut handler
   const register = useCallback(
@@ -126,7 +141,7 @@ export function KeyboardShortcutsProvider({
 
   // Handle sequence reset
   const resetSequence = useCallback(() => {
-    setSequence("");
+    sequenceRef.current = "";
     if (sequenceTimeoutRef.current) {
       clearTimeout(sequenceTimeoutRef.current);
       sequenceTimeoutRef.current = null;
@@ -137,7 +152,8 @@ export function KeyboardShortcutsProvider({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Cmd/Ctrl+K always works, even in inputs
-      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+      // Check lowercase to handle both 'k' and 'K' (browser may report uppercase when modifier is held)
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setIsCommandPaletteOpen((prev) => !prev);
         resetSequence();
@@ -180,7 +196,7 @@ export function KeyboardShortcutsProvider({
       // Focus search with /
       if (key === "/") {
         event.preventDefault();
-        const searchInput = document.getElementById("search-input");
+        const searchInput = document.getElementById("task-search");
         if (searchInput) {
           searchInput.focus();
         }
@@ -198,7 +214,7 @@ export function KeyboardShortcutsProvider({
       }
 
       // Build sequence for multi-key shortcuts
-      const newSequence = sequence + key;
+      const newSequence = sequenceRef.current + key;
 
       // Clear existing timeout
       if (sequenceTimeoutRef.current) {
@@ -208,13 +224,13 @@ export function KeyboardShortcutsProvider({
       // Check for sequence shortcuts
       if (newSequence === "gt") {
         event.preventDefault();
-        router.push("/projects/default/tasks");
+        router.push(`/projects/${currentProjectId}/tasks`);
         resetSequence();
         return;
       }
       if (newSequence === "gs") {
         event.preventDefault();
-        router.push("/projects/default/sessions");
+        router.push(`/projects/${currentProjectId}/sessions`);
         resetSequence();
         return;
       }
@@ -230,9 +246,9 @@ export function KeyboardShortcutsProvider({
 
       // Update sequence with timeout
       if (key.length === 1 && /[a-z]/.test(key)) {
-        setSequence(newSequence);
+        sequenceRef.current = newSequence;
         sequenceTimeoutRef.current = setTimeout(() => {
-          setSequence("");
+          sequenceRef.current = "";
         }, SEQUENCE_TIMEOUT);
       }
     };
@@ -244,7 +260,7 @@ export function KeyboardShortcutsProvider({
         clearTimeout(sequenceTimeoutRef.current);
       }
     };
-  }, [sequence, isCommandPaletteOpen, onViewChange, router, resetSequence]);
+  }, [isCommandPaletteOpen, onViewChange, router, resetSequence, currentProjectId]);
 
   const shortcutsValue = useMemo<KeyboardShortcutsContextValue>(
     () => ({

@@ -469,12 +469,12 @@ class TestListTasksFiltering:
     ) -> None:
         """Should filter tasks by validationStatus."""
         response = app_with_tasks.get(
-            f"/api/v1/projects/{project_id}/tasks?validationStatus=passed"
+            f"/api/v1/projects/{project_id}/tasks?validationStatus=validated"
         )
         data = response.json()
 
         for task in data["items"]:
-            assert task["validationStatus"] == "passed"
+            assert task["validationStatus"] == "validated"
 
     def test_filter_by_parent_id(
         self, app_with_tasks: TestClient, project_id: str

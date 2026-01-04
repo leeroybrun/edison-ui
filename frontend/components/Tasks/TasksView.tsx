@@ -6,6 +6,7 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 import { TaskCard } from "./TaskCard";
 import { TaskFilters } from "./TaskFilters";
+import { useKeyboardShortcuts } from "../CommandPalette/KeyboardShortcuts";
 import type {
   Task,
   Session,
@@ -28,7 +29,7 @@ const STATE_COLORS: Record<TaskState, string> = {
 /**
  * Board column states (ordered)
  */
-const BOARD_COLUMNS: TaskState[] = ["todo", "wip", "done", "validated"];
+const BOARD_COLUMNS: TaskState[] = ["todo", "wip", "blocked", "done", "validated"];
 
 export interface TasksViewProps {
   /** Tasks to display */
@@ -128,6 +129,16 @@ export function TasksView({
     },
     [filters, updateUrl],
   );
+
+  // Register keyboard shortcuts for view switching (1/2/3)
+  // Using stable callbacks to avoid re-registering on every render
+  const setListView = useCallback(() => handleViewChange("list"), [handleViewChange]);
+  const setBoardView = useCallback(() => handleViewChange("board"), [handleViewChange]);
+  const setTreeView = useCallback(() => handleViewChange("tree"), [handleViewChange]);
+
+  useKeyboardShortcuts("1", setListView);
+  useKeyboardShortcuts("2", setBoardView);
+  useKeyboardShortcuts("3", setTreeView);
 
   // Handle filter changes
   const handleFiltersChange = useCallback(

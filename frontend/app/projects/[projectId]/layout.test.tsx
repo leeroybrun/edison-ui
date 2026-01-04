@@ -2,10 +2,17 @@ import { render, screen, within } from "@testing-library/react";
 
 import ProjectLayout from "./layout";
 
-// Mock useParams to provide projectId
+// Mock useParams, usePathname, useRouter to provide navigation context
 vi.mock("next/navigation", () => ({
   useParams: () => ({ projectId: "test-project-123" }),
   usePathname: () => "/projects/test-project-123/tasks",
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+  }),
 }));
 
 describe("ProjectLayout", () => {

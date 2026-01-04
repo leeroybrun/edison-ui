@@ -12,7 +12,9 @@ from services.qa_reader import QAReaderService
 
 
 # States that satisfy a dependency (task is considered "done")
-COMPLETED_STATES = frozenset({"done", "validated"})
+# Use tuple for deterministic ordering in API responses
+COMPLETED_STATES_LIST = ("done", "validated")
+COMPLETED_STATES = frozenset(COMPLETED_STATES_LIST)
 
 # All valid task states
 VALID_STATES = frozenset({"todo", "wip", "blocked", "done", "validated"})
@@ -491,7 +493,7 @@ class TaskReaderService:
                     BlockedByInfo(
                         dependency_id=dep_id,
                         dependency_state="unknown",
-                        required_states=list(COMPLETED_STATES),
+                        required_states=list(COMPLETED_STATES_LIST),
                         reason=f"Dependency {dep_id} not found",
                     )
                 )
@@ -502,7 +504,7 @@ class TaskReaderService:
                     BlockedByInfo(
                         dependency_id=dep_id,
                         dependency_state=dep_task.state,
-                        required_states=list(COMPLETED_STATES),
+                        required_states=list(COMPLETED_STATES_LIST),
                         reason=f"Dependency {dep_id} must be done or validated",
                     )
                 )
