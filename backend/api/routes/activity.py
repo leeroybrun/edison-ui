@@ -61,14 +61,13 @@ async def get_activity(
     Returns a list of recent activity items for the project, optionally
     filtered by session, task, or event type.
 
-    Note: Currently returns empty list. Full implementation will read
-    from Edison audit log files.
+    Phase 1 (T044): Returns empty list for UI scaffolding.
+    Phase 2 (T078): Will read from Edison JSONL audit logs.
     """
     # Validate project exists
     validate_project_exists(project_id)
 
-    # TODO: Implement actual activity reading from Edison audit logs
-    # For now, return empty list to allow frontend to render without errors
+    # Phase 1: Empty response for UI scaffolding (see T078 for data implementation)
     return ActivityResponse(items=[], hasMore=False)
 
 
@@ -85,12 +84,11 @@ async def get_audit(
     Returns a list of audit events from the Edison audit log,
     optionally filtered by session or invocation.
 
-    Note: Currently returns empty list. Full implementation will read
-    from Edison audit log files.
+    Phase 1 (T044): Returns empty list for UI scaffolding.
+    Phase 2 (T078): Will read from Edison JSONL audit logs.
     """
     # Validate project exists
     validate_project_exists(project_id)
 
-    # TODO: Implement actual audit log reading
-    # For now, return empty list to allow frontend to render without errors
+    # Phase 1: Empty response for UI scaffolding (see T078 for data implementation)
     return AuditResponse(items=[], hasMore=False)
