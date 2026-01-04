@@ -76,7 +76,7 @@ export function TaskCreateDialog({
       if (parentId) body.parentId = parentId;
 
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/projects/${projectId}/tasks/create/preview`,
+        `${API_BASE_URL}/api/v1/projects/${projectId}/tasks/preview`,
         {
           method: "POST",
           headers: {

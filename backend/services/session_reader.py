@@ -35,7 +35,19 @@ class SessionReaderService:
     """Service for reading session data from an Edison project."""
 
     # Known session states (directories under .project/sessions/)
-    SESSION_STATES = ["draft", "active", "paused", "completed", "abandoned"]
+    # Must match session_guard.VALID_SESSION_STATES
+    SESSION_STATES = [
+        "draft",
+        "active",
+        "blocked",
+        "paused",
+        "done",
+        "closing",
+        "completed",
+        "validated",
+        "archived",
+        "abandoned",
+    ]
 
     def __init__(self, project_path: str) -> None:
         """Initialize the session reader service.

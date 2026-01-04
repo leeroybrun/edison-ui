@@ -9,10 +9,13 @@ validation:
   context7:
     enabled: false
 
+  # Increased timeout for validators (900 seconds = 15 minutes)
+  timeout: 900
+
   presets:
     custom-minimal:
       name: custom-minimal
-      description: Minimal validation with global validators + browser-e2e for UI changes
+      description: Minimal validation with global-codex, global-claude, and browser-e2e only
       validators:
         - global-codex
         - global-claude
@@ -37,7 +40,16 @@ validation:
 
   # Validator-specific configuration
   validators:
+    global-claude:
+      timeout: 900
+      blocking: true
+      always_run: true
+    global-codex:
+      timeout: 900
+      blocking: true
+      always_run: true
     browser-e2e:
+      timeout: 900
       # Only trigger for UI-related file changes
       triggers:
         - "**/*.tsx"
@@ -52,3 +64,8 @@ validation:
         baseUrl: "http://localhost:3000"
         # Skip if no UI files changed
         skipIfNoTriggers: true
+    # Disable other validators
+    global-gemini:
+      enabled: false
+    global-auggie:
+      enabled: false

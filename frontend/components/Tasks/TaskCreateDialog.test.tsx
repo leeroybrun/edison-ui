@@ -102,9 +102,7 @@ describe("TaskCreateDialog", () => {
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
-          expect.stringContaining(
-            "/api/v1/projects/project-1/tasks/create/preview",
-          ),
+          expect.stringContaining("/api/v1/projects/project-1/tasks/preview"),
           expect.objectContaining({
             method: "POST",
             body: expect.stringContaining("New Task"),
