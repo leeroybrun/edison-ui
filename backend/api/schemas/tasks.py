@@ -1,10 +1,143 @@
-"""Task-related Pydantic schemas (T020/T022).
+"""Task-related Pydantic schemas (T020/T022/T040).
 
-Implements schemas for task listing and readiness endpoints per api.md contract.
+Implements schemas for task listing, readiness, and guarded create/transition endpoints
+per api.md contract.
 """
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
+
+
+# =============================================================================
+# Guard Schemas (T040)
+# =============================================================================
+
+
+class GuardFailure(BaseModel):
+    """A guard check that failed.
+
+    Represents a blocking issue that prevents an operation.
+    """
+
+    guard: str
+    reason: str
+
+
+class GuardWarning(BaseModel):
+    """A warning from a guard check (non-blocking)."""
+
+    guard: str
+    message: str
+
+
+# =============================================================================
+# Task Create Schemas (T040)
+# =============================================================================
+
+
+class TaskCreateRequest(BaseModel):
+    """Request body for task creation.
+
+    Used for both preview and apply endpoints.
+    """
+
+    title: str
+    type: str = Field(..., alias="type")
+    session_id: str | None = Field(None, alias="sessionId")
+    parent_id: str | None = Field(None, alias="parentId")
+    depends_on: list[str] = Field(default_factory=list, alias="dependsOn")
+    confirmed: bool = False
+
+    model_config = {"populate_by_name": True}
+
+
+class TaskPreview(BaseModel):
+    """Preview of what task would be created."""
+
+    title: str
+    type: str
+    session_id: str | None = Field(None, alias="sessionId")
+    parent_id: str | None = Field(None, alias="parentId")
+    depends_on: list[str] = Field(default_factory=list, alias="dependsOn")
+    initial_state: str = Field("todo", alias="initialState")
+
+    model_config = {"populate_by_name": True}
+
+
+class TaskCreatePreviewResponse(BaseModel):
+    """Response for task create preview endpoint.
+
+    Returns validation result and preview of what would be created.
+    """
+
+    valid: bool
+    guard_failures: list[GuardFailure] = Field(
+        default_factory=list, alias="guardFailures"
+    )
+    guard_warnings: list[GuardWarning] = Field(
+        default_factory=list, alias="guardWarnings"
+    )
+    preview: TaskPreview | None = None
+
+    model_config = {"populate_by_name": True}
+
+
+class TaskCreateResponse(BaseModel):
+    """Response for task create (apply) endpoint."""
+
+    task_id: str = Field(..., alias="taskId")
+    audit_entry_id: str = Field(..., alias="auditEntryId")
+
+    model_config = {"populate_by_name": True}
+
+
+# =============================================================================
+# Task Transition Schemas (T040)
+# =============================================================================
+
+
+class TaskTransitionRequest(BaseModel):
+    """Request body for task state transition.
+
+    Used for both preview and apply endpoints.
+    """
+
+    to_state: str = Field(..., alias="toState")
+    confirmed: bool = False
+
+    model_config = {"populate_by_name": True}
+
+
+class TaskTransitionPreviewResponse(BaseModel):
+    """Response for task transition preview endpoint."""
+
+    valid: bool
+    current_state: str | None = Field(None, alias="currentState")
+    to_state: str = Field(..., alias="toState")
+    guard_failures: list[GuardFailure] = Field(
+        default_factory=list, alias="guardFailures"
+    )
+    guard_warnings: list[GuardWarning] = Field(
+        default_factory=list, alias="guardWarnings"
+    )
+
+    model_config = {"populate_by_name": True}
+
+
+class TaskTransitionResponse(BaseModel):
+    """Response for task transition (apply) endpoint."""
+
+    task_id: str = Field(..., alias="taskId")
+    previous_state: str = Field(..., alias="previousState")
+    new_state: str = Field(..., alias="newState")
+    audit_entry_id: str = Field(..., alias="auditEntryId")
+
+    model_config = {"populate_by_name": True}
+
+
+# =============================================================================
+# Existing Schemas (T020/T022)
+# =============================================================================
 
 
 class BlockedByItem(BaseModel):
