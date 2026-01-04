@@ -1,0 +1,3 @@
+# Orchestration configuration
+orchestration:
+  allowCliEngines: true
