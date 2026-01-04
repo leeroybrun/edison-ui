@@ -23,7 +23,7 @@ def project_id(client: TestClient) -> str:
     assert response.status_code == 200
     data = response.json()
     if data["items"]:
-        return data["items"][0]["project_id"]
+        return str(data["items"][0]["project_id"])
     pytest.skip("No projects available for testing")
 
 
