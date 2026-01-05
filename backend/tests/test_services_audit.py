@@ -12,6 +12,7 @@ Tests cover:
 - Filesystem confinement (can't write outside .project/)
 - Thread-safe writes
 """
+
 from __future__ import annotations
 
 import json
@@ -214,7 +215,9 @@ class TestAuditWriter:
 
         writer.write_entry(entry)
 
-        log_files = list((project_root / ".project" / "logs" / "edison").glob("*.jsonl"))
+        log_files = list(
+            (project_root / ".project" / "logs" / "edison").glob("*.jsonl")
+        )
         assert len(log_files) == 1
 
     def test_audit_writer_appends_entries(self, tmp_path: Path) -> None:
@@ -239,7 +242,9 @@ class TestAuditWriter:
             )
             writer.write_entry(entry)
 
-        log_files = list((project_root / ".project" / "logs" / "edison").glob("*.jsonl"))
+        log_files = list(
+            (project_root / ".project" / "logs" / "edison").glob("*.jsonl")
+        )
         assert len(log_files) == 1
 
         with open(log_files[0]) as f:
@@ -273,7 +278,9 @@ class TestAuditWriter:
 
         writer.write_entry(entry)
 
-        log_files = list((project_root / ".project" / "logs" / "edison").glob("*.jsonl"))
+        log_files = list(
+            (project_root / ".project" / "logs" / "edison").glob("*.jsonl")
+        )
         with open(log_files[0]) as f:
             line = f.readline()
             data = json.loads(line)
@@ -312,7 +319,9 @@ class TestAuditWriter:
 
         writer.write_entry(entry)
 
-        log_files = list((project_root / ".project" / "logs" / "edison").glob("*.jsonl"))
+        log_files = list(
+            (project_root / ".project" / "logs" / "edison").glob("*.jsonl")
+        )
         with open(log_files[0]) as f:
             data = json.loads(f.readline())
 
@@ -341,7 +350,9 @@ class TestAuditWriter:
 
         writer.write_entry(entry)
 
-        log_files = list((project_root / ".project" / "logs" / "edison").glob("*.jsonl"))
+        log_files = list(
+            (project_root / ".project" / "logs" / "edison").glob("*.jsonl")
+        )
         with open(log_files[0]) as f:
             data = json.loads(f.readline())
 
@@ -363,9 +374,7 @@ class TestFilesystemConfinement:
         assert writer.log_dir == project_root / ".project" / "logs" / "edison"
         assert str(writer.log_dir).startswith(str(project_root))
 
-    def test_audit_writer_rejects_log_dir_outside_project(
-        self, tmp_path: Path
-    ) -> None:
+    def test_audit_writer_rejects_log_dir_outside_project(self, tmp_path: Path) -> None:
         """AuditWriter should reject attempts to set log dir outside project."""
         from services.audit import AuditWriter, FilesystemConfinementError
 
@@ -433,7 +442,9 @@ class TestThreadSafety:
                     actor=ActorIdentity(os_user="testuser", display_name=None),
                     timestamp=datetime.now(timezone.utc),
                     action_type="test_action",
-                    target=AuditTarget(entity_type="task", entity_id=f"T{thread_id}-{i}"),
+                    target=AuditTarget(
+                        entity_type="task", entity_id=f"T{thread_id}-{i}"
+                    ),
                     outcome="success",
                     context=None,
                 )
@@ -450,7 +461,9 @@ class TestThreadSafety:
             t.join()
 
         # Read all entries and verify none are corrupted
-        log_files = list((project_root / ".project" / "logs" / "edison").glob("*.jsonl"))
+        log_files = list(
+            (project_root / ".project" / "logs" / "edison").glob("*.jsonl")
+        )
         assert len(log_files) == 1
 
         with open(log_files[0]) as f:

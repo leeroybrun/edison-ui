@@ -2,6 +2,7 @@
 
 Exports core models for actor identity and audit entries.
 """
+
 from __future__ import annotations
 
 from models.actor import ActorIdentity, get_current_actor

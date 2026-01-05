@@ -21,12 +21,12 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Test content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       // Should have navigation landmark from sidebar
       expect(
-        screen.getByRole("navigation", { name: "Project navigation" })
+        screen.getByRole("navigation", { name: "Project navigation" }),
       ).toBeInTheDocument();
     });
 
@@ -34,7 +34,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div data-testid="page-content">Page Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       expect(screen.getByTestId("page-content")).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       expect(screen.getByRole("main")).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       const sidebarNav = screen.getByRole("navigation", {
@@ -72,7 +72,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       const sidebarNav = screen.getByRole("navigation", {
@@ -81,7 +81,7 @@ describe("ProjectLayout", () => {
       const link = within(sidebarNav).getByRole("link", { name: "Sessions" });
       expect(link).toHaveAttribute(
         "href",
-        "/projects/test-project-123/sessions"
+        "/projects/test-project-123/sessions",
       );
     });
 
@@ -89,7 +89,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       const sidebarNav = screen.getByRole("navigation", {
@@ -103,7 +103,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       const sidebarNav = screen.getByRole("navigation", {
@@ -117,7 +117,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       const sidebarNav = screen.getByRole("navigation", {
@@ -131,7 +131,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       const sidebarNav = screen.getByRole("navigation", {
@@ -140,7 +140,7 @@ describe("ProjectLayout", () => {
       const link = within(sidebarNav).getByRole("link", { name: "Settings" });
       expect(link).toHaveAttribute(
         "href",
-        "/projects/test-project-123/settings"
+        "/projects/test-project-123/settings",
       );
     });
   });
@@ -150,7 +150,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       // Should have back links in both views
@@ -171,7 +171,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       // Based on our mock, pathname is /projects/test-project-123/tasks
@@ -187,7 +187,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       const mobileNav = screen.getByRole("navigation", {
@@ -203,7 +203,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       expect(screen.getByTestId("project-sidebar")).toBeInTheDocument();
@@ -215,7 +215,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       // Mobile nav should be present in DOM (hidden via CSS on desktop)
@@ -229,7 +229,7 @@ describe("ProjectLayout", () => {
       render(
         <ProjectLayout>
           <div>Content</div>
-        </ProjectLayout>
+        </ProjectLayout>,
       );
 
       const mobileNav = screen.getByRole("navigation", {
@@ -238,22 +238,22 @@ describe("ProjectLayout", () => {
 
       // Verify all links are present in mobile nav
       expect(
-        within(mobileNav).getByRole("link", { name: "Dashboard" })
+        within(mobileNav).getByRole("link", { name: "Dashboard" }),
       ).toBeInTheDocument();
       expect(
-        within(mobileNav).getByRole("link", { name: "Sessions" })
+        within(mobileNav).getByRole("link", { name: "Sessions" }),
       ).toBeInTheDocument();
       expect(
-        within(mobileNav).getByRole("link", { name: "Tasks" })
+        within(mobileNav).getByRole("link", { name: "Tasks" }),
       ).toBeInTheDocument();
       expect(
-        within(mobileNav).getByRole("link", { name: "QA" })
+        within(mobileNav).getByRole("link", { name: "QA" }),
       ).toBeInTheDocument();
       expect(
-        within(mobileNav).getByRole("link", { name: "Agents" })
+        within(mobileNav).getByRole("link", { name: "Agents" }),
       ).toBeInTheDocument();
       expect(
-        within(mobileNav).getByRole("link", { name: "Settings" })
+        within(mobileNav).getByRole("link", { name: "Settings" }),
       ).toBeInTheDocument();
     });
   });

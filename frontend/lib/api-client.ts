@@ -38,7 +38,7 @@ export class ApiError extends Error {
     message: string,
     public readonly details?: ValidationDetail[],
     public readonly guardFailures?: GuardFailure[],
-    public readonly correlationId?: string
+    public readonly correlationId?: string,
   ) {
     super(message);
     this.name = "ApiError";
@@ -48,7 +48,10 @@ export class ApiError extends Error {
 
 /** Custom error class for network errors. */
 export class NetworkError extends Error {
-  constructor(message: string, public readonly cause?: Error) {
+  constructor(
+    message: string,
+    public readonly cause?: Error,
+  ) {
     super(message);
     this.name = "NetworkError";
     Object.setPrototypeOf(this, NetworkError.prototype);
@@ -88,9 +91,18 @@ export interface ApiClient {
   readonly token?: string;
 
   get<T>(path: string, options?: GetRequestOptions): Promise<ApiResponse<T>>;
-  post<T>(path: string, options?: MutationRequestOptions): Promise<ApiResponse<T>>;
-  patch<T>(path: string, options?: MutationRequestOptions): Promise<ApiResponse<T>>;
-  delete<T>(path: string, options?: MutationRequestOptions): Promise<ApiResponse<T>>;
+  post<T>(
+    path: string,
+    options?: MutationRequestOptions,
+  ): Promise<ApiResponse<T>>;
+  patch<T>(
+    path: string,
+    options?: MutationRequestOptions,
+  ): Promise<ApiResponse<T>>;
+  delete<T>(
+    path: string,
+    options?: MutationRequestOptions,
+  ): Promise<ApiResponse<T>>;
 }
 
 const DEFAULT_BASE_URL = "http://localhost:8000/api/v1";
@@ -109,8 +121,14 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
   const maxRetries = config.retries ?? DEFAULT_RETRIES;
   const baseRetryDelay = config.retryDelay ?? DEFAULT_RETRY_DELAY;
 
-  function buildUrl(path: string, params?: Record<string, string | number | boolean | undefined>): string {
-    const url = new URL(path.startsWith("/") ? path.slice(1) : path, baseUrl + "/");
+  function buildUrl(
+    path: string,
+    params?: Record<string, string | number | boolean | undefined>,
+  ): string {
+    const url = new URL(
+      path.startsWith("/") ? path.slice(1) : path,
+      baseUrl + "/",
+    );
 
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
@@ -135,7 +153,9 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
     return headers;
   }
 
-  async function parseErrorResponse(response: Response): Promise<ApiErrorResponse> {
+  async function parseErrorResponse(
+    response: Response,
+  ): Promise<ApiErrorResponse> {
     try {
       return await response.json();
     } catch {
@@ -146,7 +166,9 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
     }
   }
 
-  async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
+  async function handleResponse<T>(
+    response: Response,
+  ): Promise<ApiResponse<T>> {
     if (!response.ok) {
       const errorData = await parseErrorResponse(response);
       throw new ApiError(
@@ -155,7 +177,7 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
         errorData.message,
         errorData.details,
         errorData.guardFailures,
-        errorData.correlationId
+        errorData.correlationId,
       );
     }
 
@@ -188,7 +210,7 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
   async function fetchWithRetry(
     url: string,
     init: RequestInit,
-    attempt = 0
+    attempt = 0,
   ): Promise<Response> {
     try {
       const response = await fetch(url, init);
@@ -206,7 +228,7 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
       }
       throw new NetworkError(
         error instanceof Error ? error.message : "Network request failed",
-        error instanceof Error ? error : undefined
+        error instanceof Error ? error : undefined,
       );
     }
   }
@@ -214,7 +236,7 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
   async function request<T>(
     method: string,
     path: string,
-    options: GetRequestOptions & MutationRequestOptions = {}
+    options: GetRequestOptions & MutationRequestOptions = {},
   ): Promise<ApiResponse<T>> {
     const url = buildUrl(path, options.params);
     const headers = buildHeaders();
@@ -241,15 +263,24 @@ export function createApiClient(config: ApiClientConfig = {}): ApiClient {
       return request<T>("GET", path, options);
     },
 
-    post<T>(path: string, options?: MutationRequestOptions): Promise<ApiResponse<T>> {
+    post<T>(
+      path: string,
+      options?: MutationRequestOptions,
+    ): Promise<ApiResponse<T>> {
       return request<T>("POST", path, options);
     },
 
-    patch<T>(path: string, options?: MutationRequestOptions): Promise<ApiResponse<T>> {
+    patch<T>(
+      path: string,
+      options?: MutationRequestOptions,
+    ): Promise<ApiResponse<T>> {
       return request<T>("PATCH", path, options);
     },
 
-    delete<T>(path: string, options?: MutationRequestOptions): Promise<ApiResponse<T>> {
+    delete<T>(
+      path: string,
+      options?: MutationRequestOptions,
+    ): Promise<ApiResponse<T>> {
       return request<T>("DELETE", path, options);
     },
   };
@@ -276,9 +307,7 @@ export interface QueryState<T> {
  * @param fetcher - Function that performs the API request
  * @returns Query state with data, loading, error, and refetch
  */
-export function useApiQuery<T>(
-  _fetcher: () => Promise<T>
-): QueryState<T> {
+export function useApiQuery<T>(_fetcher: () => Promise<T>): QueryState<T> {
   // Minimal placeholder implementation
   // In a real implementation, this would use React hooks
   return {

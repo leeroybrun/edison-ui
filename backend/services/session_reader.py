@@ -2,6 +2,7 @@
 
 Reads session data from Edison project filesystem structure.
 """
+
 from __future__ import annotations
 
 import json

@@ -29,7 +29,7 @@ describe("AuditFilters", () => {
         onChange={() => {}}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     expect(screen.getByLabelText(/session/i)).toBeInTheDocument();
@@ -45,15 +45,19 @@ describe("AuditFilters", () => {
         onChange={() => {}}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     const sessionSelect = screen.getByLabelText(/session/i);
     expect(sessionSelect).toBeInTheDocument();
 
     // Options should include sessions
-    expect(screen.getByRole("option", { name: /Feature implementation/i })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: /Bug fixes/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: /Feature implementation/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: /Bug fixes/i }),
+    ).toBeInTheDocument();
   });
 
   it("displays task options in dropdown", () => {
@@ -63,15 +67,19 @@ describe("AuditFilters", () => {
         onChange={() => {}}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     const taskSelect = screen.getByLabelText(/task/i);
     expect(taskSelect).toBeInTheDocument();
 
     // Options should include tasks
-    expect(screen.getByRole("option", { name: /T001.*Implement login/i })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: /T002.*Add authentication/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: /T001.*Implement login/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: /T002.*Add authentication/i }),
+    ).toBeInTheDocument();
   });
 
   it("calls onChange when session filter changes", () => {
@@ -82,7 +90,7 @@ describe("AuditFilters", () => {
         onChange={onChange}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     const sessionSelect = screen.getByLabelText(/session/i);
@@ -99,7 +107,7 @@ describe("AuditFilters", () => {
         onChange={onChange}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     const taskSelect = screen.getByLabelText(/task/i);
@@ -116,7 +124,7 @@ describe("AuditFilters", () => {
         onChange={onChange}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     const eventTypeSelect = screen.getByLabelText(/event type/i);
@@ -133,7 +141,7 @@ describe("AuditFilters", () => {
         onChange={onChange}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     const dateInput = screen.getByLabelText(/since|date/i);
@@ -156,7 +164,7 @@ describe("AuditFilters", () => {
         onChange={() => {}}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     expect(screen.getByLabelText(/session/i)).toHaveValue("session-1");
@@ -172,10 +180,12 @@ describe("AuditFilters", () => {
         onChange={() => {}}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
-    expect(screen.getByRole("option", { name: /all sessions/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: /all sessions/i }),
+    ).toBeInTheDocument();
   });
 
   it("shows All tasks option", () => {
@@ -185,10 +195,12 @@ describe("AuditFilters", () => {
         onChange={() => {}}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
-    expect(screen.getByRole("option", { name: /all tasks/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: /all tasks/i }),
+    ).toBeInTheDocument();
   });
 
   it("shows common event types in dropdown", () => {
@@ -198,15 +210,19 @@ describe("AuditFilters", () => {
         onChange={() => {}}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     const eventTypeSelect = screen.getByLabelText(/event type/i);
     expect(eventTypeSelect).toBeInTheDocument();
 
     // Common event types
-    expect(screen.getByRole("option", { name: /all event types/i })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: /task\.transition/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: /all event types/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: /task\.transition/i }),
+    ).toBeInTheDocument();
   });
 
   it("has accessible labels for all controls", () => {
@@ -216,7 +232,7 @@ describe("AuditFilters", () => {
         onChange={() => {}}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     // All controls should have associated labels
@@ -238,7 +254,7 @@ describe("AuditFilters", () => {
         onChange={onChange}
         sessions={mockSessions}
         tasks={mockTasks}
-      />
+      />,
     );
 
     const sessionSelect = screen.getByLabelText(/session/i);

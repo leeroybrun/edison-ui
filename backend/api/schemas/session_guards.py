@@ -2,6 +2,7 @@
 
 Implements schemas for guarded session create/transition endpoints per api.md contract.
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel, Field

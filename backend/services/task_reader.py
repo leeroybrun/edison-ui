@@ -2,6 +2,7 @@
 
 Reads tasks from Edison project filesystem, computes readiness, and validation status.
 """
+
 from __future__ import annotations
 
 import re
@@ -159,7 +160,9 @@ class TaskReaderService:
                 except (json.JSONDecodeError, ValueError):
                     # Try parsing as YAML-style inline list
                     inner = value[1:-1]
-                    items = [i.strip().strip("'\"") for i in inner.split(",") if i.strip()]
+                    items = [
+                        i.strip().strip("'\"") for i in inner.split(",") if i.strip()
+                    ]
                     result[key] = items if items else value
             elif value:
                 result[key] = value
@@ -223,12 +226,20 @@ class TaskReaderService:
         parent_id_raw = fm.get("parent_id")
         parent_id: str | None = None
         if parent_id_raw is not None:
-            parent_id = str(parent_id_raw) if not isinstance(parent_id_raw, str) else parent_id_raw
+            parent_id = (
+                str(parent_id_raw)
+                if not isinstance(parent_id_raw, str)
+                else parent_id_raw
+            )
 
         session_id_raw = fm.get("session_id")
         session_id: str | None = None
         if session_id_raw is not None:
-            session_id = str(session_id_raw) if not isinstance(session_id_raw, str) else session_id_raw
+            session_id = (
+                str(session_id_raw)
+                if not isinstance(session_id_raw, str)
+                else session_id_raw
+            )
 
         owner_raw = fm.get("owner")
         owner: str | None = None
@@ -238,17 +249,27 @@ class TaskReaderService:
         priority_raw = fm.get("priority")
         priority: str | None = None
         if priority_raw is not None:
-            priority = str(priority_raw) if not isinstance(priority_raw, str) else priority_raw
+            priority = (
+                str(priority_raw) if not isinstance(priority_raw, str) else priority_raw
+            )
 
         created_at_raw = fm.get("created_at")
         created_at: str | None = None
         if created_at_raw is not None:
-            created_at = str(created_at_raw) if not isinstance(created_at_raw, str) else created_at_raw
+            created_at = (
+                str(created_at_raw)
+                if not isinstance(created_at_raw, str)
+                else created_at_raw
+            )
 
         updated_at_raw = fm.get("updated_at")
         updated_at: str | None = None
         if updated_at_raw is not None:
-            updated_at = str(updated_at_raw) if not isinstance(updated_at_raw, str) else updated_at_raw
+            updated_at = (
+                str(updated_at_raw)
+                if not isinstance(updated_at_raw, str)
+                else updated_at_raw
+            )
 
         return TaskData(
             task_id=task_id,

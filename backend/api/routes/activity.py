@@ -2,6 +2,7 @@
 
 Implements activity and audit endpoints for project activity timeline.
 """
+
 from __future__ import annotations
 
 from typing import Annotated
@@ -53,7 +54,9 @@ async def get_activity(
     sessionId: Annotated[str | None, Query(description="Filter by session ID")] = None,
     taskId: Annotated[str | None, Query(description="Filter by task ID")] = None,
     eventType: Annotated[str | None, Query(description="Filter by event type")] = None,
-    since: Annotated[str | None, Query(description="Filter events since timestamp")] = None,
+    since: Annotated[
+        str | None, Query(description="Filter events since timestamp")
+    ] = None,
     limit: Annotated[int, Query(ge=1, le=500, description="Max items")] = 50,
 ) -> ActivityResponse:
     """Get activity timeline for a project.
@@ -75,8 +78,12 @@ async def get_activity(
 async def get_audit(
     project_id: str,
     sessionId: Annotated[str | None, Query(description="Filter by session ID")] = None,
-    invocationId: Annotated[str | None, Query(description="Filter by invocation ID")] = None,
-    since: Annotated[str | None, Query(description="Filter events since timestamp")] = None,
+    invocationId: Annotated[
+        str | None, Query(description="Filter by invocation ID")
+    ] = None,
+    since: Annotated[
+        str | None, Query(description="Filter events since timestamp")
+    ] = None,
     limit: Annotated[int, Query(ge=1, le=500, description="Max items")] = 50,
 ) -> AuditResponse:
     """Get raw audit events for a project.

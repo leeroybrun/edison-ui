@@ -2,6 +2,7 @@
 
 RED Phase: These tests MUST fail initially as the endpoints don't exist yet.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -52,7 +53,7 @@ def mock_edison_project_with_qa(tmp_path: Path) -> Path:
     project_path = tmp_path / "test-project"
     project_path.mkdir()
     (project_path / ".edison").mkdir()
-    
+
     project_dir = project_path / ".project"
     project_dir.mkdir()
 
@@ -63,13 +64,19 @@ def mock_edison_project_with_qa(tmp_path: Path) -> Path:
     (tasks_dir / "validated").mkdir()
 
     # T001: Has QA in TODO state
-    (tasks_dir / "done" / "T001.md").write_text(create_task_frontmatter("T001", "Task 1"))
-    
+    (tasks_dir / "done" / "T001.md").write_text(
+        create_task_frontmatter("T001", "Task 1")
+    )
+
     # T002: Has QA in DONE state with PASS verdict
-    (tasks_dir / "done" / "T002.md").write_text(create_task_frontmatter("T002", "Task 2"))
+    (tasks_dir / "done" / "T002.md").write_text(
+        create_task_frontmatter("T002", "Task 2")
+    )
 
     # T003: Has QA in WIP state
-    (tasks_dir / "done" / "T003.md").write_text(create_task_frontmatter("T003", "Task 3"))
+    (tasks_dir / "done" / "T003.md").write_text(
+        create_task_frontmatter("T003", "Task 3")
+    )
 
     # Create QA records
     qa_dir = project_dir / "qa"
@@ -100,7 +107,7 @@ def mock_edison_project_with_qa(tmp_path: Path) -> Path:
     evidence_dir.mkdir(parents=True)
     (evidence_dir / "test-output.txt").write_text("All tests passed.")
     (evidence_dir / "coverage.txt").write_text("Coverage: 100%")
-    
+
     # Create marker files for evidence
     (evidence_dir / "context7-react.txt").write_text("React context used")
 
@@ -116,6 +123,7 @@ def app_with_qa(
     monkeypatch.setenv("PIN_STORAGE_PATH", str(tmp_path / "pins.json"))
 
     from core.settings import get_settings
+
     get_settings.cache_clear()
 
     app = create_app()
@@ -132,7 +140,9 @@ def project_id(app_with_qa: TestClient) -> str:
 class TestListQARecords:
     """Tests for GET /projects/{projectId}/qa endpoint."""
 
-    def test_list_qa_returns_200(self, app_with_qa: TestClient, project_id: str) -> None:
+    def test_list_qa_returns_200(
+        self, app_with_qa: TestClient, project_id: str
+    ) -> None:
         """Should return 200 OK with list of QA records."""
         response = app_with_qa.get(f"/api/v1/projects/{project_id}/qa")
         assert response.status_code == 200
@@ -140,23 +150,31 @@ class TestListQARecords:
         assert "items" in data
         assert len(data["items"]) == 3
 
-    def test_list_qa_filter_by_state(self, app_with_qa: TestClient, project_id: str) -> None:
+    def test_list_qa_filter_by_state(
+        self, app_with_qa: TestClient, project_id: str
+    ) -> None:
         """Should filter QA records by state."""
         response = app_with_qa.get(f"/api/v1/projects/{project_id}/qa?state=todo")
         data = response.json()
         assert len(data["items"]) == 1
         assert data["items"][0]["taskId"] == "T001"
 
-    def test_list_qa_filter_by_verdict(self, app_with_qa: TestClient, project_id: str) -> None:
+    def test_list_qa_filter_by_verdict(
+        self, app_with_qa: TestClient, project_id: str
+    ) -> None:
         """Should filter QA records by verdict."""
         response = app_with_qa.get(f"/api/v1/projects/{project_id}/qa?verdict=pass")
         data = response.json()
         assert len(data["items"]) == 1
         assert data["items"][0]["taskId"] == "T002"
 
-    def test_list_qa_filter_by_session(self, app_with_qa: TestClient, project_id: str) -> None:
+    def test_list_qa_filter_by_session(
+        self, app_with_qa: TestClient, project_id: str
+    ) -> None:
         """Should filter QA records by session ID."""
-        response = app_with_qa.get(f"/api/v1/projects/{project_id}/qa?sessionId=session-123")
+        response = app_with_qa.get(
+            f"/api/v1/projects/{project_id}/qa?sessionId=session-123"
+        )
         data = response.json()
         assert len(data["items"]) == 1
         assert data["items"][0]["taskId"] == "T003"
@@ -165,7 +183,9 @@ class TestListQARecords:
 class TestGetQADetail:
     """Tests for GET /projects/{projectId}/tasks/{taskId}/qa endpoint."""
 
-    def test_get_qa_detail_returns_200(self, app_with_qa: TestClient, project_id: str) -> None:
+    def test_get_qa_detail_returns_200(
+        self, app_with_qa: TestClient, project_id: str
+    ) -> None:
         """Should return 200 OK with QA detail."""
         response = app_with_qa.get(f"/api/v1/projects/{project_id}/tasks/T002/qa")
         assert response.status_code == 200
@@ -174,7 +194,9 @@ class TestGetQADetail:
         assert data["state"] == "done"
         assert data["verdict"] == "pass"
 
-    def test_get_qa_detail_includes_evidence(self, app_with_qa: TestClient, project_id: str) -> None:
+    def test_get_qa_detail_includes_evidence(
+        self, app_with_qa: TestClient, project_id: str
+    ) -> None:
         """Should include evidence rounds and artifacts."""
         response = app_with_qa.get(f"/api/v1/projects/{project_id}/tasks/T002/qa")
         data = response.json()
@@ -188,7 +210,9 @@ class TestGetQADetail:
         assert "coverage.txt" in artifacts
         assert "context7-react.txt" in artifacts
 
-    def test_get_qa_detail_404_if_no_record(self, app_with_qa: TestClient, project_id: str) -> None:
+    def test_get_qa_detail_404_if_no_record(
+        self, app_with_qa: TestClient, project_id: str
+    ) -> None:
         """Should return 404 if no QA record exists."""
         response = app_with_qa.get(f"/api/v1/projects/{project_id}/tasks/UNKNOWN/qa")
         assert response.status_code == 404

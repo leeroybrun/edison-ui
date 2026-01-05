@@ -230,7 +230,10 @@ export function ProjectSidebar({
       </div>
 
       {/* Navigation links */}
-      <nav aria-label="Project navigation" className="flex-1 overflow-y-auto p-2">
+      <nav
+        aria-label="Project navigation"
+        className="flex-1 overflow-y-auto p-2"
+      >
         <ul className="space-y-1">
           {NAV_ITEMS.map((item) => {
             const href = buildHref(projectId, item.key);

@@ -195,7 +195,9 @@ export function CommandPalette({
   // Calculate active descendant
   const activeIndex = selectedIndex >= 0 ? selectedIndex : highlightedIndex;
   const activeDescendant =
-    activeIndex >= 0 ? `command-option-${flatCommands[activeIndex]?.id}` : undefined;
+    activeIndex >= 0
+      ? `command-option-${flatCommands[activeIndex]?.id}`
+      : undefined;
 
   // Track running index for option IDs
   let runningIndex = 0;

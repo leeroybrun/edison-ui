@@ -3,6 +3,7 @@
 RED Phase: These tests MUST fail initially as the endpoints don't exist yet.
 Tests the unified tasks listing endpoint per US2 and api.md contracts.
 """
+
 from __future__ import annotations
 
 import json
@@ -248,7 +249,9 @@ def mock_edison_project_with_tasks(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def app_with_tasks(
-    mock_edison_project_with_tasks: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    mock_edison_project_with_tasks: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> TestClient:
     """Create app with mocked scan roots pointing to project with tasks."""
     monkeypatch.setenv("SCAN_ROOTS", str(mock_edison_project_with_tasks.parent))
@@ -438,13 +441,9 @@ class TestListTasksFiltering:
         for task in data["items"]:
             assert task["sessionId"] is None
 
-    def test_filter_by_state(
-        self, app_with_tasks: TestClient, project_id: str
-    ) -> None:
+    def test_filter_by_state(self, app_with_tasks: TestClient, project_id: str) -> None:
         """Should filter tasks by state."""
-        response = app_with_tasks.get(
-            f"/api/v1/projects/{project_id}/tasks?state=todo"
-        )
+        response = app_with_tasks.get(f"/api/v1/projects/{project_id}/tasks?state=todo")
         data = response.json()
 
         # T001, T003 from global + T008 from session = 3 todo tasks
@@ -489,9 +488,7 @@ class TestListTasksFiltering:
         assert data["items"][0]["taskId"] == "T003"
         assert data["items"][0]["parentId"] == "T002"
 
-    def test_search_by_title(
-        self, app_with_tasks: TestClient, project_id: str
-    ) -> None:
+    def test_search_by_title(self, app_with_tasks: TestClient, project_id: str) -> None:
         """Should search tasks by title."""
         response = app_with_tasks.get(
             f"/api/v1/projects/{project_id}/tasks?search=authentication"
@@ -594,9 +591,7 @@ class TestListTasksReadiness:
 class TestListTasksErrors:
     """Tests for error handling in tasks endpoint."""
 
-    def test_returns_404_for_unknown_project(
-        self, app_with_tasks: TestClient
-    ) -> None:
+    def test_returns_404_for_unknown_project(self, app_with_tasks: TestClient) -> None:
         """Should return 404 for non-existent project."""
         response = app_with_tasks.get("/api/v1/projects/nonexistent/tasks")
         assert response.status_code == 404
@@ -605,18 +600,14 @@ class TestListTasksErrors:
         self, app_with_tasks: TestClient, project_id: str
     ) -> None:
         """Should return 422 for invalid limit value."""
-        response = app_with_tasks.get(
-            f"/api/v1/projects/{project_id}/tasks?limit=-1"
-        )
+        response = app_with_tasks.get(f"/api/v1/projects/{project_id}/tasks?limit=-1")
         assert response.status_code == 422
 
     def test_invalid_offset_returns_422(
         self, app_with_tasks: TestClient, project_id: str
     ) -> None:
         """Should return 422 for invalid offset value."""
-        response = app_with_tasks.get(
-            f"/api/v1/projects/{project_id}/tasks?offset=-1"
-        )
+        response = app_with_tasks.get(f"/api/v1/projects/{project_id}/tasks?offset=-1")
         assert response.status_code == 422
 
 
@@ -870,9 +861,7 @@ class TestTaskSchemas:
 class TestTaskReaderService:
     """Tests for the task reader service."""
 
-    def test_list_all_tasks(
-        self, mock_edison_project_with_tasks: Path
-    ) -> None:
+    def test_list_all_tasks(self, mock_edison_project_with_tasks: Path) -> None:
         """Should list all tasks including session-scoped tasks."""
         from services.task_reader import TaskReaderService
 
@@ -884,9 +873,7 @@ class TestTaskReaderService:
         assert "T001" in task_ids
         assert "T007" in task_ids  # Session-scoped
 
-    def test_get_task_by_id(
-        self, mock_edison_project_with_tasks: Path
-    ) -> None:
+    def test_get_task_by_id(self, mock_edison_project_with_tasks: Path) -> None:
         """Should get a specific task by ID."""
         from services.task_reader import TaskReaderService
 
@@ -908,9 +895,7 @@ class TestTaskReaderService:
 
         assert task is None
 
-    def test_filter_by_session(
-        self, mock_edison_project_with_tasks: Path
-    ) -> None:
+    def test_filter_by_session(self, mock_edison_project_with_tasks: Path) -> None:
         """Should filter tasks by session ID."""
         from services.task_reader import TaskReaderService
 
@@ -921,9 +906,7 @@ class TestTaskReaderService:
         for t in tasks:
             assert t.session_id == "session-001"
 
-    def test_filter_by_state(
-        self, mock_edison_project_with_tasks: Path
-    ) -> None:
+    def test_filter_by_state(self, mock_edison_project_with_tasks: Path) -> None:
         """Should filter tasks by state."""
         from services.task_reader import TaskReaderService
 
@@ -935,9 +918,7 @@ class TestTaskReaderService:
         for t in tasks:
             assert t.state == "todo"
 
-    def test_compute_readiness(
-        self, mock_edison_project_with_tasks: Path
-    ) -> None:
+    def test_compute_readiness(self, mock_edison_project_with_tasks: Path) -> None:
         """Should compute task readiness correctly."""
         from services.task_reader import TaskReaderService
 
@@ -974,9 +955,7 @@ class TestTaskReaderService:
         status = service.get_validation_status("T004")
         assert status == "needs_validation"
 
-    def test_parse_yaml_block_sequences(
-        self, tmp_path: Path
-    ) -> None:
+    def test_parse_yaml_block_sequences(self, tmp_path: Path) -> None:
         """Should correctly parse YAML block sequences (- item style)."""
         from services.task_reader import TaskReaderService
 
@@ -1020,9 +999,7 @@ A task with block sequence YAML frontmatter.
         assert task.tags == ["auth", "security", "backend"]
         assert task.child_ids == ["T101", "T102"]
 
-    def test_parse_mixed_yaml_formats(
-        self, tmp_path: Path
-    ) -> None:
+    def test_parse_mixed_yaml_formats(self, tmp_path: Path) -> None:
         """Should handle mix of inline and block YAML arrays."""
         from services.task_reader import TaskReaderService
 
@@ -1036,7 +1013,7 @@ A task with block sequence YAML frontmatter.
         (tasks_dir / "wip").mkdir()
 
         # Mix of inline array and block sequence
-        task_content = '''---
+        task_content = """---
 id: T200
 title: Mixed format task
 depends_on: ["T001", "T002"]
@@ -1046,7 +1023,7 @@ tags:
 owner: "test-user"
 ---
 # Task T200
-'''
+"""
         (tasks_dir / "wip" / "T200.md").write_text(task_content)
 
         service = TaskReaderService(str(project))

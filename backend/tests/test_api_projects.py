@@ -2,6 +2,7 @@
 
 RED Phase: These tests MUST fail initially as the endpoints don't exist yet.
 """
+
 from __future__ import annotations
 
 import json
@@ -36,8 +37,12 @@ def mock_edison_project(tmp_path: Path) -> Path:
     (tasks_dir / "validated").mkdir()
 
     # Add some mock tasks
-    (tasks_dir / "todo" / "T001.md").write_text("---\nid: T001\ntitle: Test Task 1\n---\n# Test Task 1")
-    (tasks_dir / "wip" / "T002.md").write_text("---\nid: T002\ntitle: Test Task 2\n---\n# Test Task 2")
+    (tasks_dir / "todo" / "T001.md").write_text(
+        "---\nid: T001\ntitle: Test Task 1\n---\n# Test Task 1"
+    )
+    (tasks_dir / "wip" / "T002.md").write_text(
+        "---\nid: T002\ntitle: Test Task 2\n---\n# Test Task 2"
+    )
 
     # Create session directories
     sessions_dir = project_dir / "sessions"
@@ -54,8 +59,8 @@ def mock_edison_project(tmp_path: Path) -> Path:
         "meta": {
             "sessionId": "test-session",
             "createdAt": "2025-12-27T10:00:00Z",
-            "lastActive": "2025-12-27T10:00:00Z"
-        }
+            "lastActive": "2025-12-27T10:00:00Z",
+        },
     }
     (session_dir / "session.json").write_text(json.dumps(session_json))
 
@@ -68,7 +73,9 @@ def mock_edison_project(tmp_path: Path) -> Path:
     (qa_dir / "validated").mkdir()
 
     # Add a mock QA
-    (qa_dir / "todo" / "QA-T001.md").write_text("---\nid: QA-T001\ntask_id: T001\n---\n# QA for T001")
+    (qa_dir / "todo" / "QA-T001.md").write_text(
+        "---\nid: QA-T001\ntask_id: T001\n---\n# QA for T001"
+    )
 
     # Create .git directory (marks it as a git repo)
     git_dir = project_path / ".git"
@@ -101,7 +108,9 @@ def mock_scan_root(
 
 
 @pytest.fixture
-def app_with_scan_root(mock_scan_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
+def app_with_scan_root(
+    mock_scan_root: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> TestClient:
     """Create app with mocked scan roots and pin storage."""
     # Set environment variables for scan roots and pin storage
     monkeypatch.setenv("SCAN_ROOTS", str(mock_scan_root))
@@ -109,6 +118,7 @@ def app_with_scan_root(mock_scan_root: Path, tmp_path: Path, monkeypatch: pytest
 
     # Clear settings cache to pick up new env
     from core.settings import get_settings
+
     get_settings.cache_clear()
 
     app = create_app()
@@ -123,7 +133,9 @@ class TestListProjects:
         response = app_with_scan_root.get("/api/v1/projects")
         assert response.status_code == 200
 
-    def test_list_projects_returns_items_array(self, app_with_scan_root: TestClient) -> None:
+    def test_list_projects_returns_items_array(
+        self, app_with_scan_root: TestClient
+    ) -> None:
         """Should return items array in response."""
         response = app_with_scan_root.get("/api/v1/projects")
         data = response.json()
@@ -206,9 +218,7 @@ class TestListProjects:
         for project in data["items"]:
             assert project.get("pinned", False) is True
 
-    def test_list_projects_has_git_field(
-        self, app_with_scan_root: TestClient
-    ) -> None:
+    def test_list_projects_has_git_field(self, app_with_scan_root: TestClient) -> None:
         """Should include hasGit field."""
         response = app_with_scan_root.get("/api/v1/projects")
         data = response.json()
@@ -217,9 +227,7 @@ class TestListProjects:
         assert "hasGit" in project
         assert project["hasGit"] is True  # Our mock project has .git
 
-    def test_list_projects_redacts_path(
-        self, app_with_scan_root: TestClient
-    ) -> None:
+    def test_list_projects_redacts_path(self, app_with_scan_root: TestClient) -> None:
         """Should redact the full path (per security requirements)."""
         response = app_with_scan_root.get("/api/v1/projects")
         data = response.json()
@@ -294,8 +302,7 @@ class TestPinProject:
         project_id = list_response.json()["items"][0]["projectId"]
 
         response = app_with_scan_root.patch(
-            f"/api/v1/projects/{project_id}/pin",
-            json={"pinned": True}
+            f"/api/v1/projects/{project_id}/pin", json={"pinned": True}
         )
         assert response.status_code == 200
 
@@ -307,8 +314,7 @@ class TestPinProject:
         project_id = list_response.json()["items"][0]["projectId"]
 
         response = app_with_scan_root.patch(
-            f"/api/v1/projects/{project_id}/pin",
-            json={"pinned": True}
+            f"/api/v1/projects/{project_id}/pin", json={"pinned": True}
         )
         data = response.json()
 
@@ -322,14 +328,12 @@ class TestPinProject:
 
         # First pin
         app_with_scan_root.patch(
-            f"/api/v1/projects/{project_id}/pin",
-            json={"pinned": True}
+            f"/api/v1/projects/{project_id}/pin", json={"pinned": True}
         )
 
         # Then unpin
         response = app_with_scan_root.patch(
-            f"/api/v1/projects/{project_id}/pin",
-            json={"pinned": False}
+            f"/api/v1/projects/{project_id}/pin", json={"pinned": False}
         )
         data = response.json()
 
@@ -340,8 +344,7 @@ class TestPinProject:
     ) -> None:
         """Should return 404 for unknown project."""
         response = app_with_scan_root.patch(
-            "/api/v1/projects/unknown-project-id/pin",
-            json={"pinned": True}
+            "/api/v1/projects/unknown-project-id/pin", json={"pinned": True}
         )
         assert response.status_code == 404
 
@@ -411,10 +414,7 @@ class TestProjectSchemas:
         from api.schemas.projects import ProjectHealth
 
         health = ProjectHealth(
-            task_count=10,
-            session_count=2,
-            qa_count=5,
-            active_count=1
+            task_count=10, session_count=2, qa_count=5, active_count=1
         )
 
         assert health.task_count == 10
@@ -429,14 +429,11 @@ class TestProjectSchemas:
             name="test",
             pinned=False,
             health=ProjectHealth(
-                task_count=0,
-                session_count=0,
-                qa_count=0,
-                active_count=0
+                task_count=0, session_count=0, qa_count=0, active_count=0
             ),
             last_activity_at="2025-12-27T10:00:00Z",
             has_git=True,
-            errors=[]
+            errors=[],
         )
 
         assert item.project_id == "test-id"
@@ -445,11 +442,6 @@ class TestProjectSchemas:
         """Should validate ProjectListResponse schema."""
         from api.schemas.projects import ProjectListResponse
 
-        response = ProjectListResponse(
-            items=[],
-            total=0,
-            limit=100,
-            offset=0
-        )
+        response = ProjectListResponse(items=[], total=0, limit=100, offset=0)
 
         assert response.total == 0

@@ -2,6 +2,7 @@
 
 Tests for GET /projects/{projectId}/activity and /audit endpoints.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

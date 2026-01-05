@@ -2,6 +2,7 @@
 
 Discovers Edison projects in configured scan roots and collects health metrics.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -59,9 +60,7 @@ class ProjectDiscoveryService:
             "__pycache__",
         ]
         self.pin_storage_path = (
-            Path(pin_storage_path).expanduser().resolve()
-            if pin_storage_path
-            else None
+            Path(pin_storage_path).expanduser().resolve() if pin_storage_path else None
         )
         self._pinned_projects: set[str] = set()
         self._load_pinned_projects()
@@ -132,7 +131,10 @@ class ProjectDiscoveryService:
             for state_dir in sessions_dir.iterdir():
                 if state_dir.is_dir():
                     for session_dir in state_dir.iterdir():
-                        if session_dir.is_dir() and (session_dir / "session.json").exists():
+                        if (
+                            session_dir.is_dir()
+                            and (session_dir / "session.json").exists()
+                        ):
                             session_count += 1
                             if state_dir.name == "active":
                                 active_count += 1

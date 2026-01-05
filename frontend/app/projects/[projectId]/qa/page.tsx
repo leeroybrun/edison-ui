@@ -1,5 +1,9 @@
 import { QAView } from "../../../../components/QA";
-import type { QARecord, QAListResponse, Session } from "../../../../components/QA/types";
+import type {
+  QARecord,
+  QAListResponse,
+  Session,
+} from "../../../../components/QA/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -105,8 +109,7 @@ export default async function QAPage(props: QAPageProps) {
   ]);
 
   // Determine initial view mode
-  const initialView =
-    searchParams.view === "board" ? "board" : "list";
+  const initialView = searchParams.view === "board" ? "board" : "list";
 
   return (
     <div className="space-y-4">

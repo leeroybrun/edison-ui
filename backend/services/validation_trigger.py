@@ -6,6 +6,7 @@ Provides guard checks for triggering validation including:
 - no-active-validation: No active QA round in progress for this task
 - validators-valid: Specified validators must exist in catalog (if provided)
 """
+
 from __future__ import annotations
 
 import uuid
@@ -18,16 +19,18 @@ from services.task_reader import TaskReaderService
 
 
 # Default validator catalog (in production, this would be loaded from config)
-VALID_VALIDATORS = frozenset({
-    "code-review",
-    "test-coverage",
-    "security",
-    "performance",
-    "accessibility",
-    "documentation",
-    "api-review",
-    "database-review",
-})
+VALID_VALIDATORS = frozenset(
+    {
+        "code-review",
+        "test-coverage",
+        "security",
+        "performance",
+        "accessibility",
+        "documentation",
+        "api-review",
+        "database-review",
+    }
+)
 
 # Default suggested validators when none specified
 DEFAULT_VALIDATORS = ["code-review", "test-coverage"]
@@ -281,18 +284,20 @@ class ValidationTriggerService:
         ]
         for v in validators:
             lines.append(f"  - {v}")
-        lines.extend([
-            f"created_at: '{now}'",
-            f"updated_at: '{now}'",
-            "---",
-            "",
-            f"# QA for {task_id}",
-            "",
-            f"Validation round {round_number} triggered.",
-            "",
-            "## Validators",
-            "",
-        ])
+        lines.extend(
+            [
+                f"created_at: '{now}'",
+                f"updated_at: '{now}'",
+                "---",
+                "",
+                f"# QA for {task_id}",
+                "",
+                f"Validation round {round_number} triggered.",
+                "",
+                "## Validators",
+                "",
+            ]
+        )
         for v in validators:
             lines.append(f"- [ ] {v}")
         lines.append("")

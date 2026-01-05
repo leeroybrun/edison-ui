@@ -28,9 +28,7 @@ describe("GuardFailureAlert", () => {
       render(<GuardFailureAlert failures={failures} />);
 
       expect(screen.getByText("Missing test evidence")).toBeInTheDocument();
-      expect(
-        screen.getByText("Task T001 is not complete"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Task T001 is not complete")).toBeInTheDocument();
     });
 
     it("displays guard name for each failure", () => {

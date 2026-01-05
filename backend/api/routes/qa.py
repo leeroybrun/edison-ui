@@ -2,6 +2,7 @@
 
 Implements QA listing, detail, and validation trigger endpoints.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -38,12 +39,8 @@ async def list_qa_records(
     session_id: Annotated[
         str | None, Query(alias="sessionId", description="Filter by session ID")
     ] = None,
-    state: Annotated[
-        str | None, Query(description="Filter by state")
-    ] = None,
-    verdict: Annotated[
-        str | None, Query(description="Filter by verdict")
-    ] = None,
+    state: Annotated[str | None, Query(description="Filter by state")] = None,
+    verdict: Annotated[str | None, Query(description="Filter by verdict")] = None,
     limit: Annotated[int, Query(ge=1, le=1000, description="Max items")] = 100,
     offset: Annotated[int, Query(ge=0, description="Pagination offset")] = 0,
 ) -> QAListResponse:
@@ -79,7 +76,9 @@ async def get_qa_detail(
 
     detail = service.get_qa_detail(task_id)
     if not detail:
-        raise HTTPException(status_code=404, detail=f"QA record not found for task {task_id}")
+        raise HTTPException(
+            status_code=404, detail=f"QA record not found for task {task_id}"
+        )
 
     return detail
 
@@ -108,12 +107,8 @@ async def preview_trigger_validation(
     )
 
     # Convert to response
-    failures = [
-        GuardFailure(guard=f.guard, reason=f.reason) for f in result.failures
-    ]
-    warnings = [
-        GuardWarning(guard=w.guard, message=w.message) for w in result.warnings
-    ]
+    failures = [GuardFailure(guard=f.guard, reason=f.reason) for f in result.failures]
+    warnings = [GuardWarning(guard=w.guard, message=w.message) for w in result.warnings]
 
     return ValidationTriggerPreviewResponse(
         valid=result.valid,

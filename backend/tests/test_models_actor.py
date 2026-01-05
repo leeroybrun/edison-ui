@@ -3,6 +3,7 @@
 TDD RED PHASE: These tests are written BEFORE implementation.
 Expected: All tests should fail (module not found).
 """
+
 from __future__ import annotations
 
 import getpass

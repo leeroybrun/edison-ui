@@ -57,7 +57,7 @@ describe("EntityAuditPanel", () => {
         entityType="task"
         entityId="T005"
         projectId="project-1"
-      />
+      />,
     );
 
     // Panel title includes entity ID and "Activity"
@@ -75,7 +75,7 @@ describe("EntityAuditPanel", () => {
         entityType="session"
         entityId="session-1"
         projectId="project-1"
-      />
+      />,
     );
 
     expect(screen.getByText(/session-1/)).toBeInTheDocument();
@@ -92,13 +92,13 @@ describe("EntityAuditPanel", () => {
         entityType="task"
         entityId="T005"
         projectId="project-1"
-      />
+      />,
     );
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining("taskId=T005"),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
   });
@@ -114,13 +114,13 @@ describe("EntityAuditPanel", () => {
         entityType="session"
         entityId="session-1"
         projectId="project-1"
-      />
+      />,
     );
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining("sessionId=session-1"),
-        expect.any(Object)
+        expect.any(Object),
       );
     });
   });
@@ -133,7 +133,7 @@ describe("EntityAuditPanel", () => {
         entityType="task"
         entityId="T005"
         projectId="project-1"
-      />
+      />,
     );
 
     expect(screen.getByRole("status")).toBeInTheDocument();
@@ -150,7 +150,7 @@ describe("EntityAuditPanel", () => {
         entityType="task"
         entityId="T005"
         projectId="project-1"
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -166,7 +166,7 @@ describe("EntityAuditPanel", () => {
         entityType="task"
         entityId="T005"
         projectId="project-1"
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -187,7 +187,7 @@ describe("EntityAuditPanel", () => {
         entityType="task"
         entityId="T005"
         projectId="project-1"
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -195,7 +195,9 @@ describe("EntityAuditPanel", () => {
     });
 
     // Find collapse button
-    const collapseButton = screen.getByRole("button", { name: /collapse|toggle|expand/i });
+    const collapseButton = screen.getByRole("button", {
+      name: /collapse|toggle|expand/i,
+    });
     expect(collapseButton).toBeInTheDocument();
 
     // Click to collapse
@@ -203,7 +205,9 @@ describe("EntityAuditPanel", () => {
 
     // Content should be hidden
     await waitFor(() => {
-      expect(screen.queryByText("Task T005 moved to done")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Task T005 moved to done"),
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -218,7 +222,7 @@ describe("EntityAuditPanel", () => {
         entityType="task"
         entityId="T005"
         projectId="project-1"
-      />
+      />,
     );
 
     await waitFor(() => {
@@ -237,7 +241,7 @@ describe("EntityAuditPanel", () => {
         entityType="task"
         entityId="T005"
         projectId="project-1"
-      />
+      />,
     );
 
     // Should have a heading for the panel

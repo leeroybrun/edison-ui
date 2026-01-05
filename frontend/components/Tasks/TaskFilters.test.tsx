@@ -12,11 +12,7 @@ const mockSessions: Session[] = [
 describe("TaskFilters", () => {
   it("renders search input", () => {
     render(
-      <TaskFilters
-        filters={{}}
-        sessions={[]}
-        onFiltersChange={() => {}}
-      />,
+      <TaskFilters filters={{}} sessions={[]} onFiltersChange={() => {}} />,
     );
 
     expect(screen.getByPlaceholderText(/search/i)).toBeInTheDocument();
@@ -24,11 +20,7 @@ describe("TaskFilters", () => {
 
   it("renders state filter dropdown", () => {
     render(
-      <TaskFilters
-        filters={{}}
-        sessions={[]}
-        onFiltersChange={() => {}}
-      />,
+      <TaskFilters filters={{}} sessions={[]} onFiltersChange={() => {}} />,
     );
 
     expect(screen.getByLabelText(/state/i)).toBeInTheDocument();
@@ -49,11 +41,7 @@ describe("TaskFilters", () => {
   it("calls onFiltersChange when search input changes", () => {
     const handleChange = vi.fn();
     render(
-      <TaskFilters
-        filters={{}}
-        sessions={[]}
-        onFiltersChange={handleChange}
-      />,
+      <TaskFilters filters={{}} sessions={[]} onFiltersChange={handleChange} />,
     );
 
     const input = screen.getByPlaceholderText(/search/i);
@@ -65,11 +53,7 @@ describe("TaskFilters", () => {
   it("calls onFiltersChange when state filter changes", () => {
     const handleChange = vi.fn();
     render(
-      <TaskFilters
-        filters={{}}
-        sessions={[]}
-        onFiltersChange={handleChange}
-      />,
+      <TaskFilters filters={{}} sessions={[]} onFiltersChange={handleChange} />,
     );
 
     const select = screen.getByLabelText(/state/i);
@@ -151,11 +135,7 @@ describe("TaskFilters", () => {
 
   it("renders session filter with Unscoped option even without sessions", () => {
     render(
-      <TaskFilters
-        filters={{}}
-        sessions={[]}
-        onFiltersChange={() => {}}
-      />,
+      <TaskFilters filters={{}} sessions={[]} onFiltersChange={() => {}} />,
     );
 
     const select = screen.getByLabelText(/session/i);

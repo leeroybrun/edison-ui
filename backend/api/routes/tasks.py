@@ -2,6 +2,7 @@
 
 Implements task listing, readiness, and guarded create/transition endpoints per api.md contracts.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -235,12 +236,8 @@ async def preview_create_task(
     )
 
     # Convert to response
-    failures = [
-        GuardFailure(guard=f.guard, reason=f.reason) for f in result.failures
-    ]
-    warnings = [
-        GuardWarning(guard=w.guard, message=w.message) for w in result.warnings
-    ]
+    failures = [GuardFailure(guard=f.guard, reason=f.reason) for f in result.failures]
+    warnings = [GuardWarning(guard=w.guard, message=w.message) for w in result.warnings]
 
     # Create preview if valid
     preview = None
@@ -339,7 +336,9 @@ async def create_task(
 # =============================================================================
 
 
-@router.post("/{task_id}/transition/preview", response_model=TaskTransitionPreviewResponse)
+@router.post(
+    "/{task_id}/transition/preview", response_model=TaskTransitionPreviewResponse
+)
 async def preview_transition_task(
     project_id: str,
     task_id: str,
@@ -356,12 +355,8 @@ async def preview_transition_task(
     result = guard_service.check_transition_guards(task_id, request.to_state)
 
     # Convert to response
-    failures = [
-        GuardFailure(guard=f.guard, reason=f.reason) for f in result.failures
-    ]
-    warnings = [
-        GuardWarning(guard=w.guard, message=w.message) for w in result.warnings
-    ]
+    failures = [GuardFailure(guard=f.guard, reason=f.reason) for f in result.failures]
+    warnings = [GuardWarning(guard=w.guard, message=w.message) for w in result.warnings]
 
     return TaskTransitionPreviewResponse(
         valid=result.valid,

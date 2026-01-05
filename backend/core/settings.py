@@ -37,6 +37,11 @@ class Settings(BaseSettings):
     )
     pin_storage_path: str = "~/.edison-ui/pins.json"
 
+    # Realtime configuration (T051)
+    realtime_enabled: bool = True
+    realtime_coalesce_ms: int = 100
+    realtime_max_queue_size: int = 1000
+
     @property
     def scan_roots(self) -> list[str]:
         """Return scan_roots as a list."""
@@ -61,4 +66,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-

@@ -4,12 +4,23 @@ import { useCallback, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 import { SessionCard } from "./SessionCard";
-import type { Session, SessionsViewProps, SessionState, ViewMode } from "./types";
+import type {
+  Session,
+  SessionsViewProps,
+  SessionState,
+  ViewMode,
+} from "./types";
 
 /**
  * All valid session states matching backend SESSION_STATES
  */
-const SESSION_STATES: SessionState[] = ["draft", "active", "paused", "completed", "abandoned"];
+const SESSION_STATES: SessionState[] = [
+  "draft",
+  "active",
+  "paused",
+  "completed",
+  "abandoned",
+];
 
 /**
  * State badge color mappings for list view
@@ -83,7 +94,7 @@ export function SessionsView({
       }
       return `${pathname}?${params.toString()}`;
     },
-    [pathname]
+    [pathname],
   );
 
   // Filter sessions by state
@@ -124,10 +135,7 @@ export function SessionsView({
   };
 
   // Handle row keyboard navigation
-  const handleRowKeyDown = (
-    event: React.KeyboardEvent,
-    sessionId: string
-  ) => {
+  const handleRowKeyDown = (event: React.KeyboardEvent, sessionId: string) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       handleSessionClick(sessionId);

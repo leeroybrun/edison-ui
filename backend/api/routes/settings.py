@@ -2,6 +2,7 @@
 
 Implements settings retrieval, update, and first-run setup endpoints.
 """
+
 from __future__ import annotations
 
 import os
@@ -61,7 +62,7 @@ async def update_settings(body: SettingsUpdateRequest) -> SettingsUpdateResponse
         if not manager.is_field_allowed_for_update(field_name):
             raise HTTPException(
                 status_code=400,
-                detail=f"Field '{field_name}' is not allowed for update via PATCH"
+                detail=f"Field '{field_name}' is not allowed for update via PATCH",
             )
 
     try:

@@ -89,7 +89,12 @@ describe("TaskCreateDialog", () => {
           valid: true,
           guardFailures: [],
           guardWarnings: [],
-          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
+          preview: {
+            taskId: "T099",
+            title: "New Task",
+            description: "",
+            state: "todo",
+          },
         }),
       });
 
@@ -119,7 +124,12 @@ describe("TaskCreateDialog", () => {
           valid: true,
           guardFailures: [],
           guardWarnings: [],
-          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
+          preview: {
+            taskId: "T099",
+            title: "New Task",
+            description: "",
+            state: "todo",
+          },
         }),
       });
 
@@ -143,7 +153,12 @@ describe("TaskCreateDialog", () => {
           valid: true,
           guardFailures: [],
           guardWarnings: [],
-          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
+          preview: {
+            taskId: "T099",
+            title: "New Task",
+            description: "",
+            state: "todo",
+          },
         }),
       });
 
@@ -172,7 +187,12 @@ describe("TaskCreateDialog", () => {
           valid: true,
           guardFailures: [],
           guardWarnings: [],
-          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
+          preview: {
+            taskId: "T099",
+            title: "New Task",
+            description: "",
+            state: "todo",
+          },
         }),
       });
 
@@ -205,7 +225,12 @@ describe("TaskCreateDialog", () => {
             { guard: "session_required", reason: "No active session" },
           ],
           guardWarnings: [],
-          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
+          preview: {
+            taskId: "T099",
+            title: "New Task",
+            description: "",
+            state: "todo",
+          },
         }),
       });
 
@@ -231,7 +256,12 @@ describe("TaskCreateDialog", () => {
             { guard: "session_required", reason: "No active session" },
           ],
           guardWarnings: [],
-          preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
+          preview: {
+            taskId: "T099",
+            title: "New Task",
+            description: "",
+            state: "todo",
+          },
         }),
       });
 
@@ -258,7 +288,12 @@ describe("TaskCreateDialog", () => {
             valid: true,
             guardFailures: [],
             guardWarnings: [],
-            preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
+            preview: {
+              taskId: "T099",
+              title: "New Task",
+              description: "",
+              state: "todo",
+            },
           }),
         })
         .mockResolvedValueOnce({
@@ -305,7 +340,12 @@ describe("TaskCreateDialog", () => {
             valid: true,
             guardFailures: [],
             guardWarnings: [],
-            preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
+            preview: {
+              taskId: "T099",
+              title: "New Task",
+              description: "",
+              state: "todo",
+            },
           }),
         })
         .mockResolvedValueOnce({
@@ -398,7 +438,12 @@ describe("TaskCreateDialog", () => {
             valid: true,
             guardFailures: [],
             guardWarnings: [],
-            preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
+            preview: {
+              taskId: "T099",
+              title: "New Task",
+              description: "",
+              state: "todo",
+            },
           }),
         })
         .mockImplementation(() => new Promise(() => {})); // Never resolves
@@ -452,7 +497,12 @@ describe("TaskCreateDialog", () => {
             valid: true,
             guardFailures: [],
             guardWarnings: [],
-            preview: { taskId: "T099", title: "New Task", description: "", state: "todo" },
+            preview: {
+              taskId: "T099",
+              title: "New Task",
+              description: "",
+              state: "todo",
+            },
           }),
         })
         .mockResolvedValueOnce({

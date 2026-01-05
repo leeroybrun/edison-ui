@@ -2,6 +2,7 @@
 
 Provides filesystem operations for task creation and state transitions.
 """
+
 from __future__ import annotations
 
 import uuid
@@ -92,7 +93,7 @@ class TaskWriterService:
         lines = [
             "---",
             f"id: {task_id}",
-            f"title: \"{title}\"",
+            f'title: "{title}"',
             f"type: {task_type}",
         ]
         if session_id:

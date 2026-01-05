@@ -8,4 +8,3 @@ export default async function ProjectsPage() {
     </section>
   );
 }
-

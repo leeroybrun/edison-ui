@@ -5,6 +5,7 @@ AuditWriter provides append-only JSONL audit logging with:
 - Automatic redaction of secrets, external paths, and env var values
 - Thread-safe writes via file locking
 """
+
 from __future__ import annotations
 
 import fcntl
@@ -129,8 +130,7 @@ def redact_context(context: dict[str, Any], project_root: str) -> dict[str, Any]
             is_env = key_lower in ENV_VAR_KEYS or is_env_context
 
             return {
-                k: _redact_value(k, v, is_env_context=is_env)
-                for k, v in value.items()
+                k: _redact_value(k, v, is_env_context=is_env) for k, v in value.items()
             }
 
         if isinstance(value, list):

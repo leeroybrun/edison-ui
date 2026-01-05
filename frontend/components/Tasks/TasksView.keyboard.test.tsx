@@ -198,7 +198,9 @@ describe("TasksView Keyboard Navigation", () => {
       await user.click(region);
 
       // Move past the end
-      await user.keyboard("{ArrowDown}{ArrowDown}{ArrowDown}{ArrowDown}{ArrowDown}");
+      await user.keyboard(
+        "{ArrowDown}{ArrowDown}{ArrowDown}{ArrowDown}{ArrowDown}",
+      );
 
       const rows = screen.getAllByRole("row").slice(1);
       expect(rows[0]).toHaveAttribute("data-selected", "true");
@@ -247,7 +249,7 @@ describe("TasksView Keyboard Navigation", () => {
 
       // Should now have selection in the next column
       const wipHeading = screen.getByRole("heading", { name: /wip/i });
-      const wipColumn = wipHeading.closest('[data-column]');
+      const wipColumn = wipHeading.closest("[data-column]");
       const wipCards = wipColumn?.querySelectorAll('[data-selected="true"]');
       expect(wipCards?.length).toBeGreaterThan(0);
     });
@@ -272,7 +274,7 @@ describe("TasksView Keyboard Navigation", () => {
 
       // Should be back in first column
       const todoHeading = screen.getByRole("heading", { name: /todo/i });
-      const todoColumn = todoHeading.closest('[data-column]');
+      const todoColumn = todoHeading.closest("[data-column]");
       const todoCards = todoColumn?.querySelectorAll('[data-selected="true"]');
       expect(todoCards?.length).toBeGreaterThan(0);
     });
@@ -392,7 +394,9 @@ describe("TasksView Keyboard Navigation", () => {
       await user.keyboard("{ArrowLeft}"); // Collapse
 
       // Toggle button should be in collapsed state
-      const toggleButton = screen.getByRole("button", { name: /toggle.*T001/i });
+      const toggleButton = screen.getByRole("button", {
+        name: /toggle.*T001/i,
+      });
       expect(toggleButton.querySelector("svg")).not.toHaveClass("rotate-90");
     });
 
@@ -444,7 +448,9 @@ describe("TasksView Keyboard Navigation", () => {
       await user.keyboard("{ArrowLeft}"); // Back to T001
 
       // Parent should be selected (index 0)
-      const parentContainer = screen.getByText("T001").closest("[data-selected]");
+      const parentContainer = screen
+        .getByText("T001")
+        .closest("[data-selected]");
       expect(parentContainer).not.toBeNull();
     });
   });

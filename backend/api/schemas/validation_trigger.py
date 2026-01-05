@@ -2,6 +2,7 @@
 
 Implements schemas for QA validation trigger preview/apply endpoints.
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel, Field
@@ -36,9 +37,15 @@ class ValidationTriggerPreviewResponse(BaseModel):
     valid: bool
     task_id: str = Field(..., alias="taskId")
     task_state: str | None = Field(None, alias="taskState")
-    suggested_validators: list[str] = Field(default_factory=list, alias="suggestedValidators")
-    guard_failures: list[GuardFailure] = Field(default_factory=list, alias="guardFailures")
-    guard_warnings: list[GuardWarning] = Field(default_factory=list, alias="guardWarnings")
+    suggested_validators: list[str] = Field(
+        default_factory=list, alias="suggestedValidators"
+    )
+    guard_failures: list[GuardFailure] = Field(
+        default_factory=list, alias="guardFailures"
+    )
+    guard_warnings: list[GuardWarning] = Field(
+        default_factory=list, alias="guardWarnings"
+    )
 
     model_config = {"populate_by_name": True}
 

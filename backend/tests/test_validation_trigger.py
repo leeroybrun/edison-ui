@@ -6,6 +6,7 @@ RED Phase: These tests verify guard checks for triggering validation:
 - no-active-validation: No active QA round in progress
 - validators-valid: Specified validators must exist in catalog
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -126,8 +127,7 @@ def project_with_validation_setup(tmp_path: Path) -> Path:
     # QA for T005 in wip state (active validation)
     (qa_dir / "wip" / "T005-qa.md").write_text(
         create_qa_frontmatter(
-            "T005", "QA-T005", state="wip", round_num=1,
-            validators=["code-review"]
+            "T005", "QA-T005", state="wip", round_num=1, validators=["code-review"]
         )
         + "\n# QA T005\nValidation in progress."
     )
@@ -135,8 +135,12 @@ def project_with_validation_setup(tmp_path: Path) -> Path:
     # QA for T004 in validated state (completed)
     (qa_dir / "validated" / "T004-qa.md").write_text(
         create_qa_frontmatter(
-            "T004", "QA-T004", state="validated", verdict="pass", round_num=1,
-            validators=["code-review", "test-coverage"]
+            "T004",
+            "QA-T004",
+            state="validated",
+            verdict="pass",
+            round_num=1,
+            validators=["code-review", "test-coverage"],
         )
         + "\n# QA T004\nValidation complete."
     )
@@ -198,9 +202,7 @@ class TestTaskExistsGuard:
 class TestTaskDoneGuard:
     """Tests for task-done guard check."""
 
-    def test_done_task_passes_guard(
-        self, project_with_validation_setup: Path
-    ) -> None:
+    def test_done_task_passes_guard(self, project_with_validation_setup: Path) -> None:
         """Should pass when task is in done state."""
         from services.validation_trigger import ValidationTriggerGuardService
 
@@ -210,9 +212,7 @@ class TestTaskDoneGuard:
         # Task is in done state, should not have task-done failure
         assert not any(f.guard == "task-done" for f in result.failures)
 
-    def test_wip_task_fails_guard(
-        self, project_with_validation_setup: Path
-    ) -> None:
+    def test_wip_task_fails_guard(self, project_with_validation_setup: Path) -> None:
         """Should fail when task is in wip state."""
         from services.validation_trigger import ValidationTriggerGuardService
 
@@ -222,9 +222,7 @@ class TestTaskDoneGuard:
         assert result.valid is False
         assert any(f.guard == "task-done" for f in result.failures)
 
-    def test_todo_task_fails_guard(
-        self, project_with_validation_setup: Path
-    ) -> None:
+    def test_todo_task_fails_guard(self, project_with_validation_setup: Path) -> None:
         """Should fail when task is in todo state."""
         from services.validation_trigger import ValidationTriggerGuardService
 

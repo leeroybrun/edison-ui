@@ -43,7 +43,7 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
     // cli.invocation.end appears twice in mock data
@@ -59,7 +59,7 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
     expect(screen.getByText(/edison task transition/)).toBeInTheDocument();
@@ -75,7 +75,7 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
     // Exit code 0 should have success styling
@@ -94,7 +94,7 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
     // 1234ms should be shown as "1.2s" or similar
@@ -109,7 +109,7 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
     expect(screen.getByRole("status")).toBeInTheDocument();
@@ -124,10 +124,12 @@ describe("AuditEventList", () => {
         hasMore={true}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
-    expect(screen.getByRole("button", { name: /load more/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /load more/i }),
+    ).toBeInTheDocument();
   });
 
   it("hides Load more button when hasMore is false", () => {
@@ -138,10 +140,12 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
-    expect(screen.queryByRole("button", { name: /load more/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /load more/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("calls onLoadMore when Load more button is clicked", () => {
@@ -153,7 +157,7 @@ describe("AuditEventList", () => {
         hasMore={true}
         onLoadMore={onLoadMore}
         showRaw={false}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByRole("button", { name: /load more/i }));
@@ -168,7 +172,7 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
     expect(screen.getByText(/no audit events/i)).toBeInTheDocument();
@@ -182,7 +186,7 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={true}
-      />
+      />,
     );
 
     // In raw mode, should show invocation IDs
@@ -197,11 +201,13 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
     // Find expand buttons and click first one
-    const expandButtons = screen.getAllByRole("button", { name: /details|expand/i });
+    const expandButtons = screen.getAllByRole("button", {
+      name: /details|expand/i,
+    });
     expect(expandButtons.length).toBeGreaterThan(0);
 
     fireEvent.click(expandButtons[0]);
@@ -218,7 +224,7 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
     expect(screen.getByRole("list")).toBeInTheDocument();
@@ -233,7 +239,7 @@ describe("AuditEventList", () => {
         hasMore={false}
         onLoadMore={() => {}}
         showRaw={false}
-      />
+      />,
     );
 
     // session-1 appears in 2 events

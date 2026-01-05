@@ -58,7 +58,8 @@ export function ActivityPageClient({
   const searchParams = useSearchParams();
 
   const [view, setView] = useState<"activity" | "audit">(initialView);
-  const [activityItems, setActivityItems] = useState<ActivityItem[]>(initialItems);
+  const [activityItems, setActivityItems] =
+    useState<ActivityItem[]>(initialItems);
   const [auditItems, setAuditItems] = useState<AuditEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -80,14 +81,19 @@ export function ActivityPageClient({
   );
 
   const fetchData = useCallback(
-    async (currentFilters: AuditFiltersState, currentView: "activity" | "audit") => {
+    async (
+      currentFilters: AuditFiltersState,
+      currentView: "activity" | "audit",
+    ) => {
       setLoading(true);
 
       try {
         const params = new URLSearchParams();
-        if (currentFilters.sessionId) params.set("sessionId", currentFilters.sessionId);
+        if (currentFilters.sessionId)
+          params.set("sessionId", currentFilters.sessionId);
         if (currentFilters.taskId) params.set("taskId", currentFilters.taskId);
-        if (currentFilters.eventType) params.set("eventType", currentFilters.eventType);
+        if (currentFilters.eventType)
+          params.set("eventType", currentFilters.eventType);
         if (currentFilters.since) params.set("since", currentFilters.since);
         params.set("limit", "50");
 
