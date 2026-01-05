@@ -45,7 +45,7 @@ validation:
         cwd: ''
         ensure_running: true
         healthcheck_url: http://localhost:3334
-        start_command: 'cd backend && SCAN_ROOTS=/Users/leeroy/Documents/Development API_PORT=8002 CORS_ORIGINS=''["http://localhost:3334","http://localhost:3000"]'' python -m uvicorn main:app --host 127.0.0.1 --port 8002 & cd frontend && NEXT_PUBLIC_API_URL=http://localhost:8002 pnpm dev -p 3334'
+        start_command: './scripts/start-e2e-servers.sh'
         stop_after: validation
         stop_command: 'pkill -f "uvicorn main:app --port 8002" || true; pkill -f "next dev.*3334" || true'
         url: http://localhost:3334
