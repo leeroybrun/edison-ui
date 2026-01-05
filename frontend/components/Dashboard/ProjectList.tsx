@@ -119,7 +119,11 @@ export function ProjectList({
           </h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {pinnedProjects.map((project) => (
-              <ProjectCard key={project.projectId} onPin={onPin} project={project} />
+              <ProjectCard
+                key={project.projectId}
+                onPin={onPin}
+                project={project}
+              />
             ))}
           </div>
         </section>
@@ -132,7 +136,11 @@ export function ProjectList({
         </h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {unpinnedProjects.map((project) => (
-            <ProjectCard key={project.projectId} onPin={onPin} project={project} />
+            <ProjectCard
+              key={project.projectId}
+              onPin={onPin}
+              project={project}
+            />
           ))}
         </div>
       </section>

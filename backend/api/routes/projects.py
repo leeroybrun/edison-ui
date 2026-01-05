@@ -2,6 +2,7 @@
 
 Implements project discovery, listing, detail, and pin endpoints.
 """
+
 from __future__ import annotations
 
 from typing import Annotated

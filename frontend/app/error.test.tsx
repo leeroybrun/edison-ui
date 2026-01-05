@@ -26,7 +26,7 @@ describe("ErrorPage", () => {
   it("renders a retry button", () => {
     render(<ErrorPage error={mockError} reset={mockReset} />);
     expect(
-      screen.getByRole("button", { name: /try again|retry/i })
+      screen.getByRole("button", { name: /try again|retry/i }),
     ).toBeInTheDocument();
   });
 
@@ -34,7 +34,9 @@ describe("ErrorPage", () => {
     const user = userEvent.setup();
     render(<ErrorPage error={mockError} reset={mockReset} />);
 
-    const retryButton = screen.getByRole("button", { name: /try again|retry/i });
+    const retryButton = screen.getByRole("button", {
+      name: /try again|retry/i,
+    });
     await user.click(retryButton);
 
     expect(mockReset).toHaveBeenCalledTimes(1);
@@ -42,8 +44,6 @@ describe("ErrorPage", () => {
 
   it("has accessible error heading", () => {
     render(<ErrorPage error={mockError} reset={mockReset} />);
-    expect(
-      screen.getByRole("heading", { name: /error/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /error/i })).toBeInTheDocument();
   });
 });

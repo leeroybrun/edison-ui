@@ -19,14 +19,18 @@ describe("ProjectSidebar", () => {
 
   describe("navigation structure", () => {
     it("renders navigation with accessible landmark", () => {
-      render(<ProjectSidebar projectId={projectId} projectName={projectName} />);
+      render(
+        <ProjectSidebar projectId={projectId} projectName={projectName} />,
+      );
       const nav = screen.getByRole("navigation");
       expect(nav).toBeInTheDocument();
       expect(nav).toHaveAttribute("aria-label", "Project navigation");
     });
 
     it("renders all required navigation items", () => {
-      render(<ProjectSidebar projectId={projectId} projectName={projectName} />);
+      render(
+        <ProjectSidebar projectId={projectId} projectName={projectName} />,
+      );
 
       for (const item of EXPECTED_NAV_ITEMS) {
         const link = screen.getByRole("link", { name: item.label });
@@ -36,12 +40,16 @@ describe("ProjectSidebar", () => {
     });
 
     it("displays project name in header", () => {
-      render(<ProjectSidebar projectId={projectId} projectName={projectName} />);
+      render(
+        <ProjectSidebar projectId={projectId} projectName={projectName} />,
+      );
       expect(screen.getByText(projectName)).toBeInTheDocument();
     });
 
     it("includes back link to projects list", () => {
-      render(<ProjectSidebar projectId={projectId} projectName={projectName} />);
+      render(
+        <ProjectSidebar projectId={projectId} projectName={projectName} />,
+      );
       const backLink = screen.getByRole("link", { name: /back to projects/i });
       expect(backLink).toBeInTheDocument();
       expect(backLink).toHaveAttribute("href", "/");
@@ -55,7 +63,7 @@ describe("ProjectSidebar", () => {
           projectId={projectId}
           projectName={projectName}
           activeItem="tasks"
-        />
+        />,
       );
       const tasksLink = screen.getByRole("link", { name: "Tasks" });
       expect(tasksLink).toHaveAttribute("aria-current", "page");
@@ -67,7 +75,7 @@ describe("ProjectSidebar", () => {
           projectId={projectId}
           projectName={projectName}
           activeItem="tasks"
-        />
+        />,
       );
       const dashboardLink = screen.getByRole("link", { name: "Dashboard" });
       expect(dashboardLink).not.toHaveAttribute("aria-current");
@@ -77,7 +85,9 @@ describe("ProjectSidebar", () => {
   describe("keyboard accessibility", () => {
     it("all navigation links are focusable", async () => {
       const user = userEvent.setup();
-      render(<ProjectSidebar projectId={projectId} projectName={projectName} />);
+      render(
+        <ProjectSidebar projectId={projectId} projectName={projectName} />,
+      );
 
       // Tab through all links
       for (const item of EXPECTED_NAV_ITEMS) {
@@ -96,7 +106,7 @@ describe("ProjectSidebar", () => {
           projectId={projectId}
           projectName={projectName}
           collapsed={true}
-        />
+        />,
       );
       const sidebar = screen.getByTestId("project-sidebar");
       expect(sidebar).toHaveClass("w-16");
@@ -108,14 +118,16 @@ describe("ProjectSidebar", () => {
           projectId={projectId}
           projectName={projectName}
           collapsed={false}
-        />
+        />,
       );
       const sidebar = screen.getByTestId("project-sidebar");
       expect(sidebar).toHaveClass("w-64");
     });
 
     it("renders collapse toggle button", () => {
-      render(<ProjectSidebar projectId={projectId} projectName={projectName} />);
+      render(
+        <ProjectSidebar projectId={projectId} projectName={projectName} />,
+      );
       const toggleButton = screen.getByRole("button", {
         name: /collapse sidebar/i,
       });
@@ -131,7 +143,7 @@ describe("ProjectSidebar", () => {
           projectName={projectName}
           collapsed={false}
           onCollapsedChange={onCollapsedChange}
-        />
+        />,
       );
 
       const toggleButton = screen.getByRole("button", {
@@ -149,7 +161,7 @@ describe("ProjectSidebar", () => {
           projectId={projectId}
           projectName={projectName}
           collapsed={true}
-        />
+        />,
       );
 
       for (const item of EXPECTED_NAV_ITEMS) {

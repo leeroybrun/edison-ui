@@ -64,7 +64,7 @@ describe("ApiClient", () => {
           headers: expect.objectContaining({
             "Content-Type": "application/json",
           }),
-        })
+        }),
       );
       expect(result.data).toEqual(mockData);
     });
@@ -83,7 +83,7 @@ describe("ApiClient", () => {
 
       expect(fetch).toHaveBeenCalledWith(
         "http://localhost:8000/api/v1/projects?pinned=true&limit=10",
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -105,7 +105,7 @@ describe("ApiClient", () => {
           headers: expect.objectContaining({
             Authorization: "Bearer bearer-token-123",
           }),
-        })
+        }),
       );
     });
   });
@@ -135,7 +135,7 @@ describe("ApiClient", () => {
             "Content-Type": "application/json",
           }),
           body: JSON.stringify(requestBody),
-        })
+        }),
       );
       expect(result.data).toEqual(responseData);
     });
@@ -159,7 +159,7 @@ describe("ApiClient", () => {
         expect.objectContaining({
           method: "PATCH",
           body: JSON.stringify({ pinned: true }),
-        })
+        }),
       );
     });
   });
@@ -181,7 +181,7 @@ describe("ApiClient", () => {
         "http://localhost:8000/api/v1/pairing/pairing-123",
         expect.objectContaining({
           method: "DELETE",
-        })
+        }),
       );
     });
   });
@@ -203,9 +203,9 @@ describe("ApiClient", () => {
 
       const client = createApiClient();
 
-      await expect(client.post("/projects/proj1/tasks", { body: {} })).rejects.toThrow(
-        ApiError
-      );
+      await expect(
+        client.post("/projects/proj1/tasks", { body: {} }),
+      ).rejects.toThrow(ApiError);
     });
 
     it("should include error details in ApiError", async () => {
@@ -352,7 +352,9 @@ describe("ApiClient", () => {
     it("should handle network errors", async () => {
       const { createApiClient, NetworkError } = await import("./api-client");
 
-      global.fetch = vi.fn().mockRejectedValueOnce(new Error("Failed to fetch"));
+      global.fetch = vi
+        .fn()
+        .mockRejectedValueOnce(new Error("Failed to fetch"));
 
       const client = createApiClient();
 
@@ -371,7 +373,7 @@ describe("ApiClient", () => {
             abortController.signal.addEventListener("abort", () => {
               reject(new DOMException("Aborted", "AbortError"));
             });
-          })
+          }),
       );
 
       const client = createApiClient();

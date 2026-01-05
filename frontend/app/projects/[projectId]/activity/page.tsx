@@ -1,5 +1,10 @@
 import { ActivityPageClient } from "./ActivityPageClient";
-import type { ActivityItem, Session, TaskRef, ActivityResponse } from "../../../../components/Activity";
+import type {
+  ActivityItem,
+  Session,
+  TaskRef,
+  ActivityResponse,
+} from "../../../../components/Activity";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 

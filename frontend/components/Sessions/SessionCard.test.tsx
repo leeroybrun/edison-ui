@@ -95,7 +95,7 @@ describe("SessionCard", () => {
         onClick={handleClick}
         projectId="my-project"
         session={mockSession}
-      />
+      />,
     );
 
     const card = screen.getByRole("article");
@@ -106,7 +106,7 @@ describe("SessionCard", () => {
 
   it("shows selected state when isSelected is true", () => {
     render(
-      <SessionCard isSelected projectId="my-project" session={mockSession} />
+      <SessionCard isSelected projectId="my-project" session={mockSession} />,
     );
 
     const card = screen.getByRole("article");
@@ -120,7 +120,7 @@ describe("SessionCard", () => {
         onClick={handleClick}
         projectId="my-project"
         session={mockSession}
-      />
+      />,
     );
 
     const card = screen.getByRole("article");

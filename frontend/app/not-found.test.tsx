@@ -15,7 +15,9 @@ describe("NotFound", () => {
 
   it("renders link back to dashboard", () => {
     render(<NotFound />);
-    const homeLink = screen.getByRole("link", { name: /dashboard|home|go back/i });
+    const homeLink = screen.getByRole("link", {
+      name: /dashboard|home|go back/i,
+    });
     expect(homeLink).toBeInTheDocument();
     expect(homeLink).toHaveAttribute("href", "/");
   });

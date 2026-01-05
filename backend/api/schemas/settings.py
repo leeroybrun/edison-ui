@@ -1,4 +1,5 @@
 """Settings-related Pydantic schemas (T011)."""
+
 from __future__ import annotations
 
 from pydantic import BaseModel, Field

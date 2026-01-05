@@ -2,10 +2,15 @@
 
 Exports all shared schema models for errors, guards, projects, and settings.
 """
+
 from __future__ import annotations
 
 from api.schemas.errors import ErrorDetail, ErrorResponse, ValidationErrorResponse
-from api.schemas.guards import GuardApplyResponse, GuardCheckResult, GuardPreviewResponse
+from api.schemas.guards import (
+    GuardApplyResponse,
+    GuardCheckResult,
+    GuardPreviewResponse,
+)
 from api.schemas.projects import (
     PinRequest,
     PinResponse,

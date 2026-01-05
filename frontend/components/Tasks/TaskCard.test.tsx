@@ -42,9 +42,7 @@ describe("TaskCard", () => {
     };
 
     states.forEach((state) => {
-      const { container } = render(
-        <TaskCard task={{ ...mockTask, state }} />,
-      );
+      const { container } = render(<TaskCard task={{ ...mockTask, state }} />);
       const badge = container.querySelector(`[data-state="${state}"]`);
       expect(badge).toHaveClass(expectedStyles[state]);
     });
@@ -86,7 +84,8 @@ describe("TaskCard", () => {
             dependencyId: "T000",
             dependencyState: "wip",
             requiredStates: ["done", "validated"],
-            reason: "Dependency T000 is in state wip, requires done or validated",
+            reason:
+              "Dependency T000 is in state wip, requires done or validated",
           },
         ],
       };
@@ -105,7 +104,8 @@ describe("TaskCard", () => {
             dependencyId: "T000",
             dependencyState: "wip",
             requiredStates: ["done", "validated"],
-            reason: "Dependency T000 is in state wip, requires done or validated",
+            reason:
+              "Dependency T000 is in state wip, requires done or validated",
           },
         ],
       };

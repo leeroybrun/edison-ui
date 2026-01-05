@@ -2,6 +2,7 @@
 
 Actor identity must be stable and explicit for auditing (OS user + display name).
 """
+
 from __future__ import annotations
 
 import getpass

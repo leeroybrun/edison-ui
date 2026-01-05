@@ -5,6 +5,7 @@ RED Phase: These tests verify task operation guards including:
 - Dependency validation
 - State transition validation
 """
+
 from __future__ import annotations
 
 import json
@@ -79,14 +80,12 @@ def project_with_guards_setup(tmp_path: Path) -> Path:
 
     # Task in done state
     (tasks_dir / "done" / "T004.md").write_text(
-        create_task_frontmatter("T004", "Completed task")
-        + "\n# Task T004\nDone."
+        create_task_frontmatter("T004", "Completed task") + "\n# Task T004\nDone."
     )
 
     # Task in validated state
     (tasks_dir / "validated" / "T005.md").write_text(
-        create_task_frontmatter("T005", "Validated task")
-        + "\n# Task T005\nValidated."
+        create_task_frontmatter("T005", "Validated task") + "\n# Task T005\nValidated."
     )
 
     # Task depending on validated task (should be able to start)
@@ -275,9 +274,7 @@ class TestDependencyGuards:
         assert result.valid is False
         assert any(f.guard == "dependency-exists" for f in result.failures)
 
-    def test_valid_dependencies_pass(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_valid_dependencies_pass(self, project_with_guards_setup: Path) -> None:
         """Should pass when all dependencies exist."""
         from services.task_guard import TaskGuardService
 
@@ -291,9 +288,7 @@ class TestDependencyGuards:
 
         assert result.valid is True
 
-    def test_empty_dependencies_pass(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_empty_dependencies_pass(self, project_with_guards_setup: Path) -> None:
         """Should pass when no dependencies specified."""
         from services.task_guard import TaskGuardService
 
@@ -316,9 +311,7 @@ class TestDependencyGuards:
 class TestParentGuards:
     """Tests for parent task validation."""
 
-    def test_nonexistent_parent_fails(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_nonexistent_parent_fails(self, project_with_guards_setup: Path) -> None:
         """Should fail when parent task doesn't exist."""
         from services.task_guard import TaskGuardService
 
@@ -333,9 +326,7 @@ class TestParentGuards:
         assert result.valid is False
         assert any(f.guard == "parent-exists" for f in result.failures)
 
-    def test_valid_parent_passes(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_valid_parent_passes(self, project_with_guards_setup: Path) -> None:
         """Should pass when parent task exists."""
         from services.task_guard import TaskGuardService
 
@@ -349,9 +340,7 @@ class TestParentGuards:
 
         assert result.valid is True
 
-    def test_null_parent_passes(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_null_parent_passes(self, project_with_guards_setup: Path) -> None:
         """Should pass when no parent specified."""
         from services.task_guard import TaskGuardService
 
@@ -374,9 +363,7 @@ class TestParentGuards:
 class TestStateTransitionGuards:
     """Tests for state transition guard checks."""
 
-    def test_todo_to_wip_allowed(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_todo_to_wip_allowed(self, project_with_guards_setup: Path) -> None:
         """Should allow transition from todo to wip."""
         from services.task_guard import TaskGuardService
 
@@ -387,9 +374,7 @@ class TestStateTransitionGuards:
         assert result.current_state == "todo"
         assert result.to_state == "wip"
 
-    def test_wip_to_done_allowed(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_wip_to_done_allowed(self, project_with_guards_setup: Path) -> None:
         """Should allow transition from wip to done."""
         from services.task_guard import TaskGuardService
 
@@ -400,9 +385,7 @@ class TestStateTransitionGuards:
         assert result.current_state == "wip"
         assert result.to_state == "done"
 
-    def test_done_to_validated_allowed(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_done_to_validated_allowed(self, project_with_guards_setup: Path) -> None:
         """Should allow transition from done to validated."""
         from services.task_guard import TaskGuardService
 
@@ -413,9 +396,7 @@ class TestStateTransitionGuards:
         assert result.current_state == "done"
         assert result.to_state == "validated"
 
-    def test_todo_to_done_not_allowed(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_todo_to_done_not_allowed(self, project_with_guards_setup: Path) -> None:
         """Should not allow direct transition from todo to done (must go through wip)."""
         from services.task_guard import TaskGuardService
 
@@ -437,9 +418,7 @@ class TestStateTransitionGuards:
         assert result.valid is False
         assert any(f.guard == "valid-transition" for f in result.failures)
 
-    def test_wip_to_blocked_allowed(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_wip_to_blocked_allowed(self, project_with_guards_setup: Path) -> None:
         """Should allow transition from wip to blocked."""
         from services.task_guard import TaskGuardService
 
@@ -448,9 +427,7 @@ class TestStateTransitionGuards:
 
         assert result.valid is True
 
-    def test_blocked_to_wip_allowed(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_blocked_to_wip_allowed(self, project_with_guards_setup: Path) -> None:
         """Should allow transition from blocked back to wip."""
         # First we need a blocked task
         from services.task_guard import TaskGuardService
@@ -458,8 +435,7 @@ class TestStateTransitionGuards:
         # Create blocked task directly in fixture
         tasks_dir = project_with_guards_setup / ".project" / "tasks" / "blocked"
         (tasks_dir / "T007.md").write_text(
-            create_task_frontmatter("T007", "Blocked task")
-            + "\n# Task T007\nBlocked."
+            create_task_frontmatter("T007", "Blocked task") + "\n# Task T007\nBlocked."
         )
 
         service = TaskGuardService(str(project_with_guards_setup))
@@ -479,9 +455,7 @@ class TestStateTransitionGuards:
         assert result.valid is False
         assert any(f.guard == "task-exists" for f in result.failures)
 
-    def test_invalid_target_state_fails(
-        self, project_with_guards_setup: Path
-    ) -> None:
+    def test_invalid_target_state_fails(self, project_with_guards_setup: Path) -> None:
         """Should fail for invalid target state."""
         from services.task_guard import TaskGuardService
 

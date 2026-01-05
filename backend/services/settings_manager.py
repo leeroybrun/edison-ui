@@ -2,6 +2,7 @@
 
 Manages user settings including first-run setup and configuration updates.
 """
+
 from __future__ import annotations
 
 import json
@@ -38,7 +39,9 @@ class SettingsManager:
         if settings_file:
             self.settings_file = Path(settings_file).expanduser().resolve()
         else:
-            self.settings_file = Path("~/.edison-ui/settings.json").expanduser().resolve()
+            self.settings_file = (
+                Path("~/.edison-ui/settings.json").expanduser().resolve()
+            )
 
         self._settings: UserSettings | None = None
 
@@ -57,8 +60,12 @@ class SettingsManager:
                         first_run_complete=data.get("firstRunComplete", False),
                         exposure_mode=data.get("exposureMode", "localhost"),
                         realtime_enabled=data.get("realtimeEnabled", True),
-                        realtime_watcher_enabled=data.get("realtimeWatcherEnabled", True),
-                        realtime_polling_interval_ms=data.get("realtimePollingIntervalMs", 5000),
+                        realtime_watcher_enabled=data.get(
+                            "realtimeWatcherEnabled", True
+                        ),
+                        realtime_polling_interval_ms=data.get(
+                            "realtimePollingIntervalMs", 5000
+                        ),
                     )
             except (json.JSONDecodeError, OSError):
                 self._settings = UserSettings()

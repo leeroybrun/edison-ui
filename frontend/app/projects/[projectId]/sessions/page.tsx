@@ -1,5 +1,10 @@
 import { SessionsView } from "../../../../components/Sessions";
-import type { Session, SessionListResponse, SessionState, ViewMode } from "../../../../components/Sessions";
+import type {
+  Session,
+  SessionListResponse,
+  SessionState,
+  ViewMode,
+} from "../../../../components/Sessions";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -13,7 +18,7 @@ interface SessionsPageProps {
  */
 async function fetchSessions(
   projectId: string,
-  state?: SessionState
+  state?: SessionState,
 ): Promise<{ sessions: Session[]; error?: string }> {
   try {
     const params = new URLSearchParams();
@@ -56,7 +61,13 @@ function parseViewMode(view?: string): ViewMode {
  * Matches backend SESSION_STATES: draft, active, paused, completed, abandoned
  */
 function parseStateFilter(state?: string): SessionState | undefined {
-  const validStates: SessionState[] = ["draft", "active", "paused", "completed", "abandoned"];
+  const validStates: SessionState[] = [
+    "draft",
+    "active",
+    "paused",
+    "completed",
+    "abandoned",
+  ];
   if (state && validStates.includes(state as SessionState)) {
     return state as SessionState;
   }

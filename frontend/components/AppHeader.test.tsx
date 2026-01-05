@@ -9,4 +9,3 @@ describe("AppHeader", () => {
     expect(screen.getByRole("link", { name: "Projects" })).toBeInTheDocument();
   });
 });
-

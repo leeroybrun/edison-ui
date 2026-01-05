@@ -53,10 +53,10 @@ describe("SessionsView", () => {
     vi.clearAllMocks();
     (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({ push: mockPush });
     (useSearchParams as ReturnType<typeof vi.fn>).mockReturnValue(
-      mockSearchParams
+      mockSearchParams,
     );
     (usePathname as ReturnType<typeof vi.fn>).mockReturnValue(
-      "/projects/my-project/sessions"
+      "/projects/my-project/sessions",
     );
   });
 
@@ -65,10 +65,10 @@ describe("SessionsView", () => {
       render(<SessionsView projectId="my-project" sessions={mockSessions} />);
 
       expect(
-        screen.getByRole("button", { name: /list view/i })
+        screen.getByRole("button", { name: /list view/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /board view/i })
+        screen.getByRole("button", { name: /board view/i }),
       ).toBeInTheDocument();
     });
 
@@ -86,7 +86,7 @@ describe("SessionsView", () => {
       fireEvent.click(boardButton);
 
       expect(mockPush).toHaveBeenCalledWith(
-        expect.stringContaining("view=board")
+        expect.stringContaining("view=board"),
       );
     });
 
@@ -96,7 +96,7 @@ describe("SessionsView", () => {
           initialView="board"
           projectId="my-project"
           sessions={mockSessions}
-        />
+        />,
       );
 
       const boardButton = screen.getByRole("button", { name: /board view/i });
@@ -123,19 +123,19 @@ describe("SessionsView", () => {
       render(<SessionsView projectId="my-project" sessions={mockSessions} />);
 
       expect(
-        screen.getByRole("columnheader", { name: /session id/i })
+        screen.getByRole("columnheader", { name: /session id/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("columnheader", { name: /state/i })
+        screen.getByRole("columnheader", { name: /state/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("columnheader", { name: /phase/i })
+        screen.getByRole("columnheader", { name: /phase/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("columnheader", { name: /tasks/i })
+        screen.getByRole("columnheader", { name: /tasks/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("columnheader", { name: /last active/i })
+        screen.getByRole("columnheader", { name: /last active/i }),
       ).toBeInTheDocument();
     });
 
@@ -147,7 +147,7 @@ describe("SessionsView", () => {
 
       // Per spec: selecting a session shows that session's tasks
       expect(mockPush).toHaveBeenCalledWith(
-        "/projects/my-project/tasks?sessionId=session-1"
+        "/projects/my-project/tasks?sessionId=session-1",
       );
     });
 
@@ -159,7 +159,7 @@ describe("SessionsView", () => {
 
       // Per spec: selecting a session shows that session's tasks
       expect(mockPush).toHaveBeenCalledWith(
-        "/projects/my-project/tasks?sessionId=session-1"
+        "/projects/my-project/tasks?sessionId=session-1",
       );
     });
   });
@@ -171,7 +171,7 @@ describe("SessionsView", () => {
           initialView="board"
           projectId="my-project"
           sessions={mockSessions}
-        />
+        />,
       );
 
       // Check for column headings (h2 elements inside board columns)
@@ -188,7 +188,7 @@ describe("SessionsView", () => {
           initialView="board"
           projectId="my-project"
           sessions={mockSessions}
-        />
+        />,
       );
 
       // Find the Active column and verify session-1 is there
@@ -197,13 +197,13 @@ describe("SessionsView", () => {
 
       // Find the Completed column and verify session-2 is there
       const completedColumn = screen.getByTestId("column-completed");
-      expect(within(completedColumn).getByText("session-2")).toBeInTheDocument();
+      expect(
+        within(completedColumn).getByText("session-2"),
+      ).toBeInTheDocument();
 
       // Find the Paused column and verify session-3 is there
       const pausedColumn = screen.getByTestId("column-paused");
-      expect(
-        within(pausedColumn).getByText("session-3")
-      ).toBeInTheDocument();
+      expect(within(pausedColumn).getByText("session-3")).toBeInTheDocument();
     });
 
     it("displays session cards with task count in board view", () => {
@@ -212,7 +212,7 @@ describe("SessionsView", () => {
           initialView="board"
           projectId="my-project"
           sessions={mockSessions}
-        />
+        />,
       );
 
       expect(screen.getByText("5 tasks")).toBeInTheDocument();
@@ -226,16 +226,22 @@ describe("SessionsView", () => {
       render(<SessionsView projectId="my-project" sessions={mockSessions} />);
 
       expect(
-        screen.getByRole("button", { name: /all states/i })
-      ).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^draft$/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^active$/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /^paused$/i })).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /^completed$/i })
+        screen.getByRole("button", { name: /all states/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /^abandoned$/i })
+        screen.getByRole("button", { name: /^draft$/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /^active$/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /^paused$/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /^completed$/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /^abandoned$/i }),
       ).toBeInTheDocument();
     });
 
@@ -245,7 +251,9 @@ describe("SessionsView", () => {
       const activeFilter = screen.getByRole("button", { name: /^active$/i });
       fireEvent.click(activeFilter);
 
-      expect(mockPush).toHaveBeenCalledWith(expect.stringContaining("state=active"));
+      expect(mockPush).toHaveBeenCalledWith(
+        expect.stringContaining("state=active"),
+      );
     });
 
     it("uses initial state filter from props", () => {
@@ -254,7 +262,7 @@ describe("SessionsView", () => {
           initialStateFilter="completed"
           projectId="my-project"
           sessions={mockSessions}
-        />
+        />,
       );
 
       // Only completed sessions should be visible
@@ -269,7 +277,7 @@ describe("SessionsView", () => {
           initialStateFilter="active"
           projectId="my-project"
           sessions={mockSessions}
-        />
+        />,
       );
 
       const allFilter = screen.getByRole("button", { name: /all states/i });
@@ -277,16 +285,14 @@ describe("SessionsView", () => {
 
       // URL should not contain state param
       expect(mockPush).toHaveBeenCalledWith(
-        expect.not.stringContaining("state=")
+        expect.not.stringContaining("state="),
       );
     });
   });
 
   describe("Loading State", () => {
     it("displays loading indicator when isLoading is true", () => {
-      render(
-        <SessionsView isLoading projectId="my-project" sessions={[]} />
-      );
+      render(<SessionsView isLoading projectId="my-project" sessions={[]} />);
 
       expect(screen.getByText(/loading sessions/i)).toBeInTheDocument();
     });
@@ -299,7 +305,7 @@ describe("SessionsView", () => {
           error="Failed to fetch sessions"
           projectId="my-project"
           sessions={[]}
-        />
+        />,
       );
 
       expect(screen.getByRole("alert")).toBeInTheDocument();
@@ -320,7 +326,7 @@ describe("SessionsView", () => {
       render(<SessionsView projectId="my-project" sessions={mockSessions} />);
 
       expect(
-        screen.getByRole("heading", { name: /sessions/i })
+        screen.getByRole("heading", { name: /sessions/i }),
       ).toBeInTheDocument();
     });
 

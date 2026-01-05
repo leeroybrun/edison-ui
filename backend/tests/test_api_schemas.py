@@ -2,10 +2,10 @@
 
 TDD RED Phase: These tests describe the expected behavior of the schema models.
 """
+
 from __future__ import annotations
 
 from typing import Any
-
 
 
 class TestErrorDetail:
@@ -371,7 +371,10 @@ class TestGuardApplyResponse:
         """GuardApplyResponse for successful action."""
         from api.schemas.guards import GuardApplyResponse
 
-        result: dict[str, Any] = {"new_status": "done", "updated_at": "2024-01-15T10:30:00Z"}
+        result: dict[str, Any] = {
+            "new_status": "done",
+            "updated_at": "2024-01-15T10:30:00Z",
+        }
         response = GuardApplyResponse(
             success=True,
             result=result,

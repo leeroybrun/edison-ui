@@ -102,7 +102,7 @@ describe("QAView", () => {
 
       expect(screen.getByRole("button", { name: /list/i })).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: /board/i })
+        screen.getByRole("button", { name: /board/i }),
       ).toBeInTheDocument();
     });
 
@@ -129,7 +129,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       // Check for table headers
@@ -147,7 +147,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       expect(screen.getByText("QA001")).toBeInTheDocument();
@@ -162,7 +162,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       expect(screen.getByText("T001")).toBeInTheDocument();
@@ -175,7 +175,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       // Check verdict displays
@@ -192,21 +192,21 @@ describe("QAView", () => {
           initialView="board"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       expect(
-        screen.getByRole("heading", { name: /waiting/i })
+        screen.getByRole("heading", { name: /waiting/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("heading", { name: /todo/i })
+        screen.getByRole("heading", { name: /todo/i }),
       ).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: /wip/i })).toBeInTheDocument();
       expect(
-        screen.getByRole("heading", { name: /done/i })
+        screen.getByRole("heading", { name: /done/i }),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("heading", { name: /validated/i })
+        screen.getByRole("heading", { name: /validated/i }),
       ).toBeInTheDocument();
     });
 
@@ -216,7 +216,7 @@ describe("QAView", () => {
           initialView="board"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       // QA001 is done, QA002 is wip, QA003 is todo
@@ -231,7 +231,7 @@ describe("QAView", () => {
           initialView="board"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       // Cards should show task IDs
@@ -257,7 +257,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       const searchInput = screen.getByPlaceholderText(/search/i);
@@ -275,7 +275,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       const stateSelect = screen.getByLabelText(/state/i);
@@ -293,7 +293,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       const verdictSelect = screen.getByLabelText(/verdict/i);
@@ -311,7 +311,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       const sessionSelect = screen.getByLabelText(/session/i);
@@ -329,7 +329,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       const validatorInput = screen.getByLabelText(/validator/i);
@@ -348,7 +348,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       const sessionSelect = screen.getByLabelText(/session/i);
@@ -385,7 +385,7 @@ describe("QAView", () => {
           initialView="list"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       const searchInput = screen.getByPlaceholderText(/search/i);
@@ -410,7 +410,7 @@ describe("QAView", () => {
           initialView="board"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       const boardButton = screen.getByRole("button", { name: /board/i });
@@ -428,7 +428,7 @@ describe("QAView", () => {
           lockedSessionId="session-1"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       // Session filter should not be rendered
@@ -441,7 +441,7 @@ describe("QAView", () => {
           lockedSessionId="session-1"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       // Should show a badge/indicator for the locked session
@@ -456,7 +456,7 @@ describe("QAView", () => {
           lockedSessionId="session-1"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       // QA from session-1 should be visible
@@ -472,7 +472,7 @@ describe("QAView", () => {
           lockedSessionId="session-1"
           qaRecords={mockQARecords}
           sessions={mockSessions}
-        />
+        />,
       );
 
       const stateFilter = screen.getByLabelText(/state/i);
@@ -493,7 +493,7 @@ describe("QAView", () => {
           error="Failed to load QA records"
           qaRecords={[]}
           sessions={[]}
-        />
+        />,
       );
 
       expect(screen.getByRole("alert")).toBeInTheDocument();

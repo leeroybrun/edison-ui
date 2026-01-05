@@ -50,7 +50,7 @@ export function EntityAuditPanel({
 
       const response = await fetch(
         `${API_BASE_URL}/api/v1/projects/${projectId}/activity?${params.toString()}`,
-        { cache: "no-store" }
+        { cache: "no-store" },
       );
 
       if (!response.ok) {

@@ -42,9 +42,8 @@ interface KeyboardShortcutsContextValue {
   closeCommandPalette: () => void;
 }
 
-const KeyboardShortcutsContext = createContext<KeyboardShortcutsContextValue | null>(
-  null,
-);
+const KeyboardShortcutsContext =
+  createContext<KeyboardShortcutsContextValue | null>(null);
 
 /**
  * Command palette context value
@@ -55,7 +54,9 @@ interface CommandPaletteContextValue {
   close: () => void;
 }
 
-const CommandPaletteContext = createContext<CommandPaletteContextValue | null>(null);
+const CommandPaletteContext = createContext<CommandPaletteContextValue | null>(
+  null,
+);
 
 export interface KeyboardShortcutsProviderProps {
   children: ReactNode;
@@ -260,7 +261,13 @@ export function KeyboardShortcutsProvider({
         clearTimeout(sequenceTimeoutRef.current);
       }
     };
-  }, [isCommandPaletteOpen, onViewChange, router, resetSequence, currentProjectId]);
+  }, [
+    isCommandPaletteOpen,
+    onViewChange,
+    router,
+    resetSequence,
+    currentProjectId,
+  ]);
 
   const shortcutsValue = useMemo<KeyboardShortcutsContextValue>(
     () => ({
@@ -311,7 +318,9 @@ export function useKeyboardShortcuts(
 export function useCommandPalette(): CommandPaletteContextValue {
   const context = useContext(CommandPaletteContext);
   if (!context) {
-    throw new Error("useCommandPalette must be used within KeyboardShortcutsProvider");
+    throw new Error(
+      "useCommandPalette must be used within KeyboardShortcutsProvider",
+    );
   }
   return context;
 }

@@ -75,7 +75,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       expect(screen.getByText("Round 1")).toBeInTheDocument();
@@ -89,7 +89,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       // Timeline should have visual connectors
@@ -104,7 +104,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       const currentRoundIndicator = screen.getByTestId("round-indicator-3");
@@ -117,7 +117,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       // Round 1 failed (has a failing validator)
@@ -136,9 +136,7 @@ describe("RoundTimeline", () => {
 
   describe("Empty state", () => {
     it("shows empty message when no evidence", () => {
-      render(
-        <RoundTimeline evidence={[]} currentRound={0} verdict={null} />
-      );
+      render(<RoundTimeline evidence={[]} currentRound={0} verdict={null} />);
 
       expect(screen.getByText(/no validation rounds/i)).toBeInTheDocument();
     });
@@ -151,7 +149,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       // Round 3 content should be visible
@@ -164,12 +162,12 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       // Round 1 content should not be visible initially
       expect(
-        screen.queryByText("Initial implementation bundle")
+        screen.queryByText("Initial implementation bundle"),
       ).not.toBeInTheDocument();
     });
 
@@ -179,7 +177,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       // Expand Round 1
@@ -187,14 +185,14 @@ describe("RoundTimeline", () => {
       fireEvent.click(round1Button);
 
       expect(
-        screen.getByText("Initial implementation bundle")
+        screen.getByText("Initial implementation bundle"),
       ).toBeInTheDocument();
 
       // Collapse Round 1
       fireEvent.click(round1Button);
 
       expect(
-        screen.queryByText("Initial implementation bundle")
+        screen.queryByText("Initial implementation bundle"),
       ).not.toBeInTheDocument();
     });
   });
@@ -206,7 +204,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       expect(screen.getByText("Final adjustments")).toBeInTheDocument();
@@ -218,7 +216,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       expect(screen.getByText("code-review")).toBeInTheDocument();
@@ -231,7 +229,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       expect(screen.getByText("final-coverage.txt")).toBeInTheDocument();
@@ -243,13 +241,11 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={2}
           verdict="passed"
-        />
+        />,
       );
 
       // Round 2 is current and expanded by default
-      expect(
-        screen.getByText(/added error handling/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/added error handling/i)).toBeInTheDocument();
     });
 
     it("handles null implementation report gracefully", () => {
@@ -258,14 +254,14 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       // Round 3 has null implementationReport, should not crash
       expect(screen.getByText("Final adjustments")).toBeInTheDocument();
       // Should not show "Implementation Report" section for round 3
       expect(
-        screen.queryByTestId("implementation-report-3")
+        screen.queryByTestId("implementation-report-3"),
       ).not.toBeInTheDocument();
     });
   });
@@ -277,7 +273,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       const passBadges = screen.getAllByTestId(/validator-badge.*round-3/);
@@ -292,14 +288,16 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       // Expand Round 1
       const round1Button = screen.getByRole("button", { name: /round 1/i });
       fireEvent.click(round1Button);
 
-      const failBadge = screen.getByTestId("validator-badge-code-review-round-1");
+      const failBadge = screen.getByTestId(
+        "validator-badge-code-review-round-1",
+      );
       expect(failBadge).toHaveClass("bg-red-100");
     });
 
@@ -309,7 +307,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       // Expand Round 1
@@ -327,7 +325,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       // Should have at least one list element (the timeline)
@@ -341,7 +339,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       const round1Button = screen.getByRole("button", { name: /round 1/i });
@@ -357,7 +355,7 @@ describe("RoundTimeline", () => {
           evidence={mockEvidence}
           currentRound={3}
           verdict="passed"
-        />
+        />,
       );
 
       const round1Button = screen.getByRole("button", { name: /round 1/i });

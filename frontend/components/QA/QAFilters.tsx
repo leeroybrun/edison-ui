@@ -111,7 +111,8 @@ export function QAFilters({
           <option value="">All verdicts</option>
           {QA_VERDICTS.map((verdict) => (
             <option key={verdict} value={verdict}>
-              {verdict.charAt(0).toUpperCase() + verdict.slice(1).replace("_", " ")}
+              {verdict.charAt(0).toUpperCase() +
+                verdict.slice(1).replace("_", " ")}
             </option>
           ))}
         </select>

@@ -14,7 +14,8 @@ const mockRoundEvidence: RoundEvidence[] = [
         validatorId: "code-review",
         verdict: "fail",
         reason: "Missing error handling in API calls",
-        reportPath: "[REDACTED]/validation-evidence/T001/round-1/code-review.md",
+        reportPath:
+          "[REDACTED]/validation-evidence/T001/round-1/code-review.md",
       },
     ],
     artifacts: [
@@ -34,13 +35,15 @@ const mockRoundEvidence: RoundEvidence[] = [
         validatorId: "code-review",
         verdict: "pass",
         reason: "All checks passed",
-        reportPath: "[REDACTED]/validation-evidence/T001/round-2/code-review.md",
+        reportPath:
+          "[REDACTED]/validation-evidence/T001/round-2/code-review.md",
       },
       {
         validatorId: "test-coverage",
         verdict: "pass",
         reason: "Coverage at 95%",
-        reportPath: "[REDACTED]/validation-evidence/T001/round-2/test-coverage.md",
+        reportPath:
+          "[REDACTED]/validation-evidence/T001/round-2/test-coverage.md",
       },
     ],
     artifacts: [
@@ -167,8 +170,12 @@ describe("TaskQAPanel", () => {
       render(<TaskQAPanel qa={mockQA} />);
 
       // Use getByRole to find the round buttons
-      expect(screen.getByRole("button", { name: /round 1/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /round 2/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /round 1/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /round 2/i }),
+      ).toBeInTheDocument();
     });
 
     it("shows current round as expanded by default", () => {
@@ -187,7 +194,7 @@ describe("TaskQAPanel", () => {
 
       // Now Round 1 details should be visible
       expect(
-        screen.getByText("Initial implementation bundle")
+        screen.getByText("Initial implementation bundle"),
       ).toBeInTheDocument();
     });
   });
@@ -209,12 +216,14 @@ describe("TaskQAPanel", () => {
       fireEvent.click(round1Header);
 
       const failureReason = screen.getByText(
-        "Missing error handling in API calls"
+        "Missing error handling in API calls",
       );
       expect(failureReason).toBeInTheDocument();
 
       // Find the parent container and check for red styling
-      const failBadge = screen.getByTestId("validator-badge-code-review-round-1");
+      const failBadge = screen.getByTestId(
+        "validator-badge-code-review-round-1",
+      );
       expect(failBadge).toHaveClass("bg-red-100");
     });
 
@@ -222,7 +231,9 @@ describe("TaskQAPanel", () => {
       render(<TaskQAPanel qa={mockQA} />);
 
       // Round 2 is expanded by default with passing validators
-      const passBadge = screen.getByTestId("validator-badge-code-review-round-2");
+      const passBadge = screen.getByTestId(
+        "validator-badge-code-review-round-2",
+      );
       expect(passBadge).toHaveClass("bg-green-100");
     });
   });
@@ -253,7 +264,7 @@ describe("TaskQAPanel", () => {
       render(<TaskQAPanel qa={mockQA} />);
 
       expect(
-        screen.getByRole("heading", { name: /qa validation/i })
+        screen.getByRole("heading", { name: /qa validation/i }),
       ).toBeInTheDocument();
     });
 

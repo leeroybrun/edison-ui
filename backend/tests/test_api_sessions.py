@@ -2,6 +2,7 @@
 
 RED Phase: These tests MUST fail initially as the endpoints don't exist yet.
 """
+
 from __future__ import annotations
 
 import json
@@ -47,13 +48,10 @@ def mock_edison_project_with_sessions(tmp_path: Path) -> Path:
             "owner": "leeroy",
             "createdAt": "2025-12-27T10:00:00Z",
             "lastActive": "2025-12-27T12:00:00Z",
-            "status": "working"
+            "status": "working",
         },
-        "git": {
-            "branchName": "feature/foo",
-            "baseBranch": "main"
-        },
-        "tasks": {"T001": "wip", "T002": "todo", "T003": "done"}
+        "git": {"branchName": "feature/foo", "baseBranch": "main"},
+        "tasks": {"T001": "wip", "T002": "todo", "T003": "done"},
     }
     (active_session_dir / "session.json").write_text(json.dumps(active_session_json))
 
@@ -67,11 +65,9 @@ def mock_edison_project_with_sessions(tmp_path: Path) -> Path:
         "meta": {
             "sessionId": "session-draft-1",
             "createdAt": "2025-12-26T08:00:00Z",
-            "lastActive": "2025-12-26T09:00:00Z"
+            "lastActive": "2025-12-26T09:00:00Z",
         },
-        "git": {
-            "baseBranch": "main"
-        }
+        "git": {"baseBranch": "main"},
     }
     (draft_session_dir / "session.json").write_text(json.dumps(draft_session_json))
 
@@ -86,15 +82,14 @@ def mock_edison_project_with_sessions(tmp_path: Path) -> Path:
             "sessionId": "session-completed-1",
             "owner": "jenkins",
             "createdAt": "2025-12-20T10:00:00Z",
-            "lastActive": "2025-12-22T15:00:00Z"
+            "lastActive": "2025-12-22T15:00:00Z",
         },
-        "git": {
-            "branchName": "feature/bar",
-            "baseBranch": "main"
-        },
-        "tasks": {"T010": "validated", "T011": "validated"}
+        "git": {"branchName": "feature/bar", "baseBranch": "main"},
+        "tasks": {"T010": "validated", "T011": "validated"},
     }
-    (completed_session_dir / "session.json").write_text(json.dumps(completed_session_json))
+    (completed_session_dir / "session.json").write_text(
+        json.dumps(completed_session_json)
+    )
 
     # Create .git directory (marks it as a git repo)
     git_dir = project_path / ".git"
@@ -105,7 +100,9 @@ def mock_edison_project_with_sessions(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def app_with_sessions(
-    mock_edison_project_with_sessions: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    mock_edison_project_with_sessions: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> TestClient:
     """Create app with mocked scan roots for sessions tests."""
     scan_root = mock_edison_project_with_sessions.parent
@@ -114,6 +111,7 @@ def app_with_sessions(
 
     # Clear settings cache to pick up new env
     from core.settings import get_settings
+
     get_settings.cache_clear()
 
     app = create_app()
@@ -248,7 +246,9 @@ class TestListSessions:
             assert "baseBranch" in git_info
 
         # Check specific values
-        active_session = next(s for s in data["items"] if s["sessionId"] == "session-active-1")
+        active_session = next(
+            s for s in data["items"] if s["sessionId"] == "session-active-1"
+        )
         assert active_session["git"]["branchName"] == "feature/foo"
         assert active_session["git"]["baseBranch"] == "main"
 
@@ -304,9 +304,7 @@ class TestListSessions:
         self, app_with_sessions: TestClient
     ) -> None:
         """Should return 404 for unknown project."""
-        response = app_with_sessions.get(
-            "/api/v1/projects/unknown-project-id/sessions"
-        )
+        response = app_with_sessions.get("/api/v1/projects/unknown-project-id/sessions")
         assert response.status_code == 404
 
     def test_list_sessions_rejects_invalid_state(
@@ -441,10 +439,7 @@ class TestSessionSchemas:
         """Should validate SessionGitInfo schema."""
         from api.schemas.sessions import SessionGitInfo
 
-        git_info = SessionGitInfo(
-            branch_name="feature/foo",
-            base_branch="main"
-        )
+        git_info = SessionGitInfo(branch_name="feature/foo", base_branch="main")
 
         assert git_info.branch_name == "feature/foo"
         assert git_info.base_branch == "main"
@@ -453,9 +448,7 @@ class TestSessionSchemas:
         """Should allow optional branchName."""
         from api.schemas.sessions import SessionGitInfo
 
-        git_info = SessionGitInfo(
-            base_branch="main"
-        )
+        git_info = SessionGitInfo(base_branch="main")
 
         assert git_info.branch_name is None
         assert git_info.base_branch == "main"
@@ -472,10 +465,7 @@ class TestSessionSchemas:
             task_count=5,
             created_at="2025-12-27T10:00:00Z",
             last_active_at="2025-12-27T12:00:00Z",
-            git=SessionGitInfo(
-                branch_name="feature/test",
-                base_branch="main"
-            )
+            git=SessionGitInfo(branch_name="feature/test", base_branch="main"),
         )
 
         assert session.session_id == "test-session"
@@ -494,7 +484,7 @@ class TestSessionSchemas:
             task_count=0,
             created_at="2025-12-27T10:00:00Z",
             last_active_at="2025-12-27T12:00:00Z",
-            git=SessionGitInfo(base_branch="main")
+            git=SessionGitInfo(base_branch="main"),
         )
 
         data = session.model_dump(by_alias=True)
@@ -509,12 +499,7 @@ class TestSessionSchemas:
         """Should validate SessionListResponse schema."""
         from api.schemas.sessions import SessionListResponse
 
-        response = SessionListResponse(
-            items=[],
-            total=0,
-            limit=100,
-            offset=0
-        )
+        response = SessionListResponse(items=[], total=0, limit=100, offset=0)
 
         assert response.total == 0
         assert response.limit == 100

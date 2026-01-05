@@ -31,12 +31,12 @@ interface SessionDetailPageProps {
  */
 async function fetchSession(
   projectId: string,
-  sessionId: string
+  sessionId: string,
 ): Promise<{ session: Session | null; error?: string }> {
   try {
     const response = await fetch(
       `${API_BASE_URL}/api/v1/projects/${projectId}/sessions/${sessionId}`,
-      { cache: "no-store" }
+      { cache: "no-store" },
     );
 
     if (!response.ok) {
@@ -70,7 +70,7 @@ async function fetchSessionTasks(
   options: {
     state?: string;
     search?: string;
-  } = {}
+  } = {},
 ): Promise<{ tasks: Task[]; error?: string }> {
   try {
     const params = new URLSearchParams();
@@ -112,7 +112,7 @@ async function fetchSessionQA(
     state?: string;
     verdict?: string;
     search?: string;
-  } = {}
+  } = {},
 ): Promise<{ qaRecords: QARecord[]; error?: string }> {
   try {
     const params = new URLSearchParams();
@@ -178,9 +178,7 @@ export default async function SessionDetailPage(props: SessionDetailPageProps) {
   ]);
 
   // Use relevant error based on active tab
-  const error =
-    sessionError ||
-    (activeTab === "tasks" ? tasksError : qaError);
+  const error = sessionError || (activeTab === "tasks" ? tasksError : qaError);
 
   // Determine initial view mode for tasks
   const tasksInitialView =

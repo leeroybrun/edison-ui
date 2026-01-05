@@ -2,9 +2,19 @@
 
 import type { ChangeEvent } from "react";
 
-import type { Session, TaskFilters as TaskFiltersType, TaskState } from "./types";
+import type {
+  Session,
+  TaskFilters as TaskFiltersType,
+  TaskState,
+} from "./types";
 
-const TASK_STATES: TaskState[] = ["todo", "wip", "blocked", "done", "validated"];
+const TASK_STATES: TaskState[] = [
+  "todo",
+  "wip",
+  "blocked",
+  "done",
+  "validated",
+];
 
 export interface TaskFiltersProps {
   /** Current filter values */

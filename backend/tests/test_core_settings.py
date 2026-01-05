@@ -2,6 +2,7 @@
 
 RED Phase: Tests written first, expected to fail until implementation.
 """
+
 from __future__ import annotations
 
 import os
@@ -28,7 +29,9 @@ class TestScanRootsConfig:
 
     def test_scan_roots_from_env_multiple_paths(self) -> None:
         """scan_roots should support comma-separated paths in SCAN_ROOTS."""
-        with patch.dict(os.environ, {"SCAN_ROOTS": "~/dev,~/projects,~/work"}, clear=True):
+        with patch.dict(
+            os.environ, {"SCAN_ROOTS": "~/dev,~/projects,~/work"}, clear=True
+        ):
             settings = Settings()
             assert settings.scan_roots == ["~/dev", "~/projects", "~/work"]
 

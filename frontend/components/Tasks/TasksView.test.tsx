@@ -89,37 +89,24 @@ describe("TasksView", () => {
 
   describe("View Toggle", () => {
     it("renders view toggle buttons", () => {
-      render(
-        <TasksView
-          tasks={mockTasks}
-          sessions={mockSessions}
-        />,
-      );
+      render(<TasksView tasks={mockTasks} sessions={mockSessions} />);
 
       expect(screen.getByRole("button", { name: /list/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /board/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /board/i }),
+      ).toBeInTheDocument();
       expect(screen.getByRole("button", { name: /tree/i })).toBeInTheDocument();
     });
 
     it("defaults to list view", () => {
-      render(
-        <TasksView
-          tasks={mockTasks}
-          sessions={mockSessions}
-        />,
-      );
+      render(<TasksView tasks={mockTasks} sessions={mockSessions} />);
 
       const listButton = screen.getByRole("button", { name: /list/i });
       expect(listButton).toHaveAttribute("aria-pressed", "true");
     });
 
     it("switches to board view when board button clicked", () => {
-      render(
-        <TasksView
-          tasks={mockTasks}
-          sessions={mockSessions}
-        />,
-      );
+      render(<TasksView tasks={mockTasks} sessions={mockSessions} />);
 
       fireEvent.click(screen.getByRole("button", { name: /board/i }));
 
@@ -127,12 +114,7 @@ describe("TasksView", () => {
     });
 
     it("switches to tree view when tree button clicked", () => {
-      render(
-        <TasksView
-          tasks={mockTasks}
-          sessions={mockSessions}
-        />,
-      );
+      render(<TasksView tasks={mockTasks} sessions={mockSessions} />);
 
       fireEvent.click(screen.getByRole("button", { name: /tree/i }));
 
@@ -197,10 +179,16 @@ describe("TasksView", () => {
         />,
       );
 
-      expect(screen.getByRole("heading", { name: /todo/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /todo/i }),
+      ).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: /wip/i })).toBeInTheDocument();
-      expect(screen.getByRole("heading", { name: /done/i })).toBeInTheDocument();
-      expect(screen.getByRole("heading", { name: /validated/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /done/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("heading", { name: /validated/i }),
+      ).toBeInTheDocument();
     });
 
     it("places tasks in correct state columns", () => {
@@ -273,19 +261,16 @@ describe("TasksView", () => {
       );
 
       // Find the expand/collapse button for parent task
-      const expandButton = screen.getByRole("button", { name: /toggle.*T002/i });
+      const expandButton = screen.getByRole("button", {
+        name: /toggle.*T002/i,
+      });
       expect(expandButton).toBeInTheDocument();
     });
   });
 
   describe("Filters", () => {
     it("renders filter controls", () => {
-      render(
-        <TasksView
-          tasks={mockTasks}
-          sessions={mockSessions}
-        />,
-      );
+      render(<TasksView tasks={mockTasks} sessions={mockSessions} />);
 
       expect(screen.getByPlaceholderText(/search/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/state/i)).toBeInTheDocument();
@@ -305,8 +290,12 @@ describe("TasksView", () => {
       fireEvent.change(searchInput, { target: { value: "profile" } });
 
       await waitFor(() => {
-        expect(screen.getByText("Create user profile page")).toBeInTheDocument();
-        expect(screen.queryByText("Setup authentication")).not.toBeInTheDocument();
+        expect(
+          screen.getByText("Create user profile page"),
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByText("Setup authentication"),
+        ).not.toBeInTheDocument();
       });
     });
 
@@ -386,12 +375,7 @@ describe("TasksView", () => {
     });
 
     it("updates URL query params when filters change", () => {
-      render(
-        <TasksView
-          tasks={mockTasks}
-          sessions={mockSessions}
-        />,
-      );
+      render(<TasksView tasks={mockTasks} sessions={mockSessions} />);
 
       const stateSelect = screen.getByLabelText(/state/i);
       fireEvent.change(stateSelect, { target: { value: "done" } });
@@ -402,12 +386,7 @@ describe("TasksView", () => {
 
   describe("Empty State", () => {
     it("shows empty state when no tasks", () => {
-      render(
-        <TasksView
-          tasks={[]}
-          sessions={[]}
-        />,
-      );
+      render(<TasksView tasks={[]} sessions={[]} />);
 
       expect(screen.getByText(/no tasks/i)).toBeInTheDocument();
     });
@@ -432,14 +411,11 @@ describe("TasksView", () => {
 
   describe("Accessibility", () => {
     it("has accessible region for tasks list", () => {
-      render(
-        <TasksView
-          tasks={mockTasks}
-          sessions={mockSessions}
-        />,
-      );
+      render(<TasksView tasks={mockTasks} sessions={mockSessions} />);
 
-      expect(screen.getByRole("region", { name: /tasks/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("region", { name: /tasks/i }),
+      ).toBeInTheDocument();
     });
 
     it("view toggle buttons have proper aria-pressed state", () => {
@@ -470,9 +446,7 @@ describe("TasksView", () => {
       );
 
       // Session filter should not be rendered
-      expect(
-        screen.queryByLabelText(/session/i)
-      ).not.toBeInTheDocument();
+      expect(screen.queryByLabelText(/session/i)).not.toBeInTheDocument();
     });
 
     it("displays locked session indicator when lockedSessionId is provided", () => {

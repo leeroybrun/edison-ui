@@ -1,4 +1,5 @@
 """QA reader service (T030)."""
+
 from __future__ import annotations
 
 import re
@@ -43,7 +44,7 @@ class QAReaderService:
             return result
 
         frontmatter = match.group(1)
-        
+
         # Simple parser for list items and keys
         lines = frontmatter.split("\n")
         current_key: str | None = None
@@ -67,11 +68,11 @@ class QAReaderService:
             if ":" in line:
                 if current_list is not None:
                     current_list = None
-                
+
                 parts = line.split(":", 1)
                 key = parts[0].strip()
                 val = parts[1].strip()
-                
+
                 current_key = key
                 if val:
                     result[key] = val.strip("'\"")
@@ -89,13 +90,13 @@ class QAReaderService:
             return None
 
         fm = self._parse_frontmatter(content)
-        
+
         qa_id = str(fm.get("id", file_path.stem))
         task_id = str(fm.get("task_id", ""))
         # Fallback if task_id not in frontmatter, try to parse from filename: {task-id}-qa.md
         if not task_id and file_path.name.endswith("-qa.md"):
             task_id = file_path.name.replace("-qa.md", "")
-        
+
         if not task_id:
             return None
 
@@ -112,7 +113,9 @@ class QAReaderService:
 
         # Fallback: Check evidence if verdict is missing
         if not verdict and round_num is not None:
-            evidence_dir = self.qa_dir / "validation-evidence" / task_id / f"round-{round_num}"
+            evidence_dir = (
+                self.qa_dir / "validation-evidence" / task_id / f"round-{round_num}"
+            )
             summary_file = evidence_dir / "bundle-summary.md"
             if summary_file.exists():
                 try:
@@ -188,7 +191,7 @@ class QAReaderService:
                     updated_at=r.updated_at,
                 )
             )
-        
+
         return filtered
 
     def get_qa_detail(self, task_id: str) -> QADetail | None:
@@ -201,7 +204,7 @@ class QAReaderService:
         # Load evidence rounds
         rounds: list[ValidationRound] = []
         evidence_root = self.qa_dir / "validation-evidence" / task_id
-        
+
         if evidence_root.exists():
             for round_dir in evidence_root.glob("round-*"):
                 try:
@@ -223,13 +226,13 @@ class QAReaderService:
                 rounds.append(
                     ValidationRound(
                         round_number=round_num,
-                        timestamp=record.updated_at, # Approximate
+                        timestamp=record.updated_at,  # Approximate
                         verdict=record.verdict or "pending",
-                        validators=[], # Would parse from round summary if available
+                        validators=[],  # Would parse from round summary if available
                         artifacts=artifacts,
                     )
                 )
-        
+
         rounds.sort(key=lambda x: x.round_number)
 
         return QADetail(

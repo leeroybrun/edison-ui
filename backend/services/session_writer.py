@@ -2,6 +2,7 @@
 
 Provides filesystem operations for session creation and state transitions.
 """
+
 from __future__ import annotations
 
 import json
@@ -37,7 +38,18 @@ class SessionWriterService:
     """Service for writing session data to the Edison project filesystem."""
 
     # Known session states (directories under .project/sessions/)
-    SESSION_STATES = ["draft", "active", "blocked", "paused", "done", "closing", "completed", "validated", "archived", "abandoned"]
+    SESSION_STATES = [
+        "draft",
+        "active",
+        "blocked",
+        "paused",
+        "done",
+        "closing",
+        "completed",
+        "validated",
+        "archived",
+        "abandoned",
+    ]
 
     def __init__(self, project_path: str) -> None:
         """Initialize the session writer service.

@@ -29,7 +29,13 @@ const STATE_COLORS: Record<TaskState, string> = {
 /**
  * Board column states (ordered)
  */
-const BOARD_COLUMNS: TaskState[] = ["todo", "wip", "blocked", "done", "validated"];
+const BOARD_COLUMNS: TaskState[] = [
+  "todo",
+  "wip",
+  "blocked",
+  "done",
+  "validated",
+];
 
 export interface TasksViewProps {
   /** Tasks to display */
@@ -132,9 +138,18 @@ export function TasksView({
 
   // Register keyboard shortcuts for view switching (1/2/3)
   // Using stable callbacks to avoid re-registering on every render
-  const setListView = useCallback(() => handleViewChange("list"), [handleViewChange]);
-  const setBoardView = useCallback(() => handleViewChange("board"), [handleViewChange]);
-  const setTreeView = useCallback(() => handleViewChange("tree"), [handleViewChange]);
+  const setListView = useCallback(
+    () => handleViewChange("list"),
+    [handleViewChange],
+  );
+  const setBoardView = useCallback(
+    () => handleViewChange("board"),
+    [handleViewChange],
+  );
+  const setTreeView = useCallback(
+    () => handleViewChange("tree"),
+    [handleViewChange],
+  );
 
   useKeyboardShortcuts("1", setListView);
   useKeyboardShortcuts("2", setBoardView);
@@ -386,7 +401,13 @@ export function TasksView({
       return columnTasks[selectedIndex]?.taskId;
     }
     return filteredTasks[selectedIndex]?.taskId;
-  }, [viewMode, selectedIndex, selectedColumnIndex, boardColumnTasks, filteredTasks]);
+  }, [
+    viewMode,
+    selectedIndex,
+    selectedColumnIndex,
+    boardColumnTasks,
+    filteredTasks,
+  ]);
 
   // Render tree item recursively
   const renderTreeItem = (task: Task, depth: number = 0): React.ReactNode => {
@@ -445,9 +466,7 @@ export function TasksView({
 
         {/* Children */}
         {hasChildren && !isCollapsed && (
-          <div>
-            {children.map((child) => renderTreeItem(child, depth + 1))}
-          </div>
+          <div>{children.map((child) => renderTreeItem(child, depth + 1))}</div>
         )}
       </div>
     );
@@ -465,7 +484,10 @@ export function TasksView({
   // Error state
   if (error) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4" role="alert">
+      <div
+        className="rounded-lg border border-red-200 bg-red-50 p-4"
+        role="alert"
+      >
         <p className="text-red-800">{error}</p>
       </div>
     );
@@ -635,7 +657,9 @@ export function TasksView({
         {viewMode === "board" && filteredTasks.length > 0 && (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             {BOARD_COLUMNS.map((state, columnIndex) => {
-              const columnTasks = filteredTasks.filter((t) => t.state === state);
+              const columnTasks = filteredTasks.filter(
+                (t) => t.state === state,
+              );
               const isActiveColumn = selectedColumnIndex === columnIndex;
               return (
                 <div

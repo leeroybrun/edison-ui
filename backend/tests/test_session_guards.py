@@ -7,6 +7,7 @@ RED Phase: These tests verify session operation guards including:
 - Has-task check for draft->active
 - All-work-complete check for active->done
 """
+
 from __future__ import annotations
 
 import json
@@ -111,7 +112,9 @@ def project_with_sessions(tmp_path: Path) -> Path:
 
     # Add a task to the session
     (draft_with_task_tasks_dir / "todo" / "T100.md").write_text(
-        create_task_frontmatter("T100", "Session task", session_id="session-draft-with-task")
+        create_task_frontmatter(
+            "T100", "Session task", session_id="session-draft-with-task"
+        )
         + "\n# Task T100\nSession scoped task."
     )
 
@@ -143,7 +146,9 @@ def project_with_sessions(tmp_path: Path) -> Path:
 
     # Add a task in wip state
     (active_tasks_dir / "wip" / "T101.md").write_text(
-        create_task_frontmatter("T101", "Active session task", session_id="session-active")
+        create_task_frontmatter(
+            "T101", "Active session task", session_id="session-active"
+        )
         + "\n# Task T101\nIn progress."
     )
 
@@ -175,7 +180,9 @@ def project_with_sessions(tmp_path: Path) -> Path:
 
     # Add a task in done state
     (active_complete_tasks_dir / "done" / "T102.md").write_text(
-        create_task_frontmatter("T102", "Completed task", session_id="session-active-complete")
+        create_task_frontmatter(
+            "T102", "Completed task", session_id="session-active-complete"
+        )
         + "\n# Task T102\nDone."
     )
 
@@ -211,7 +218,9 @@ def project_with_sessions(tmp_path: Path) -> Path:
         },
         "tasks": {},
     }
-    (completed_session_dir / "session.json").write_text(json.dumps(completed_session_json))
+    (completed_session_dir / "session.json").write_text(
+        json.dumps(completed_session_json)
+    )
 
     # Create an abandoned session
     abandoned_session_dir = sessions_dir / "abandoned" / "session-abandoned"
@@ -228,7 +237,9 @@ def project_with_sessions(tmp_path: Path) -> Path:
         },
         "tasks": {},
     }
-    (abandoned_session_dir / "session.json").write_text(json.dumps(abandoned_session_json))
+    (abandoned_session_dir / "session.json").write_text(
+        json.dumps(abandoned_session_json)
+    )
 
     # Create .git directory
     (project_path / ".git").mkdir()
@@ -323,7 +334,9 @@ class TestValidStateGuards:
         from services.session_guard import SessionGuardService
 
         service = SessionGuardService(str(project_with_sessions))
-        result = service.check_transition_guards("session-draft-with-task", "invalid-state")
+        result = service.check_transition_guards(
+            "session-draft-with-task", "invalid-state"
+        )
 
         assert result.valid is False
         assert any(f.guard == "valid-state" for f in result.failures)
@@ -399,9 +412,7 @@ class TestValidTransitionGuards:
         # Should pass the all-work-complete check
         assert not any(f.guard == "all-work-complete" for f in result.failures)
 
-    def test_active_to_blocked_allowed(
-        self, project_with_sessions: Path
-    ) -> None:
+    def test_active_to_blocked_allowed(self, project_with_sessions: Path) -> None:
         """Should allow transition from active to blocked."""
         from services.session_guard import SessionGuardService
 
@@ -434,9 +445,7 @@ class TestValidTransitionGuards:
         assert result.valid is False
         assert any(f.guard == "valid-transition" for f in result.failures)
 
-    def test_draft_to_completed_not_allowed(
-        self, project_with_sessions: Path
-    ) -> None:
+    def test_draft_to_completed_not_allowed(self, project_with_sessions: Path) -> None:
         """Should not allow direct transition from draft to completed."""
         from services.session_guard import SessionGuardService
 

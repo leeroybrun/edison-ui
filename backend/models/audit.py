@@ -2,6 +2,7 @@
 
 AuditEntry captures who did what, when, to what entity, and the outcome.
 """
+
 from __future__ import annotations
 
 from datetime import datetime

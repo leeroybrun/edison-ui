@@ -50,7 +50,9 @@ describe("TaskTransitionDialog", () => {
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
-          expect.stringContaining("/api/v1/projects/project-1/tasks/T001/transition/preview"),
+          expect.stringContaining(
+            "/api/v1/projects/project-1/tasks/T001/transition/preview",
+          ),
           expect.objectContaining({
             method: "POST",
             headers: expect.objectContaining({
@@ -152,9 +154,7 @@ describe("TaskTransitionDialog", () => {
       render(<TaskTransitionDialog {...defaultProps} toState="done" />);
 
       await waitFor(() => {
-        expect(
-          screen.getByRole("button", { name: /confirm/i }),
-        ).toBeDisabled();
+        expect(screen.getByRole("button", { name: /confirm/i })).toBeDisabled();
       });
     });
   });
@@ -169,7 +169,10 @@ describe("TaskTransitionDialog", () => {
           toState: "wip",
           guardFailures: [],
           guardWarnings: [
-            { guard: "session_scope", message: "Task is outside current session" },
+            {
+              guard: "session_scope",
+              message: "Task is outside current session",
+            },
           ],
         }),
       });
@@ -191,9 +194,7 @@ describe("TaskTransitionDialog", () => {
           currentState: "todo",
           toState: "wip",
           guardFailures: [],
-          guardWarnings: [
-            { guard: "session_scope", message: "Warning" },
-          ],
+          guardWarnings: [{ guard: "session_scope", message: "Warning" }],
         }),
       });
 
@@ -244,7 +245,9 @@ describe("TaskTransitionDialog", () => {
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
-          expect.stringContaining("/api/v1/projects/project-1/tasks/T001/transition"),
+          expect.stringContaining(
+            "/api/v1/projects/project-1/tasks/T001/transition",
+          ),
           expect.objectContaining({
             method: "POST",
             body: JSON.stringify({ toState: "wip", confirmed: true }),
@@ -409,9 +412,7 @@ describe("TaskTransitionDialog", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/Transition not allowed/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/Transition not allowed/i)).toBeInTheDocument();
       });
     });
   });

@@ -5,6 +5,7 @@ Provides guard checks for task operations including:
 - Dependency validation
 - State transition validation
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

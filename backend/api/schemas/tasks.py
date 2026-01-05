@@ -3,6 +3,7 @@
 Implements schemas for task listing, readiness, and guarded create/transition endpoints
 per api.md contract.
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel, Field

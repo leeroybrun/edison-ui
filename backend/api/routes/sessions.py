@@ -2,6 +2,7 @@
 
 Implements session listing and guarded create/transition endpoints for a project.
 """
+
 from __future__ import annotations
 
 from datetime import datetime, timezone
@@ -138,12 +139,8 @@ async def preview_create_session(
     )
 
     # Convert to response
-    failures = [
-        GuardFailure(guard=f.guard, reason=f.reason) for f in result.failures
-    ]
-    warnings = [
-        GuardWarning(guard=w.guard, message=w.message) for w in result.warnings
-    ]
+    failures = [GuardFailure(guard=f.guard, reason=f.reason) for f in result.failures]
+    warnings = [GuardWarning(guard=w.guard, message=w.message) for w in result.warnings]
 
     # Create preview if valid
     preview = None
@@ -230,7 +227,9 @@ async def create_session(
 # =============================================================================
 
 
-@router.post("/{session_id}/transition/preview", response_model=SessionTransitionPreviewResponse)
+@router.post(
+    "/{session_id}/transition/preview", response_model=SessionTransitionPreviewResponse
+)
 async def preview_transition_session(
     project_id: str,
     session_id: str,
@@ -247,12 +246,8 @@ async def preview_transition_session(
     result = guard_service.check_transition_guards(session_id, request.to_state)
 
     # Convert to response
-    failures = [
-        GuardFailure(guard=f.guard, reason=f.reason) for f in result.failures
-    ]
-    warnings = [
-        GuardWarning(guard=w.guard, message=w.message) for w in result.warnings
-    ]
+    failures = [GuardFailure(guard=f.guard, reason=f.reason) for f in result.failures]
+    warnings = [GuardWarning(guard=w.guard, message=w.message) for w in result.warnings]
 
     return SessionTransitionPreviewResponse(
         valid=result.valid,

@@ -167,9 +167,7 @@ describe("Dashboard", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/no projects found/i)).toBeInTheDocument();
-      expect(
-        screen.getByText(/configure scan roots/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/configure scan roots/i)).toBeInTheDocument();
     });
   });
 });

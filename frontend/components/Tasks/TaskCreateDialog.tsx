@@ -175,7 +175,8 @@ export function TaskCreateDialog({
     return null;
   }
 
-  const hasFailures = preview?.guardFailures && preview.guardFailures.length > 0;
+  const hasFailures =
+    preview?.guardFailures && preview.guardFailures.length > 0;
   const isCreateDisabled = loading || hasFailures || !preview;
   const guardFailures: GuardFailure[] = preview?.guardFailures || [];
   const guardWarnings: GuardWarning[] = preview?.guardWarnings || [];
@@ -263,7 +264,9 @@ export function TaskCreateDialog({
               </div>
               <div className="mt-1 flex items-center gap-2">
                 <span className="text-sm text-gray-500">Title:</span>
-                <span className="text-sm text-gray-900">{preview.preview.title}</span>
+                <span className="text-sm text-gray-900">
+                  {preview.preview.title}
+                </span>
               </div>
               {sessionId && (
                 <div className="mt-1 flex items-center gap-2">

@@ -47,7 +47,9 @@ describe("PreviewConfirmDialog", () => {
     });
 
     it("renders custom preview component when provided", () => {
-      const customPreview = <div data-testid="custom-preview">Custom Preview</div>;
+      const customPreview = (
+        <div data-testid="custom-preview">Custom Preview</div>
+      );
       render(
         <PreviewConfirmDialog
           {...defaultProps}
@@ -282,16 +284,14 @@ describe("PreviewConfirmDialog", () => {
 
   describe("custom buttons", () => {
     it("uses custom confirm text when provided", () => {
-      render(
-        <PreviewConfirmDialog {...defaultProps} confirmText="Submit" />,
-      );
-      expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
+      render(<PreviewConfirmDialog {...defaultProps} confirmText="Submit" />);
+      expect(
+        screen.getByRole("button", { name: "Submit" }),
+      ).toBeInTheDocument();
     });
 
     it("uses custom cancel text when provided", () => {
-      render(
-        <PreviewConfirmDialog {...defaultProps} cancelText="Dismiss" />,
-      );
+      render(<PreviewConfirmDialog {...defaultProps} cancelText="Dismiss" />);
       expect(
         screen.getByRole("button", { name: "Dismiss" }),
       ).toBeInTheDocument();

@@ -1,5 +1,9 @@
 import { TasksView } from "../../../../components/Tasks";
-import type { Task, Session, TaskListResponse } from "../../../../components/Tasks/types";
+import type {
+  Task,
+  Session,
+  TaskListResponse,
+} from "../../../../components/Tasks/types";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 

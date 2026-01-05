@@ -6,6 +6,7 @@ RED Phase: These tests verify the preview -> confirm/apply pattern for:
 - POST /projects/{projectId}/sessions/{sessionId}/transition/preview
 - POST /projects/{projectId}/sessions/{sessionId}/transition
 """
+
 from __future__ import annotations
 
 import json
@@ -113,7 +114,9 @@ def project_with_guarded_sessions(tmp_path: Path) -> Path:
 
     # Add a task
     (draft_with_task_tasks_dir / "todo" / "T100.md").write_text(
-        create_task_frontmatter("T100", "Session task", session_id="session-draft-with-task")
+        create_task_frontmatter(
+            "T100", "Session task", session_id="session-draft-with-task"
+        )
         + "\n# Task T100\nSession scoped task."
     )
 
@@ -145,7 +148,9 @@ def project_with_guarded_sessions(tmp_path: Path) -> Path:
 
     # Add a task in wip
     (active_tasks_dir / "wip" / "T101.md").write_text(
-        create_task_frontmatter("T101", "Active session task", session_id="session-active")
+        create_task_frontmatter(
+            "T101", "Active session task", session_id="session-active"
+        )
         + "\n# Task T101\nIn progress."
     )
 
@@ -177,7 +182,9 @@ def project_with_guarded_sessions(tmp_path: Path) -> Path:
 
     # Add a task in done state
     (active_complete_tasks_dir / "done" / "T102.md").write_text(
-        create_task_frontmatter("T102", "Completed task", session_id="session-active-complete")
+        create_task_frontmatter(
+            "T102", "Completed task", session_id="session-active-complete"
+        )
         + "\n# Task T102\nDone."
     )
 
@@ -196,7 +203,9 @@ def project_with_guarded_sessions(tmp_path: Path) -> Path:
         },
         "tasks": {},
     }
-    (completed_session_dir / "session.json").write_text(json.dumps(completed_session_json))
+    (completed_session_dir / "session.json").write_text(
+        json.dumps(completed_session_json)
+    )
 
     # Create logs directory for audit
     logs_dir = project_dir / "logs" / "edison"
@@ -573,8 +582,20 @@ class TestSessionTransition:
     ) -> None:
         """Should actually move the session directory to new state."""
         # Verify session is in draft before
-        draft_dir = project_with_guarded_sessions / ".project" / "sessions" / "draft" / "session-draft-with-task"
-        active_dir = project_with_guarded_sessions / ".project" / "sessions" / "active" / "session-draft-with-task"
+        draft_dir = (
+            project_with_guarded_sessions
+            / ".project"
+            / "sessions"
+            / "draft"
+            / "session-draft-with-task"
+        )
+        active_dir = (
+            project_with_guarded_sessions
+            / ".project"
+            / "sessions"
+            / "active"
+            / "session-draft-with-task"
+        )
         assert draft_dir.exists()
         assert not active_dir.exists()
 
@@ -632,7 +653,11 @@ class TestAuditIntegration:
         # Check audit log exists
         today = date.today().isoformat()
         log_pattern = str(
-            project_with_guarded_sessions / ".project" / "logs" / "edison" / f"audit-{today}.jsonl"
+            project_with_guarded_sessions
+            / ".project"
+            / "logs"
+            / "edison"
+            / f"audit-{today}.jsonl"
         )
         log_files = globmod.glob(log_pattern)
         assert len(log_files) == 1
@@ -666,7 +691,11 @@ class TestAuditIntegration:
         # Check audit log
         today = date.today().isoformat()
         log_pattern = str(
-            project_with_guarded_sessions / ".project" / "logs" / "edison" / f"audit-{today}.jsonl"
+            project_with_guarded_sessions
+            / ".project"
+            / "logs"
+            / "edison"
+            / f"audit-{today}.jsonl"
         )
         log_files = globmod.glob(log_pattern)
         assert len(log_files) == 1
@@ -676,9 +705,7 @@ class TestAuditIntegration:
 
         # Find the transition entry
         transition_entries = [
-            json.loads(line)
-            for line in lines
-            if "session.transition" in line
+            json.loads(line) for line in lines if "session.transition" in line
         ]
         assert len(transition_entries) >= 1
 

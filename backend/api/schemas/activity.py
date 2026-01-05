@@ -2,6 +2,7 @@
 
 Schemas for activity and audit endpoints.
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel

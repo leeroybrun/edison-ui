@@ -6,6 +6,7 @@ RED Phase: These tests verify the preview -> confirm/apply pattern for:
 - POST /projects/{projectId}/tasks/{taskId}/transition/preview
 - POST /projects/{projectId}/tasks/{taskId}/transition
 """
+
 from __future__ import annotations
 
 import json
@@ -77,8 +78,7 @@ def project_with_guarded_tasks(tmp_path: Path) -> Path:
 
     # Task in done state - can be transitioned to validated
     (tasks_dir / "done" / "T003.md").write_text(
-        create_task_frontmatter("T003", "Completed task")
-        + "\n# Task T003\nDone."
+        create_task_frontmatter("T003", "Completed task") + "\n# Task T003\nDone."
     )
 
     # Task with unmet dependencies - blocked from starting
@@ -89,8 +89,7 @@ def project_with_guarded_tasks(tmp_path: Path) -> Path:
 
     # Task in validated state - terminal
     (tasks_dir / "validated" / "T005.md").write_text(
-        create_task_frontmatter("T005", "Validated task")
-        + "\n# Task T005\nValidated."
+        create_task_frontmatter("T005", "Validated task") + "\n# Task T005\nValidated."
     )
 
     # Create sessions directory structure
@@ -581,7 +580,9 @@ class TestTaskTransition:
     ) -> None:
         """Should actually move the task file to new state directory."""
         # Verify T001 is in todo before
-        todo_file = project_with_guarded_tasks / ".project" / "tasks" / "todo" / "T001.md"
+        todo_file = (
+            project_with_guarded_tasks / ".project" / "tasks" / "todo" / "T001.md"
+        )
         wip_file = project_with_guarded_tasks / ".project" / "tasks" / "wip" / "T001.md"
         assert todo_file.exists()
         assert not wip_file.exists()
@@ -640,7 +641,11 @@ class TestAuditIntegration:
         # Check audit log exists
         today = date.today().isoformat()
         log_pattern = str(
-            project_with_guarded_tasks / ".project" / "logs" / "edison" / f"audit-{today}.jsonl"
+            project_with_guarded_tasks
+            / ".project"
+            / "logs"
+            / "edison"
+            / f"audit-{today}.jsonl"
         )
         log_files = globmod.glob(log_pattern)
         assert len(log_files) == 1
@@ -674,7 +679,11 @@ class TestAuditIntegration:
         # Check audit log
         today = date.today().isoformat()
         log_pattern = str(
-            project_with_guarded_tasks / ".project" / "logs" / "edison" / f"audit-{today}.jsonl"
+            project_with_guarded_tasks
+            / ".project"
+            / "logs"
+            / "edison"
+            / f"audit-{today}.jsonl"
         )
         log_files = globmod.glob(log_pattern)
         assert len(log_files) == 1
@@ -684,9 +693,7 @@ class TestAuditIntegration:
 
         # Find the transition entry
         transition_entries = [
-            json.loads(line)
-            for line in lines
-            if "task.transition" in line
+            json.loads(line) for line in lines if "task.transition" in line
         ]
         assert len(transition_entries) >= 1
 

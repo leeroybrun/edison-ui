@@ -11,12 +11,14 @@ test.describe("Edison UI Smoke Tests", () => {
 
     // Should display the dashboard heading
     await expect(
-      page.getByRole("heading", { name: "Dashboard", level: 1 })
+      page.getByRole("heading", { name: "Dashboard", level: 1 }),
     ).toBeVisible();
 
     // Should have main navigation with Dashboard and Projects links
     const mainNav = page.getByRole("navigation", { name: "Main navigation" });
-    await expect(mainNav.getByRole("link", { name: "Dashboard" })).toBeVisible();
+    await expect(
+      mainNav.getByRole("link", { name: "Dashboard" }),
+    ).toBeVisible();
     await expect(mainNav.getByRole("link", { name: "Projects" })).toBeVisible();
   });
 
@@ -25,7 +27,7 @@ test.describe("Edison UI Smoke Tests", () => {
 
     // Should display projects heading
     await expect(
-      page.getByRole("heading", { name: "Projects", level: 1 })
+      page.getByRole("heading", { name: "Projects", level: 1 }),
     ).toBeVisible();
   });
 
@@ -43,7 +45,7 @@ test.describe("Edison UI Smoke Tests", () => {
 
     // Should show Projects heading (wait for page to fully load)
     await expect(
-      page.getByRole("heading", { name: "Projects", level: 1 })
+      page.getByRole("heading", { name: "Projects", level: 1 }),
     ).toBeVisible({ timeout: 10000 });
   });
 });

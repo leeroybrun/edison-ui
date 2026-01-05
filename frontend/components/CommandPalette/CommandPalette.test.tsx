@@ -66,7 +66,9 @@ const mockCommands: Command[] = [
 describe("CommandPalette", () => {
   beforeEach(() => {
     mockPush.mockClear();
-    mockCommands.forEach((cmd) => (cmd.action as ReturnType<typeof vi.fn>).mockClear());
+    mockCommands.forEach((cmd) =>
+      (cmd.action as ReturnType<typeof vi.fn>).mockClear(),
+    );
   });
 
   afterEach(() => {
@@ -112,7 +114,9 @@ describe("CommandPalette", () => {
       );
 
       expect(screen.getByRole("combobox")).toBeInTheDocument();
-      expect(screen.getByPlaceholderText(/search commands/i)).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText(/search commands/i),
+      ).toBeInTheDocument();
     });
   });
 
@@ -341,7 +345,9 @@ describe("CommandPalette", () => {
         />,
       );
 
-      const taskOption = screen.getByText("Go to Tasks").closest('[role="option"]');
+      const taskOption = screen
+        .getByText("Go to Tasks")
+        .closest('[role="option"]');
       await user.hover(taskOption!);
 
       expect(taskOption).toHaveAttribute("data-highlighted", "true");
@@ -407,7 +413,10 @@ describe("CommandPalette", () => {
       await user.keyboard("{ArrowDown}");
 
       const options = screen.getAllByRole("option");
-      expect(searchInput).toHaveAttribute("aria-activedescendant", options[0].id);
+      expect(searchInput).toHaveAttribute(
+        "aria-activedescendant",
+        options[0].id,
+      );
     });
 
     it("traps focus within the dialog", async () => {

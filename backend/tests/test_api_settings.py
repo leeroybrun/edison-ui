@@ -2,6 +2,7 @@
 
 RED Phase: These tests MUST fail initially as the endpoints don't exist yet.
 """
+
 from __future__ import annotations
 
 import json
@@ -28,6 +29,7 @@ def clean_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClien
 
     # Clear settings cache
     from core.settings import get_settings
+
     get_settings.cache_clear()
 
     app = create_app()
@@ -43,7 +45,7 @@ def existing_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestCl
     settings_data = {
         "scanRoots": [str(tmp_path / "projects")],
         "displayName": "Test User",
-        "firstRunComplete": True
+        "firstRunComplete": True,
     }
     settings_file.write_text(json.dumps(settings_data))
 
@@ -54,6 +56,7 @@ def existing_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestCl
     (tmp_path / "projects").mkdir()
 
     from core.settings import get_settings
+
     get_settings.cache_clear()
 
     app = create_app()
@@ -76,7 +79,9 @@ class TestGetSettings:
         assert "scanRoots" in data
         assert isinstance(data["scanRoots"], list)
 
-    def test_get_settings_returns_exposure_mode(self, clean_settings: TestClient) -> None:
+    def test_get_settings_returns_exposure_mode(
+        self, clean_settings: TestClient
+    ) -> None:
         """Should return exposureMode (default localhost)."""
         response = clean_settings.get("/api/v1/settings")
         data = response.json()
@@ -84,7 +89,9 @@ class TestGetSettings:
         assert "exposureMode" in data
         assert data["exposureMode"] == "localhost"
 
-    def test_get_settings_returns_realtime_config(self, clean_settings: TestClient) -> None:
+    def test_get_settings_returns_realtime_config(
+        self, clean_settings: TestClient
+    ) -> None:
         """Should return realtime configuration."""
         response = clean_settings.get("/api/v1/settings")
         data = response.json()
@@ -109,8 +116,7 @@ class TestUpdateSettings:
     def test_update_settings_returns_200(self, clean_settings: TestClient) -> None:
         """Should return 200 on successful update."""
         response = clean_settings.patch(
-            "/api/v1/settings",
-            json={"displayName": "New Name"}
+            "/api/v1/settings", json={"displayName": "New Name"}
         )
         assert response.status_code == 200
 
@@ -119,22 +125,22 @@ class TestUpdateSettings:
     ) -> None:
         """Should return list of updated fields."""
         response = clean_settings.patch(
-            "/api/v1/settings",
-            json={"displayName": "New Name"}
+            "/api/v1/settings", json={"displayName": "New Name"}
         )
         data = response.json()
 
         assert "updated" in data
         assert "displayName" in data["updated"]
 
-    def test_update_scan_roots(self, clean_settings: TestClient, tmp_path: Path) -> None:
+    def test_update_scan_roots(
+        self, clean_settings: TestClient, tmp_path: Path
+    ) -> None:
         """Should be able to update scanRoots."""
         new_root = str(tmp_path / "new-projects")
         Path(new_root).mkdir()
 
         response = clean_settings.patch(
-            "/api/v1/settings",
-            json={"scanRoots": [new_root]}
+            "/api/v1/settings", json={"scanRoots": [new_root]}
         )
         data = response.json()
 
@@ -146,8 +152,7 @@ class TestUpdateSettings:
     ) -> None:
         """Should validate that scan roots exist."""
         response = clean_settings.patch(
-            "/api/v1/settings",
-            json={"scanRoots": ["/nonexistent/path"]}
+            "/api/v1/settings", json={"scanRoots": ["/nonexistent/path"]}
         )
         # Should return 400 for invalid path
         assert response.status_code == 400
@@ -158,7 +163,7 @@ class TestUpdateSettings:
         """Should ignore unknown fields (Pydantic extra='ignore' behavior)."""
         response = clean_settings.patch(
             "/api/v1/settings",
-            json={"exposureMode": "network"}  # Not in schema, will be ignored
+            json={"exposureMode": "network"},  # Not in schema, will be ignored
         )
         # Request succeeds but no fields are updated
         assert response.status_code == 200
@@ -211,10 +216,7 @@ class TestFirstRunSettings:
 
         response = clean_settings.post(
             "/api/v1/settings/first-run",
-            json={
-                "scanRoots": [str(projects_dir)],
-                "displayName": "Test User"
-            }
+            json={"scanRoots": [str(projects_dir)], "displayName": "Test User"},
         )
         assert response.status_code == 200
 
@@ -226,10 +228,7 @@ class TestFirstRunSettings:
 
         clean_settings.post(
             "/api/v1/settings/first-run",
-            json={
-                "scanRoots": [str(projects_dir)],
-                "displayName": "Test User"
-            }
+            json={"scanRoots": [str(projects_dir)], "displayName": "Test User"},
         )
 
         # Verify settings were persisted
@@ -246,10 +245,7 @@ class TestFirstRunSettings:
 
         clean_settings.post(
             "/api/v1/settings/first-run",
-            json={
-                "scanRoots": [str(projects_dir)],
-                "displayName": "Test User"
-            }
+            json={"scanRoots": [str(projects_dir)], "displayName": "Test User"},
         )
 
         # Check first-run status
@@ -258,16 +254,11 @@ class TestFirstRunSettings:
 
         assert data["needsSetup"] is False
 
-    def test_first_run_validates_scan_roots(
-        self, clean_settings: TestClient
-    ) -> None:
+    def test_first_run_validates_scan_roots(self, clean_settings: TestClient) -> None:
         """Should validate that scan roots exist."""
         response = clean_settings.post(
             "/api/v1/settings/first-run",
-            json={
-                "scanRoots": ["/nonexistent/path"],
-                "displayName": "Test User"
-            }
+            json={"scanRoots": ["/nonexistent/path"], "displayName": "Test User"},
         )
         assert response.status_code == 400
 
@@ -283,14 +274,9 @@ class TestSettingsSchemas:
             scan_roots=["~/projects"],
             exposure_mode="localhost",
             realtime=RealtimeConfig(
-                enabled=True,
-                watcher_enabled=True,
-                polling_interval_ms=5000
+                enabled=True, watcher_enabled=True, polling_interval_ms=5000
             ),
-            actor=ActorInfo(
-                os_user="testuser",
-                display_name=None
-            )
+            actor=ActorInfo(os_user="testuser", display_name=None),
         )
 
         assert response.scan_roots == ["~/projects"]
@@ -300,8 +286,7 @@ class TestSettingsSchemas:
         from api.schemas.settings import FirstRunCheckResponse
 
         response = FirstRunCheckResponse(
-            needs_setup=True,
-            suggested_roots=["~/projects"]
+            needs_setup=True, suggested_roots=["~/projects"]
         )
 
         assert response.needs_setup is True
@@ -311,8 +296,7 @@ class TestSettingsSchemas:
         from api.schemas.settings import SettingsUpdateRequest
 
         request = SettingsUpdateRequest(
-            scan_roots=["~/projects"],
-            display_name="Test User"
+            scan_roots=["~/projects"], display_name="Test User"
         )
 
         assert request.display_name == "Test User"

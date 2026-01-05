@@ -4,6 +4,7 @@ RED Phase: These tests verify the preview -> confirm/apply pattern for:
 - POST /projects/{projectId}/qa/trigger/preview
 - POST /projects/{projectId}/qa/trigger
 """
+
 from __future__ import annotations
 
 import json
@@ -116,8 +117,7 @@ def project_with_trigger_setup(tmp_path: Path) -> Path:
     # QA for T003 in wip state (active validation)
     (qa_dir / "wip" / "T003-qa.md").write_text(
         create_qa_frontmatter(
-            "T003", "QA-T003", state="wip", round_num=1,
-            validators=["code-review"]
+            "T003", "QA-T003", state="wip", round_num=1, validators=["code-review"]
         )
         + "\n# QA T003\nValidation in progress."
     )
@@ -466,7 +466,11 @@ class TestTriggerAuditIntegration:
         # Check audit log exists
         today = date.today().isoformat()
         log_pattern = str(
-            project_with_trigger_setup / ".project" / "logs" / "edison" / f"audit-{today}.jsonl"
+            project_with_trigger_setup
+            / ".project"
+            / "logs"
+            / "edison"
+            / f"audit-{today}.jsonl"
         )
         log_files = globmod.glob(log_pattern)
         assert len(log_files) == 1

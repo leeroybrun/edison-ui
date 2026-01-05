@@ -197,7 +197,9 @@ export function AuditEventList({
                 {/* Expand/collapse button */}
                 <button
                   aria-expanded={isExpanded}
-                  aria-label={isExpanded ? "Collapse details" : "Expand details"}
+                  aria-label={
+                    isExpanded ? "Collapse details" : "Expand details"
+                  }
                   className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                   onClick={() => toggleExpanded(item.invocationId)}
                   type="button"
@@ -237,7 +239,9 @@ export function AuditEventList({
                     </div>
                     <div className="col-span-2">
                       <dt className="text-gray-500">Full Command</dt>
-                      <dd className="font-mono text-gray-900">{item.command}</dd>
+                      <dd className="font-mono text-gray-900">
+                        {item.command}
+                      </dd>
                     </div>
                     {item.sessionId && (
                       <div>

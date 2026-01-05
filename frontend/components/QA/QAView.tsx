@@ -4,13 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
-import type {
-  QARecord,
-  Session,
-  QAState,
-  ViewMode,
-  QAFilters,
-} from "./types";
+import type { QARecord, Session, QAState, ViewMode, QAFilters } from "./types";
 
 /**
  * State badge color mappings
@@ -35,7 +29,13 @@ const VERDICT_COLORS: Record<string, string> = {
 /**
  * Board column states (ordered)
  */
-const BOARD_COLUMNS: QAState[] = ["waiting", "todo", "wip", "done", "validated"];
+const BOARD_COLUMNS: QAState[] = [
+  "waiting",
+  "todo",
+  "wip",
+  "done",
+  "validated",
+];
 
 export interface QAViewProps {
   /** QA records to display */
@@ -195,7 +195,7 @@ export function QAView({
       if (filters.validator) {
         const validatorLower = filters.validator.toLowerCase();
         const matchesValidator = record.validators.some((v) =>
-          v.toLowerCase().includes(validatorLower)
+          v.toLowerCase().includes(validatorLower),
         );
         if (!matchesValidator) {
           return false;
@@ -228,7 +228,10 @@ export function QAView({
   // Error state
   if (error) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4" role="alert">
+      <div
+        className="rounded-lg border border-red-200 bg-red-50 p-4"
+        role="alert"
+      >
         <p className="text-red-800">{error}</p>
       </div>
     );
@@ -382,11 +385,7 @@ export function QAView({
       </div>
 
       {/* QA records region */}
-      <section
-        aria-label="QA Records"
-        role="region"
-        tabIndex={0}
-      >
+      <section aria-label="QA Records" role="region" tabIndex={0}>
         {/* Empty state */}
         {qaRecords.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded-lg border bg-white py-12">
@@ -500,7 +499,9 @@ export function QAView({
         {viewMode === "board" && filteredRecords.length > 0 && (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
             {BOARD_COLUMNS.map((state) => {
-              const columnRecords = filteredRecords.filter((r) => r.state === state);
+              const columnRecords = filteredRecords.filter(
+                (r) => r.state === state,
+              );
               return (
                 <div
                   className="rounded-lg border bg-gray-50 p-3"

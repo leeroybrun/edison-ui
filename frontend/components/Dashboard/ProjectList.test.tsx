@@ -38,9 +38,7 @@ describe("ProjectList", () => {
   it("renders empty state when no projects found", () => {
     render(<ProjectList projects={[]} isLoading={false} />);
 
-    expect(
-      screen.getByText(/no projects found/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/no projects found/i)).toBeInTheDocument();
     expect(
       screen.getByText(/configure scan roots to discover edison projects/i),
     ).toBeInTheDocument();

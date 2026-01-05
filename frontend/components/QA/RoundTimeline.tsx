@@ -156,7 +156,7 @@ export function RoundTimeline({
 
   const handleKeyDown = (
     event: KeyboardEvent<HTMLButtonElement>,
-    roundNumber: number
+    roundNumber: number,
   ) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();

@@ -2,6 +2,7 @@
 
 Provides consistent error response structures across the API.
 """
+
 from __future__ import annotations
 
 from pydantic import BaseModel

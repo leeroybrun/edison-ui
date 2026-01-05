@@ -7,6 +7,7 @@ Provides guard checks for session operations including:
 - Has-task check for draft->active
 - All-work-complete check for active->done
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -53,13 +54,29 @@ class TransitionGuardResult:
 
 
 # Valid session states
-VALID_SESSION_STATES = {"draft", "active", "blocked", "paused", "done", "closing", "completed", "validated", "archived", "abandoned"}
+VALID_SESSION_STATES = {
+    "draft",
+    "active",
+    "blocked",
+    "paused",
+    "done",
+    "closing",
+    "completed",
+    "validated",
+    "archived",
+    "abandoned",
+}
 
 # Valid state transitions: from_state -> set of allowed to_states
 # Based on Edison session lifecycle
 VALID_SESSION_TRANSITIONS: dict[str, set[str]] = {
     "draft": {"active"},  # Draft can only activate (with task)
-    "active": {"done", "blocked", "closing", "paused"},  # Active can complete, block, close, or pause
+    "active": {
+        "done",
+        "blocked",
+        "closing",
+        "paused",
+    },  # Active can complete, block, close, or pause
     "blocked": {"active"},  # Blocked can unblock to active
     "paused": {"active", "abandoned"},  # Paused can resume or abandon
     "done": {"validated"},  # Done can be validated

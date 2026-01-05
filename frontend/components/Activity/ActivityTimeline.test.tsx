@@ -51,7 +51,7 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={false}
         onLoadMore={() => {}}
-      />
+      />,
     );
 
     expect(screen.getByText("Task T005 moved to done")).toBeInTheDocument();
@@ -66,7 +66,7 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={false}
         onLoadMore={() => {}}
-      />
+      />,
     );
 
     expect(screen.getAllByText("Leeroy Jenkins")).toHaveLength(2);
@@ -80,7 +80,7 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={false}
         onLoadMore={() => {}}
-      />
+      />,
     );
 
     expect(screen.getByText("task.transition")).toBeInTheDocument();
@@ -95,7 +95,7 @@ describe("ActivityTimeline", () => {
         loading={true}
         hasMore={false}
         onLoadMore={() => {}}
-      />
+      />,
     );
 
     expect(screen.getByRole("status")).toBeInTheDocument();
@@ -109,10 +109,12 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={true}
         onLoadMore={() => {}}
-      />
+      />,
     );
 
-    expect(screen.getByRole("button", { name: /load more/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /load more/i }),
+    ).toBeInTheDocument();
   });
 
   it("hides Load more button when hasMore is false", () => {
@@ -122,10 +124,12 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={false}
         onLoadMore={() => {}}
-      />
+      />,
     );
 
-    expect(screen.queryByRole("button", { name: /load more/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /load more/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("calls onLoadMore when Load more button is clicked", () => {
@@ -136,7 +140,7 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={true}
         onLoadMore={onLoadMore}
-      />
+      />,
     );
 
     fireEvent.click(screen.getByRole("button", { name: /load more/i }));
@@ -150,7 +154,7 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={false}
         onLoadMore={() => {}}
-      />
+      />,
     );
 
     expect(screen.getByText(/no activity/i)).toBeInTheDocument();
@@ -163,7 +167,7 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={false}
         onLoadMore={() => {}}
-      />
+      />,
     );
 
     // Should display formatted timestamps (time elements with datetime)
@@ -179,7 +183,7 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={false}
         onLoadMore={() => {}}
-      />
+      />,
     );
 
     // Timeline should use semantic list structure
@@ -194,7 +198,7 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={false}
         onLoadMore={() => {}}
-      />
+      />,
     );
 
     // session-1 appears in 2 items (first and second)
@@ -211,7 +215,7 @@ describe("ActivityTimeline", () => {
         loading={false}
         hasMore={true}
         onLoadMore={onLoadMore}
-      />
+      />,
     );
 
     const button = screen.getByRole("button", { name: /load more/i });
