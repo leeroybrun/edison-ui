@@ -6,6 +6,7 @@ validation:
     custom-minimal:
       blocking_validators:
       - global-claude
+      - browser-e2e
       description: Minimal validation with global-codex, global-claude, and browser-e2e
         only
       name: custom-minimal
@@ -21,15 +22,15 @@ validation:
       waves:
         critical:
         - global-claude
+        - browser-e2e
         optional:
         - global-codex
-        - browser-e2e
   timeout: 900
   validators:
     browser-e2e:
-      blocking: false
+      blocking: true
       config:
-        baseUrl: http://localhost:3333
+        baseUrl: http://localhost:3334
         skipIfNoTriggers: true
       timeout: 900
       triggers:
@@ -43,11 +44,11 @@ validation:
       web_server:
         cwd: ''
         ensure_running: true
-        healthcheck_url: ''
-        start_command: null
-        stop_after: ''
-        stop_command: ''
-        url: http://localhost:3333
+        healthcheck_url: http://localhost:3334
+        start_command: './scripts/start-e2e-servers.sh'
+        stop_after: validation
+        stop_command: 'pkill -f "uvicorn main:app --port 8002" || true; pkill -f "next dev.*3334" || true'
+        url: http://localhost:3334
     global-auggie:
       enabled: false
     global-claude:
