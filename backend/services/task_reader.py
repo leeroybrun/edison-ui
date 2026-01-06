@@ -8,6 +8,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from services.qa_reader import QAReaderService
 
@@ -85,10 +86,8 @@ class TaskReaderService:
         self._task_cache: dict[str, TaskData] | None = None
         self.qa_service = QAReaderService(project_path)
 
-    def _parse_frontmatter(self, content: str) -> dict[str, str | list[str] | None]:
+    def _parse_frontmatter(self, content: str) -> dict[str, Any]:
         """Parse YAML frontmatter from a markdown file.
-
-        Supports both inline YAML arrays ([a, b]) and block sequences (- item).
 
         Args:
             content: The file content.
@@ -96,7 +95,7 @@ class TaskReaderService:
         Returns:
             Dictionary of frontmatter values.
         """
-        result: dict[str, str | list[str] | None] = {}
+        result: dict[str, Any] = {}
 
         # Match YAML frontmatter between --- delimiters
         match = re.match(r"^---\s*\n(.*?)\n---", content, re.DOTALL)
@@ -104,73 +103,63 @@ class TaskReaderService:
             return result
 
         frontmatter = match.group(1)
-        lines = frontmatter.split("\n")
-        current_key: str | None = None
-        current_list: list[str] | None = None
+        try:
+            import yaml
 
-        for line in lines:
-            stripped = line.strip()
+            loaded = yaml.safe_load(frontmatter)
+        except Exception:
+            return result
 
-            # Skip empty lines and comments
-            if not stripped or stripped.startswith("#"):
+        if not isinstance(loaded, dict):
+            return result
+
+        return dict(loaded)
+
+    def _parse_relationships(
+        self, fm: dict[str, Any]
+    ) -> tuple[str | None, list[str], list[str], list[str]]:
+        """Derive legacy relationship fields from canonical relationships edges.
+
+        Returns (parent_id, child_ids, depends_on, blocks_tasks).
+        """
+        relationships_raw = fm.get("relationships")
+        if not isinstance(relationships_raw, list):
+            return (None, [], [], [])
+
+        edges: list[tuple[str, str]] = []
+        for item in relationships_raw:
+            if not isinstance(item, dict):
                 continue
+            edge_type = item.get("type")
+            target = item.get("target")
+            if isinstance(edge_type, str) and isinstance(target, str):
+                edges.append((edge_type, target))
 
-            # Check if this is a list item (starts with "- ")
-            if stripped.startswith("- ") and current_key is not None:
-                if current_list is None:
-                    current_list = []
-                # Get the item value, stripping quotes if present
-                item = stripped[2:].strip()
-                if (item.startswith("'") and item.endswith("'")) or (
-                    item.startswith('"') and item.endswith('"')
-                ):
-                    item = item[1:-1]
-                current_list.append(item)
-                result[current_key] = current_list
-                continue
+        parent_id: str | None = None
+        child_ids: list[str] = []
+        depends_on: list[str] = []
+        blocks_tasks: list[str] = []
 
-            # Check if this is a key: value line
-            if ":" not in line:
-                continue
+        for edge_type, target in edges:
+            if edge_type == "parent" and parent_id is None:
+                parent_id = target
+            elif edge_type == "child":
+                child_ids.append(target)
+            elif edge_type == "depends_on":
+                depends_on.append(target)
+            elif edge_type == "blocks":
+                blocks_tasks.append(target)
 
-            # Save any accumulated list before processing new key
-            if current_list is not None:
-                current_list = None
+        return (parent_id, child_ids, depends_on, blocks_tasks)
 
-            # Split only on first colon to handle values with colons
-            colon_idx = line.index(":")
-            key = line[:colon_idx].strip()
-            value = line[colon_idx + 1 :].strip()
-
-            current_key = key
-            current_list = None
-
-            # Handle quoted strings
-            if value.startswith("'") and value.endswith("'"):
-                value = value[1:-1]
-            elif value.startswith('"') and value.endswith('"'):
-                value = value[1:-1]
-
-            # Handle JSON/inline YAML arrays like [a, b, c]
-            if value.startswith("[") and value.endswith("]"):
-                try:
-                    import json
-
-                    result[key] = json.loads(value)
-                except (json.JSONDecodeError, ValueError):
-                    # Try parsing as YAML-style inline list
-                    inner = value[1:-1]
-                    items = [
-                        i.strip().strip("'\"") for i in inner.split(",") if i.strip()
-                    ]
-                    result[key] = items if items else value
-            elif value:
-                result[key] = value
-            else:
-                # Empty value - might be followed by block sequence
-                result[key] = None
-
-        return result
+    def _coerce_str_list(self, value: Any) -> list[str]:
+        if value is None:
+            return []
+        if isinstance(value, str):
+            return [v.strip() for v in value.split(",") if v.strip()]
+        if isinstance(value, list):
+            return [str(v) for v in value if v is not None and str(v).strip()]
+        return []
 
     def _parse_task_file(self, file_path: Path, state: str) -> TaskData | None:
         """Parse a task markdown file.
@@ -198,39 +187,29 @@ class TaskReaderService:
         if not isinstance(title, str):
             title = str(title)
 
-        # Parse list fields
-        depends_on = fm.get("depends_on", [])
-        if isinstance(depends_on, str):
-            depends_on = [d.strip() for d in depends_on.split(",") if d.strip()]
-        elif not isinstance(depends_on, list):
-            depends_on = []
+        parent_id: str | None = None
+        child_ids: list[str] = []
+        depends_on: list[str] = []
+        blocks_tasks: list[str] = []
 
-        child_ids = fm.get("child_ids", [])
-        if isinstance(child_ids, str):
-            child_ids = [c.strip() for c in child_ids.split(",") if c.strip()]
-        elif not isinstance(child_ids, list):
-            child_ids = []
+        parent_id_rel, child_ids_rel, depends_on_rel, blocks_tasks_rel = (
+            self._parse_relationships(fm)
+        )
+        if any([parent_id_rel, child_ids_rel, depends_on_rel, blocks_tasks_rel]):
+            parent_id = parent_id_rel
+            child_ids = child_ids_rel
+            depends_on = depends_on_rel
+            blocks_tasks = blocks_tasks_rel
+        else:
+            depends_on = self._coerce_str_list(fm.get("depends_on"))
+            child_ids = self._coerce_str_list(fm.get("child_ids"))
+            blocks_tasks = self._coerce_str_list(fm.get("blocks_tasks"))
 
-        blocks_tasks = fm.get("blocks_tasks", [])
-        if isinstance(blocks_tasks, str):
-            blocks_tasks = [b.strip() for b in blocks_tasks.split(",") if b.strip()]
-        elif not isinstance(blocks_tasks, list):
-            blocks_tasks = []
-
-        tags = fm.get("tags", [])
-        if isinstance(tags, str):
-            tags = [t.strip() for t in tags.split(",") if t.strip()]
-        elif not isinstance(tags, list):
-            tags = []
+        tags = self._coerce_str_list(fm.get("tags"))
 
         parent_id_raw = fm.get("parent_id")
-        parent_id: str | None = None
-        if parent_id_raw is not None:
-            parent_id = (
-                str(parent_id_raw)
-                if not isinstance(parent_id_raw, str)
-                else parent_id_raw
-            )
+        if parent_id is None and parent_id_raw is not None:
+            parent_id = str(parent_id_raw) if not isinstance(parent_id_raw, str) else parent_id_raw
 
         session_id_raw = fm.get("session_id")
         session_id: str | None = None
