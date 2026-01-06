@@ -27,6 +27,14 @@ export function NavSidebar() {
               Projects
             </Link>
           </li>
+          <li>
+            <Link
+              href="/settings"
+              className="flex items-center rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            >
+              Settings
+            </Link>
+          </li>
         </ul>
       </nav>
     </aside>

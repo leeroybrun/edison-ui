@@ -22,6 +22,13 @@ describe("NavSidebar", () => {
     expect(projectsLink).toHaveAttribute("href", "/projects");
   });
 
+  it("renders Settings link pointing to /settings", () => {
+    render(<NavSidebar />);
+    const settingsLink = screen.getByRole("link", { name: /settings/i });
+    expect(settingsLink).toBeInTheDocument();
+    expect(settingsLink).toHaveAttribute("href", "/settings");
+  });
+
   it("renders app title in the top bar area", () => {
     render(<NavSidebar />);
     expect(screen.getByText("Edison UI")).toBeInTheDocument();

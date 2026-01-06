@@ -1,4 +1,4 @@
-"""WebSocket realtime endpoint (T050).
+"""WebSocket realtime endpoint (T050, T063).
 
 Implements push-first realtime updates per FR-006 and data-model.md contracts.
 
@@ -9,23 +9,102 @@ Protocol:
 - Server sends: {"type": "upsert", "subscriptionId": "...", "revision": N, "data": {...}}
 - Server sends: {"type": "delete", "subscriptionId": "...", "revision": N, "id": "..."}
 - Server sends: {"type": "error", "subscriptionId": "...", "code": "...", "message": "..."}
+
+Authentication (T063):
+- In localhost mode: No auth required
+- In network mode: Pass token via ?token= query param or Sec-WebSocket-Protocol header
 """
 
 from __future__ import annotations
 
 import json
+import os
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
 from core.settings import get_settings
+from services.pairing_service import get_pairing_service, reset_pairing_service
 from services.project_discovery import ProjectDiscoveryService
 from services.qa_reader import QAReaderService
 from services.session_reader import SessionReaderService
+from services.settings_manager import SettingsManager
 from services.task_reader import TaskReaderService
 
 router = APIRouter(prefix="/ws", tags=["realtime"])
+
+
+def get_settings_manager() -> SettingsManager:
+    """Get a configured settings manager."""
+    settings_file = os.environ.get("SETTINGS_FILE")
+    return SettingsManager(settings_file=settings_file)
+
+
+def extract_websocket_token(websocket: WebSocket, token_param: str | None) -> str | None:
+    """Extract authentication token from WebSocket connection.
+
+    Checks in order:
+    1. Query parameter ?token=
+    2. Sec-WebSocket-Protocol header (format: "bearer.{token}")
+
+    Args:
+        websocket: The WebSocket connection.
+        token_param: Token from query parameter.
+
+    Returns:
+        The token if found, None otherwise.
+    """
+    # Check query param first
+    if token_param:
+        return token_param
+
+    # Check Sec-WebSocket-Protocol header
+    # Format: "bearer.{token}"
+    subprotocols: list[str] = websocket.scope.get("subprotocols", [])
+    for protocol in subprotocols:
+        if protocol.startswith("bearer."):
+            return str(protocol[7:])  # Remove "bearer." prefix
+
+    return None
+
+
+async def check_websocket_auth(
+    websocket: WebSocket, token_param: str | None
+) -> tuple[bool, str | None]:
+    """Check if WebSocket connection is authenticated.
+
+    Args:
+        websocket: The WebSocket connection.
+        token_param: Token from query parameter.
+
+    Returns:
+        Tuple of (is_authenticated, error_message).
+        In localhost mode, always returns (True, None).
+    """
+    # Get exposure mode
+    manager = get_settings_manager()
+    settings = manager.get_settings()
+
+    # In localhost mode, no auth required
+    if settings.exposure_mode == "localhost":
+        return True, None
+
+    # In network mode, require auth
+    token = extract_websocket_token(websocket, token_param)
+
+    if token is None:
+        return False, "Authorization required. Please pair your device first."
+
+    # Validate token
+    reset_pairing_service()
+    pairing_service = get_pairing_service()
+
+    if not pairing_service.validate_token(token):
+        return False, "Invalid or expired token."
+
+    return True, None
+
 
 # Valid resource types
 VALID_RESOURCES = {"tasks", "sessions", "qa", "projects"}
@@ -223,9 +302,44 @@ def get_projects_snapshot() -> list[dict[str, Any]]:
 
 
 @router.websocket("/realtime")
-async def websocket_endpoint(websocket: WebSocket) -> None:
-    """WebSocket endpoint for realtime updates."""
-    await websocket.accept()
+async def websocket_endpoint(
+    websocket: WebSocket,
+    token: str | None = Query(default=None),
+) -> None:
+    """WebSocket endpoint for realtime updates.
+
+    In network-exposed mode, authentication is required via:
+    - Query parameter: ?token={bearer_token}
+    - Subprotocol header: bearer.{token}
+    """
+    # Check authentication before accepting connection
+    is_authenticated, error_message = await check_websocket_auth(websocket, token)
+
+    if not is_authenticated:
+        # Accept connection briefly to send error, then close
+        await websocket.accept()
+        await websocket.send_json(
+            build_error_response(
+                code="AUTH_REQUIRED",
+                message=error_message or "Authentication required",
+            )
+        )
+        await websocket.close(code=4001)  # 4001 = Unauthorized
+        return
+
+    # Accept the connection (with subprotocol if used)
+    subprotocols = websocket.scope.get("subprotocols", [])
+    accepted_subprotocol = None
+    for protocol in subprotocols:
+        if protocol.startswith("bearer."):
+            accepted_subprotocol = protocol
+            break
+
+    if accepted_subprotocol:
+        await websocket.accept(subprotocol=accepted_subprotocol)
+    else:
+        await websocket.accept()
+
     manager = ConnectionManager()
 
     try:

@@ -32,6 +32,9 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           <a href="/projects" className="text-gray-700 hover:text-gray-900">
             Projects
           </a>
+          <a href="/settings" className="text-gray-700 hover:text-gray-900">
+            Settings
+          </a>
         </nav>
 
         {/* Main content */}
