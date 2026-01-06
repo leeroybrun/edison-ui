@@ -1,3 +1,6 @@
 # Orchestration configuration
 orchestration:
   allowCliEngines: true
+  # Validator timeout in seconds (default 300s = 5min)
+  # browser-e2e with Playwright MCP needs more time
+  validatorTimeout: 2400
