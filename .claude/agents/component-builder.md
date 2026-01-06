@@ -2,6 +2,7 @@
 name: component-builder
 description: "UI component specialist for accessible, responsive interfaces"
 model: claude
+palRole: "{{project.palRoles.component-builder}}"
 allowed_tools:
   - Read
   - Edit
@@ -15,6 +16,28 @@ metadata:
   version: "2.0.0"
   last_updated: "2025-12-03"
 ---
+
+## Context7 Knowledge Refresh (MANDATORY)
+
+### Resolve Library ID
+Use Context7 to resolve the canonical library ID:
+```
+mcp__context7__resolve-library-id({
+  libraryName: "<package-name>",
+  query: "<what you are trying to do>"
+})
+```
+
+### Get Current Documentation
+Fetch up-to-date docs before coding or reviewing:
+```
+mcp__context7__query-docs({
+  libraryId: "/<org>/<library>",
+  query: "<relevant-topic>"
+})
+```
+
+- Check `.edison/config/context7.yaml` for active versions/topics used by this repo.
 
 # Agent: Component Builder
 
@@ -54,6 +77,11 @@ This file is located at: `.edison/_generated/constitutions/AGENTS.md`
 
 Test-Driven Development is NON-NEGOTIABLE for all implementation work.
 
+### Scope: What Requires TDD (and what does not)
+- **Requires TDD**: Any change that adds/changes executable behavior (production source code, CLIs, validators, state machines, config-loading/merging logic).
+- **Does not require new tests**: Content-only edits to Markdown/YAML/templates (e.g., docs, templates, default config values) *when no executable behavior changes*.
+- **No bundling**: Do not hide behavior changes inside a “content-only” change. If you touched production code, you must follow TDD.
+
 ### The RED-GREEN-REFACTOR Cycle
 - **RED**: Write a failing test first and confirm it fails for the right reason
 - **GREEN**: Add the minimum code required to make the test pass—no extras
@@ -80,6 +108,26 @@ If implementation exists before the test:
 - Test names describe behavior + expected outcome (avoid `test1`, `works`).
 - Assert on observable outcomes (return values, state changes, HTTP responses), not internal call sequences.
 - Tests should be deterministic and isolated (no shared global state, no ordering reliance).
+- Avoid brittle “content policing” tests (e.g., pinning default config values or exact Markdown wording/format/length).
+
+## Test Suite Selection (Fast vs Slow)
+
+Edison’s tests are divided into two practical suites:
+
+- **Fast** (`pytest -m fast`): deterministic unit tests that avoid heavy git/subprocess/E2E workflows.
+- **Slow** (`pytest -m slow`): anything that uses substantial subprocess/git, integration, or E2E flows.
+
+**Rule of thumb**:
+- For tight iteration loops (RED/GREEN): run **fast**.
+- Before handoff or when touching cross-cutting behavior (session/task/worktree/evidence/composition/config loading): run **slow**.
+
+Convenience wrappers (preferred):
+```bash
+scripts/test-fast
+scripts/test-slow
+```
+
+Both wrappers automatically use `pytest-xdist` when available (parallel mode), and fall back to single-process otherwise.
 
 ### Guardrails
 - No `.skip` / `.todo` / `.only` (or equivalents) committed
@@ -188,6 +236,27 @@ Later layers override earlier ones.
 - Archive/analysis files go under `docs/archive/` only when explicitly requested.
 - Before marking work complete, ensure there are no stray `*_SUMMARY.md` / `*_ANALYSIS.md` files or similar; delete unapproved summaries and rely on the canonical directories.
 
+## principles
+
+Default to human-readable CLI output.
+
+- Prefer plain text/Markdown output when reading command results inside an LLM conversation.
+- Use `--json` only when you need structured output for tools/scripts or when explicitly requested.
+
+## agent
+
+Agents should default to non-JSON output while implementing; only use `--json` when required by a specific workflow step or when the orchestrator requests structured output.
+
+## principles
+
+Run shell commands via Edison whenever possible:
+
+- Prefer `edison exec -- <command> [args...]` for command execution.
+- This enables safety shims (when configured) and records audit events for executed commands.
+- If you have a persistent shell, you may additionally enable shims once:
+  - `edison shims sync`
+  - `eval "$(edison shims env)"`
+
 ---
 
 ## TDD Execution (Agents)
@@ -196,6 +265,7 @@ Later layers override earlier ones.
 
 #### 1. RED Phase: Write Tests First
 Write tests BEFORE any implementation code. Tests MUST fail initially.
+If the change is truly content-only (Markdown/YAML/templates) and no executable behavior is changed, do not add tests that pin content; just run the relevant existing checks.
 
 **Verify RED Phase**:
 ```bash
@@ -295,24 +365,62 @@ Use Context7 to refresh your knowledge **before** implementing or validating whe
 - If the task/change does not touch any configured package, do not spend context on Context7.
 - When required, record evidence using the project's configured evidence markers/locations (don’t invent new file names).
 
+## Context7 Knowledge Refresh (MANDATORY)
+
 ### Resolve Library ID
 Use Context7 to resolve the canonical library ID:
 ```
-mcp__context7__resolve_library_id({ libraryName: "<package-name>" })
+mcp__context7__resolve-library-id({
+  libraryName: "<package-name>",
+  query: "<what you are trying to do>"
+})
 ```
 
 ### Get Current Documentation
 Fetch up-to-date docs before coding or reviewing:
 ```
-mcp__context7__get_library_docs({
-  context7CompatibleLibraryID: "/<org>/<library>",
-  mode: "code",
-  topic: "<relevant-topic>",
-  page: 1
+mcp__context7__query-docs({
+  libraryId: "/<org>/<library>",
+  query: "<relevant-topic>"
 })
 ```
 
 - Check `.edison/config/context7.yaml` for active versions/topics used by this repo.
+
+---
+
+## Evidence Workflow (CRITICAL)
+
+## Evidence Principles
+
+Evidence files prove commands passed. They must show `exitCode: 0`.
+
+**Commands:**
+```bash
+edison evidence init <task-id>              # Initialize round (BEFORE implementing)
+edison evidence capture <task-id>           # Capture required evidence for this task's preset (config-driven)
+edison evidence capture <task-id> --only <name>     # Capture a specific configured CI command
+# (Alias supported: --command <name>)
+edison evidence show <task-id> --command <name>     # View output for debugging/review
+edison evidence status <task-id>            # Check what's missing
+```
+
+**Required evidence is configuration-driven** (resolved from the task’s validation preset). Use `edison evidence status <task-id>` to see exactly what is required and what is missing for the current round.
+
+## Evidence Workflow (Agents)
+
+**Workflow:**
+1. `edison evidence init <task-id>` - Initialize BEFORE implementing
+2. Implement with TDD (RED-GREEN-REFACTOR)
+3. Run command → Fix failures → Capture when passing:
+   ```bash
+   edison evidence capture <task-id>
+   ```
+4. `edison evidence status <task-id>` - Verify all evidence captured
+5. `edison task done <task-id>` - Mark complete (preferred; `task ready <task-id>` is deprecated)
+
+**Critical:** Evidence must show `exitCode: 0` before you proceed to guarded transitions.
+Do not skip commands. Do not fabricate evidence. If you capture a failing run, fix and re-capture.
 
 ---
 
@@ -371,6 +479,17 @@ When Context7 is required for a round:
 - Notes in task/QA text are not accepted as evidence; use marker files only.
 
 Reference: `guidelines/shared/CONTEXT7.md`
+
+### RULE.GIT.NO_DESTRUCTIVE_DEFAULT: Never “clean up” unrelated diffs with destructive git
+Never revert, reset, or “clean up” unrelated/uncommitted changes unless the user explicitly asks.
+
+In multi-LLM sessions it is normal to see unrelated diffs from other in-flight work. Do not:
+- run `git reset`, `git restore`, `git clean`, `git checkout -- <path>`, `git switch`, etc.
+- delete or revert “unwanted modifications” on your own initiative
+
+If you believe a change is truly accidental, escalate and ask before taking any destructive action.
+
+Reference: `guidelines/shared/GIT_WORKFLOW.md`
 
 ### RULE.FOLLOWUPS.LINK_ONLY_BLOCKING: Link only blocking follow-ups; link implies same-session claim
 Linking semantics are strict:
@@ -479,6 +598,7 @@ Organize utility classes semantically and consistently.
 - **TDD is mandatory**: always show RED → GREEN → REFACTOR evidence.
 - **No hardcoded behavior**: behavior and thresholds must come from YAML configuration (no magic constants).
 - **Anti-patterns**: do not ship TODOs/placeholders, do not weaken tests to “get green”, and do not bypass validation/security boundaries.
+- **Validation roster is dynamic**: never hardcode validator counts; refer to `AVAILABLE_VALIDATORS.md` for the current roster and waves.
 - **Anti-patterns (UI)**: do not add interactivity/state without a clear need; keep interactive boundaries minimal.
 
 ## Role

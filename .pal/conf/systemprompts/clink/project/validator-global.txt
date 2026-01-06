@@ -9,7 +9,7 @@
 
 ## Constitution (Re-read on compact)
 
-Open and follow: run `edison read VALIDATORS --type constitutions`
+Open and follow: run `edison read VALIDATORS --type constitutions`.
 
 ---
 
@@ -45,16 +45,27 @@ Refresh your knowledge on post-training packages used in this project BEFORE val
 ### Step 2: Review Git Diff
 
 ```bash
-git diff --cached  # Staged changes
-git diff           # Unstaged changes
+git status --porcelain
+git diff                      # Uncommitted changes (may be empty)
+git diff main...HEAD          # Committed changes on this branch/worktree
 ```
 
 **Questions to Answer**:
-1. ✅ **Scope Compliance**: Do changes match task requirements EXACTLY?
+1. ✅ **Scope Compliance**: Do changes satisfy the task requirements?
 2. ✅ **Unintended Deletions**: Was any code accidentally removed?
 3. ✅ **Regression Risk**: Could changes break existing functionality?
 4. ✅ **Security Vulnerabilities**: Do changes introduce security holes?
 5. ✅ **Performance Impact**: Do changes affect performance?
+6. ✅ **Dependency Risk**: If `package.json` / lockfiles changed, did any vulnerable package **versions** change due to this task?
+
+**Scope Guidance (Important):**
+- Treat "extra/unrelated diffs" as a **warning**, not an automatic rejection.
+- Only **reject for scope drift** when the extra changes are clearly risky/unintentional (e.g., broad refactors, unrelated dependency/config churn, suspicious deletions, security-sensitive changes) or when they directly violate the task constraints.
+- Your goal is to prevent defects, not to punish multi-agent workflows where other work may exist in the checkout.
+
+**Dependency audit policy (change-aware):**
+- If `package.json` / lockfiles changed, assess dependency risk for the **delta introduced by this task**.
+- If lockfiles changed but vulnerable package **versions** did **not** change (normalization/reordering), do **not** reject solely on baseline audit findings; create follow-up tasks instead.
 
 ### Step 3: Run 10-Point Comprehensive Checklist
 
@@ -163,7 +174,7 @@ make test > command-test.txt 2>&1
 
 ```bash
 # Build check (if applicable)
-npm run build > command-build.txt 2>&1 || echo "No build configured"
+make build > command-build.txt 2>&1 || echo "No build configured"
 ```
 
 ## TypeScript Validation Context
@@ -592,6 +603,75 @@ it('submits form', async () => {
 - Avoid `.skip()`/`.only()` in committed code.
 - Enforce the core NO MOCKS policy: mock only system boundaries (third-party APIs), never internal modules.
 - Keep tests fast and deterministic with clear naming.
+
+# E2E Web - Global Validator Overlay
+
+Global validation guidance for web end-to-end testing (Playwright).
+
+## Guidelines
+
+## Agent Patterns: Real, Unmocked E2E
+
+### Test Like a User (Selectors)
+- Prefer user-facing locators (`getByRole`, `getByLabel`, `getByText`) over CSS/XPath.
+- Use locator chaining/filtering to narrow scope instead of relying on brittle selectors.
+- Add stable identifiers only when necessary (`data-testid`) and keep them semantic.
+- Avoid asserting on implementation details (DOM structure, CSS classes) unless that is the feature.
+
+### Waiting & Determinism (No Flakes)
+- Never use fixed sleeps/timeouts to “fix” timing.
+- Rely on Playwright auto-waiting + web-first assertions (`expect(locator).toBeVisible()`).
+- Assert *state changes* rather than intermediate transitions.
+- Make every test independent:
+  - isolate user/session per test
+  - isolate created records (unique namespaces/IDs)
+  - never depend on test order
+
+### Authentication & Sessions (Speed + Isolation)
+- Prefer **real auth** while keeping runs fast:
+  - Authenticate once in a dedicated setup flow, save `storageState`, and reuse it to bootstrap tests already signed in.
+  - If tests mutate server-side state (or run heavily in parallel), use **different accounts** or isolate state per test/role.
+- If you use a setup project, be aware it can run even when a subset of tests doesn’t need auth; optimize only if it becomes a bottleneck (do not trade away correctness).
+
+### Real Setup (No Internal Mocks)
+- Seed via real APIs or real DB utilities, not internal mocks.
+- Prefer *arrange via the UI only when the UI is the feature*; otherwise arrange via stable APIs/fixtures and assert via UI.
+- Avoid network interception (`route.fulfill`) for internal endpoints; only consider it for true third-party services you do not control.
+
+### Diagnostics & CI Evidence (Trace-Driven Debugging)
+- Enable retries on CI (0 locally, >0 on CI) and collect evidence on failures:
+  - `trace: 'on-first-retry'` for a good signal/cost tradeoff.
+  - `video: 'on-first-retry'` and `screenshot: 'only-on-failure'` when flake triage needs more visibility.
+- Prefer debugging from traces (timeline + snapshots) before changing waits/selectors.
+
+### Coverage That Matters
+For each user-visible change, ensure tests cover:
+- Happy path
+- Validation errors
+- Permissions/auth edge cases
+- Empty/loading/error states
+- Keyboard-only path for critical interactions
+
+### Debugging Toolkit
+- Enable traces on failure in CI.
+- Keep screenshots/videos on failure only; don’t generate noise for green runs.
+- When debugging: run single worker, headed, with slowMo only temporarily.
+## Validator Protocol: Browser Validation via Playwright MCP
+
+When validating UI changes:
+- Identify affected user journeys from the diff and acceptance criteria.
+- Validate each journey in a real browser session with realistic input.
+- Try to break flows: invalid inputs, rapid clicks, back/refresh, deep links, unauthenticated access.
+- Confirm accessibility basics: keyboard navigation for primary flows, visible focus, correct roles/labels.
+
+### Playwright MCP Notes (Deterministic, Accessibility-First)
+- Prefer structured, deterministic snapshots (accessibility tree) over screenshot-based guessing.
+- Use **isolated** browser sessions for validation by default (avoid accidental state leakage across runs).
+- If you need a pre-authenticated state for validation, provide it via storage state (rather than manually “clicking login” every time).
+
+If Playwright MCP tools are unavailable:
+- Fall back to running `playwright test` locally and reviewing traces/screenshots.
+- Report the missing tooling as a blocking setup issue when UI changes require browser validation.
 
 ---
 

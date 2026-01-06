@@ -1,5 +1,7 @@
-=== Edison / Pal Prompt ===
+=== Edison / Pal MCP Prompt ===
+Model: codex
 Role: default
+Context window: Be concise and stay within the model limit.
 
 
 # Tech-Stack Pack Contexts
@@ -25,11 +27,11 @@ validations. Project layers extend these via includes and project-specific overl
 
 ## Structure & Contracts
 
-- **Guidelines** (`.edison/_generated/guidelines/<role>/*.md`): Condensed, mandatory checklists and rules. Always loaded by agents.
-- **Extended Guides** (`.edison/_generated/guidelines/extended/*.md`): Deep-dive explanations, examples, and philosophy. Referenced by guidelines.
-- **Reference** (`.edison/_generated/guidelines/reference/*.md`): Specific reference material (APIs, commands).
+- **Guidelines** (`{{PROJECT_EDISON_DIR}}/_generated/guidelines/<role>/*.md`): Condensed, mandatory checklists and rules. Always loaded by agents.
+- **Extended Guides** (`{{PROJECT_EDISON_DIR}}/_generated/guidelines/extended/*.md`): Deep-dive explanations, examples, and philosophy. Referenced by guidelines.
+- **Reference** (`{{PROJECT_EDISON_DIR}}/_generated/guidelines/reference/*.md`): Specific reference material (APIs, commands).
 
-Role folders under `.edison/_generated/guidelines/`:
+Role folders under `{{PROJECT_EDISON_DIR}}/_generated/guidelines/`:
 - `shared/` — Applies to all roles.
 - `agents/` — Implementation-focused guidance.
 - `validators/` — QA, review, and test quality guidance.
@@ -45,12 +47,12 @@ These bidirectional links are enforced by tests under `tests/guidelines/` so age
 
 ### Pack Guidelines (Namespacing Convention)
 
-- Packs MAY contribute additional guidelines under `.edison/_generated/guidelines/<pack>/*.md`.
+- Packs MAY contribute additional guidelines under `{{PROJECT_EDISON_DIR}}/_generated/guidelines/<pack>/*.md`.
 - Guideline filenames should be **namespaced by pack** to avoid collisions in the global registry, for example:
   - `framework-routing.md`, `framework-metadata.md`
   - `orm-migrations.md`, `orm-query-optimization.md`
   - `test-framework-component-testing.md`, `test-framework-test-quality.md`
-- The guideline composition engine discovers these pack guidelines and composes them alongside core and project-level guidelines into `.edison/_generated/guidelines/*.md`.
+- The guideline composition engine discovers these pack guidelines and composes them alongside core and project-level guidelines into `{{PROJECT_EDISON_DIR}}/_generated/guidelines/*.md`.
 
 ## Core orchestration & process (mandatory)
 
@@ -93,7 +95,7 @@ These are designed to be embedded into agent/validator constitutions via `{{incl
 - Practice TDD (RED → GREEN → REFACTOR) and keep evidence (fail/pass output + coverage).
 - Refresh Context7 for every package listed as post-training in the validator config; store markers.
 - Keep task status honest in the task file; log blockers immediately and propose follow-ups with IDs.
-- Run the project automation suite (type-check, lint, test, build) before handing off.
+- Run configured automation for the task’s validation preset (`edison evidence capture <task-id>`), then review outputs.
 - Produce an Implementation Report for every round; include commands run, evidence paths, follow-ups, and delegation notes (if you delegated sub-work).
 - Avoid silent shortcuts: no skipping tests, no untracked edits, no bypassing hooks or guards.
 - Ask for clarification early when requirements or acceptance criteria are ambiguous.
@@ -105,11 +107,11 @@ These are designed to be embedded into agent/validator constitutions via `{{incl
 1. **Claim & read** – Claim the task in the project tracker; open the paired QA brief. Confirm scope, dependencies, and acceptance criteria. If QA is missing, ping the orchestrator.
 2. **Plan** – Identify affected files and risks. Create a small checklist for the change. Decide what tests you will write first.
 3. **Context refresh** – For any Context7-detected packages in scope, run Context7 (resolve library ID via `mcp__context7__resolve_library_id`, then fetch docs via `mcp__context7__get_library_docs`) and drop `context7-<pkg>.txt` markers in the round evidence directory.
-4. **TDD loop** – RED → GREEN → REFACTOR for each behavior. Keep tests isolated and deterministic. Keep coverage ≥90% overall / 100% on changed/new files.
-5. **Automation** – Run the project automation suite (type-check, lint, test, build or equivalents). Capture outputs in evidence files.
+4. **TDD loop** – RED → GREEN → REFACTOR for each behavior. Keep tests isolated and deterministic. Keep coverage ≥90% overall / 100% on changed/new files. For content-only Markdown/YAML/template edits, do not add brittle tests that pin wording or default config values; if you change executable behavior, TDD is required.
+5. **Automation** – Capture the configured automation evidence for the task’s validation preset (`edison evidence capture <task-id>`). Review outputs; fix failures; re-capture until `exitCode: 0`.
 6. **Document** – Update task file `Status Updates` + `Findings`. Link evidence paths. Note blockers and follow-ups.
 7. **Implementation Report** – Fill out the report (see OUTPUT_FORMAT) with commands, Context7 packages, tests, and any follow-ups/delegations.
-8. **Ready for validation** – Move QA to `todo/` when implementation is complete, automation is green, and the report + evidence are present. Do not self-validate if you implemented the work.
+8. **Ready for validation** – Move QA to `{{fn:semantic_state("qa","todo")}}/` when implementation is complete, automation is green, and the report + evidence are present. Do not self-validate if you implemented the work.
 
 ## Guideline: agents/COMMON
 
@@ -136,7 +138,7 @@ Use this roster instead of repeating the table in each agent file:
 - Tracking (mandatory): run `edison read MANDATORY_WORKFLOW --type guidelines/agents` (includes the canonical tracking commands).
 - `edison config show <domain> --format yaml` - Inspect merged config (read-only)
 
-> Orchestrator-only (do not run unless explicitly told): `edison task claim`, `edison task ready`, `edison qa new`, `edison qa promote`, `edison qa bundle`, `edison qa validate`, `edison session next`, `edison git worktree-*`, `edison compose all`.
+> Orchestrator-only (do not run unless explicitly told): `edison task claim`, `edison task done` (and legacy `edison task ready <task>`), `edison qa new`, `edison qa promote`, `edison qa bundle`, `edison qa validate`, `edison session next`, `edison git worktree-*`, `edison compose all`.
 
 ## Git Safety (Agents)
 - Do not run `git checkout` / `git switch` / `git branch` (or create branches) as part of implementation unless explicitly asked by the user.
@@ -149,7 +151,7 @@ Use this roster instead of repeating the table in each agent file:
 - **Session runtime state is local-only.** Do not commit `.project/sessions/` or `.project/.session-id` (they should be gitignored).
 
 ### Context7 Tools
-- Context7 package detection (automatic in `edison task ready`)
+- Context7 package detection (automatic in `edison task done`)
 - HMAC evidence stamping (when enabled in config)
 
 ### Validation Tools
@@ -192,7 +194,6 @@ The orchestrator uses this configuration to assign tasks to the most appropriate
 ### The MISMATCH Pattern
 
 If you receive a task outside your scope, return a MISMATCH:
-
 ```markdown
 ## MISMATCH
 
@@ -206,11 +207,9 @@ If you receive a task outside your scope, return a MISMATCH:
 
 **Rationale**: API-first tasks should be assigned to api-builder for better error handling and test patterns.
 ```
-
 **CRITICAL**: Do NOT attempt to implement outside your scope. Return MISMATCH and let the orchestrator reassign.
 
 ### Why Sub-Agents Never Re-Delegate
-
 ```
 ❌ WRONG: Sub-agent calling another model
 ───────────────────────────────────────
@@ -221,7 +220,6 @@ Orchestrator → component-builder → api-builder (NO!)
 Orchestrator → component-builder (UI work)
            └→ api-builder (API work)
 ```
-
 **Reasons**:
 1. **Single responsibility**: Orchestrator owns delegation decisions
 2. **Context preservation**: Orchestrator maintains session context
@@ -241,7 +239,6 @@ Orchestrator → component-builder (UI work)
 | **code-reviewer** | Review only | All files (review, not implement) |
 
 ### Reading the Delegation Config
-
 ```pseudocode
 // Example: Reading the roster
 roster = `edison read AVAILABLE_AGENTS`
@@ -249,9 +246,7 @@ roster = `edison read AVAILABLE_AGENTS`
 // Find your assigned agent entry and its scope hints (as rendered in the roster)
 // Then follow the orchestrator's instructions for your slice.
 ```
-
 ### Workflow Decision Tree
-
 ```
 Receive task from orchestrator
         ↓
@@ -264,7 +259,6 @@ Does task match my scope?
               └── Include suggested split
               └── Orchestrator will reassign
 ```
-
 ### Special Case: code-reviewer
 
 The **code-reviewer** agent is unique:
@@ -285,7 +279,6 @@ The **feature-implementer** agent handles full-stack work:
 ## Evidence Required
 
 When returning results, include delegation decision:
-
 ```json
 {
   "delegationDecision": {
@@ -296,9 +289,7 @@ When returning results, include delegation decision:
   }
 }
 ```
-
 Or for MISMATCH:
-
 ```json
 {
   "delegationDecision": {
@@ -310,9 +301,7 @@ Or for MISMATCH:
   }
 }
 ```
-
 ## CLI Commands
-
 ```bash
 # Show merged delegation config (for humans; do not hardcode paths in prompts)
 edison config show delegation --format yaml
@@ -323,7 +312,6 @@ edison delegation check "<path-to-file>"
 # View agent scope (orchestrator tool)
 edison agents scope api-builder
 ```
-
 > **Note**: Delegation config has migrated from JSON to YAML format for consistency with other Edison configuration.
 
 ## References
@@ -355,11 +343,9 @@ This guide covers CLI commands relevant to agents and implementers working on as
 ## Commands
 
 ### Task Status
-
 ```bash
 edison task status <task-id>
 ```
-
 **Purpose**: Check the current state of your assigned task
 **When to use**:
 - At the start of work to understand task details
@@ -376,7 +362,6 @@ edison task status <task-id>
   "validation_required": ["global-codex", "testing"]
 }
 ```
-
 **Common usage:**
 ```bash
 # Check current task
@@ -385,7 +370,6 @@ edison task status TASK-123
 # JSON output for parsing
 edison task status TASK-123 --json
 ```
-
 ---
 
 ### Implementation Tracking
@@ -418,7 +402,6 @@ Agents have access to Context7 MCP for up-to-date library documentation.
 Use MCP tool: mcp__context7__resolve_library_id
 Parameter: libraryName (e.g., library names from active packs)
 ```
-
 **Fetch documentation:**
 ```
 Use MCP tool: mcp__context7__get_library_docs
@@ -428,7 +411,6 @@ Parameters:
   - topic: (optional) specific area (e.g., routing, data-access)
   - page: (optional) pagination for large docs (1-10)
 ```
-
 **When to use:**
 - Looking up current API syntax for frameworks from active packs
 - Understanding best practices for configured libraries
@@ -456,7 +438,6 @@ Parameters:
 ## Common Workflows
 
 ### Starting Implementation Work
-
 ```bash
 # 1. Check task details
 edison task status TASK-123
@@ -473,9 +454,7 @@ edison session track complete --task TASK-123
 # 5. Report back to orchestrator
 # "Implementation complete. Ready for validation."
 ```
-
 ### Looking Up Library Documentation
-
 ```
 // Via MCP tools (within agent context):
 
@@ -495,9 +474,7 @@ const docs = await mcp__context7__get_library_docs({
 
 // Step 3: Use information in implementation
 ```
-
 ### Checking Task Before Completion
-
 ```bash
 # Verify current state
 edison task status TASK-123 --json
@@ -506,12 +483,11 @@ edison task status TASK-123 --json
 # Ensure all implementation is complete
 # Report to orchestrator for validation
 ```
-
 ---
 
 ## Output Locations
 
-**Implementation evidence**: `.project/qa/validation-evidence/<task-id>/round-N/implementation-report.md`
+**Implementation evidence**: `{{fn:evidence_root}}/<task-id>/round-N/{{config.validation.artifactPaths.implementationReportFile}}`
 
 **Contents:**
 - Changes made
@@ -564,7 +540,6 @@ These rules are NON-NEGOTIABLE and apply to ALL agents. They represent productio
 #### 1. SECURITY FIRST
 
 **Every interaction with external data must be validated and sanitized.**
-
 ```pseudocode
 // ✅ CORRECT - Validate all input
 validated_data = schema_validator.validate(request_body)
@@ -593,11 +568,9 @@ return response({
   status: 500
 })
 ```
-
 #### 2. NO TODOs
 
 **Complete EVERYTHING before returning. No placeholders, no "TODO later".**
-
 ```pseudocode
 // ❌ WRONG - TODO comments
 function process_record(record) {
@@ -621,11 +594,10 @@ function process_record(record) {
   return validated
 }
 ```
-
 #### 3. TEST THOROUGHLY
 
 **Follow TDD protocol religiously. Tests first, always.**
-
+Applies to executable behavior changes; content-only Markdown/YAML/template edits do not require new tests, but must not be used to bypass TDD when code changes.
 ```pseudocode
 // ✅ CORRECT workflow
 // 1. Write test (RED)
@@ -650,11 +622,9 @@ function create_record(request) {
 // Skip test verification
 // Mock everything unnecessarily
 ```
-
 #### 4. ERROR HANDLING
 
 **Every function must handle errors. Every endpoint must return appropriate status codes.**
-
 ```pseudocode
 // ✅ CORRECT - Comprehensive error handling
 function handle_create_request(request) {
@@ -690,11 +660,9 @@ function handle_create_request(request) {
   return response(record)  // Missing status code!
 }
 ```
-
 #### 5. TYPE SAFETY
 
 **Use strict type checking. No loose types. No type checking suppressions.**
-
 ```pseudocode
 // ✅ CORRECT - Strict typing
 type Record {
@@ -724,11 +692,9 @@ data = untyped_function()  // NO!
 // [ignore-error] - will fix later
 result = broken_function()  // NO!
 ```
-
 #### 6. LOGGING STANDARDS
 
 **Use error logging for errors. Remove debug logs before completion.**
-
 ```pseudocode
 // ✅ CORRECT - Error logging
 try {
@@ -742,7 +708,6 @@ try {
 log_debug('data:', data)  // Remove before completion!
 log_debug('here')  // NO debug breadcrumbs!
 ```
-
 ### Agent-Specific Rules
 
 #### API Builder
@@ -793,7 +758,6 @@ log_debug('here')  // NO debug breadcrumbs!
 **ABSOLUTELY MANDATORY AND CRITICAL:**
 
 DO NOT rush and DO NOT mark tasks/work as completed if they are not REALLY finished. Instead, clearly summarize what is still needed to be done, if something was not completely finished, so that we can continue and finish the task fully in a subsequent chat.
-
 ```markdown
 ✅ CORRECT Status Report:
 ## Implementation Status: INCOMPLETE
@@ -820,7 +784,6 @@ Everything done!
 
 (Even though TODOs exist, tests are skipped, or features are incomplete)
 ```
-
 ## Evidence Required
 
 For each rule, validators check:
@@ -837,7 +800,6 @@ For each rule, validators check:
 ## Validation Commands
 
 Framework-specific commands depend on your project configuration. Common patterns:
-
 ```bash
 # Check for TODOs/FIXMEs (adjust path patterns as needed)
 grep -r "TODO\|FIXME" <source_directory>
@@ -845,19 +807,13 @@ grep -r "TODO\|FIXME" <source_directory>
 # Check for debug logs (adjust pattern for your logging framework)
 grep -r "<debug_log_pattern>" <source_directory>
 
-# Type check (command varies by language/framework)
-make type-check
+# Capture configured evidence (preferred; config-driven per validation preset)
+edison evidence capture <task-id>
+edison evidence status <task-id>
 
-# Lint (command varies by language/framework)
-make lint
-
-# Run all tests
-make test
-
-# Build (catches many issues)
-npm run build
+# Review the output for a specific command evidence file
+edison evidence show <task-id> --command <name>
 ```
-
 ## References
 
 - Quality standards: `edison read QUALITY --type guidelines/includes`
@@ -899,7 +855,7 @@ You should receive from the orchestrator:
 
 If the task is missing acceptance criteria or scope boundaries, stop and ask for them.
 
-#### Phase 1: Implement (TDD + Context7)
+#### Phase 1: Implement (TDD + Context7 + Evidence)
 
 1. **Start tracking (MANDATORY)**:
 
@@ -921,26 +877,41 @@ Notes:
   pass it via `--continuation-id` so the orchestrator/UI can correlate runs and resume reliably.
 
    - This establishes the canonical tracking metadata for the current round.
-2. Read requirements and locate existing patterns in the codebase.
-3. If the change touches any Context7‑detected package (per merged config), refresh docs via Context7 and create the required `context7-<package>.txt` marker(s) in the evidence round directory.
-4. Follow TDD: RED → GREEN → REFACTOR (tests first, then minimal implementation, then cleanup).
-5. Run the project’s automation suite (type-check, lint, test, build or equivalent). Capture outputs as evidence files **using the filenames from merged config** (required: `command-type-check.txt`, `command-lint.txt`, `command-test.txt`, `command-build.txt`).
+
+2. **Initialize evidence round (MANDATORY)**:
+   ```bash
+   edison evidence init <task-id>
+   ```
+- Creates the round directory structure for capturing evidence
+   - Do this BEFORE starting implementation
+
+3. Read requirements and locate existing patterns in the codebase.
+
+4. If the change touches any Context7‑detected package (per merged config), refresh docs via Context7 and create the required `context7-<package>.txt` marker(s) in the evidence round directory.
+
+5. Follow TDD: RED → GREEN → REFACTOR (tests first, then minimal implementation, then cleanup). This applies to executable behavior changes; content-only Markdown/YAML/template edits do not require new tests, but must not be used to bypass TDD when code changes.
+
+6. **Run and capture evidence as you work (MANDATORY)**:
+   - After each GREEN phase, run `edison evidence capture <task-id>` (captures preset-required evidence; config-driven)
+   - **FIX any failures before proceeding** - evidence must show passing commands
+   - For targeted reruns: `edison evidence capture <task-id> --only <name>` (alias: `--command <name>`)
+   - Check status: `edison evidence status <task-id>`
+
+**Critical**: Evidence is NOT just for recording—it proves you ran commands and fixed issues. If you capture a failing run, fix and re-capture until `exitCode: 0` before handoff.
 
 #### Phase 2: Produce the Implementation Report (required)
 
 Create or update the implementation report for the current round:
-- **Path**: `.project/qa/validation-evidence/<task-id>/round-<N>/implementation-report.md` (filename is config-driven; default is `implementation-report.md`).
+- **Path**: `{{fn:evidence_root}}/<task-id>/round-<N>/{{config.validation.artifactPaths.implementationReportFile}}` (filename is config-driven; default is `{{config.validation.artifactPaths.implementationReportFile}}`).
 - **Schema (LLM reference)**: `edison read implementation-report.schema.yaml --type schemas/reports`
 - Include any implementation‑discovered follow-ups in `followUpTasks[]` (used by `edison session next` to propose follow-up planning).
 
 #### Phase 3: Handoff to orchestrator (do NOT self-validate)
 
 Before handing off, **complete tracking (MANDATORY)**:
-
 ```bash
 edison session track complete --task <task-id>
 ```
-
 Return a crisp handoff to the orchestrator:
 - What changed and why
 - Commands you ran and where the evidence files live
@@ -950,24 +921,22 @@ Return a crisp handoff to the orchestrator:
 ### Agent CLI (what you may run)
 
 Agents are generally **read-only** on task/session orchestration:
-
 ```bash
 # Read-only: inspect task state/details
 edison task status <task-id>
 ```
+> Orchestrator-only (do NOT run unless explicitly told): `edison task claim`, `edison task done` (and legacy `edison task ready <task>`), `edison qa promote`, `edison qa bundle`, `edison qa validate`.
 
-> Orchestrator-only (do NOT run unless explicitly told): `edison task claim`, `edison task ready`, `edison qa promote`, `edison qa bundle`, `edison qa validate`.
+## Evidence Required
 
-## Evidence Required (minimum)
+Before handoff: `edison evidence status <task-id>`
 
-- Implementation report (`implementation-report.md`) exists for the latest round.
-- Automation evidence files exist per project config (required: `command-type-check.txt`, `command-lint.txt`, `command-test.txt`, `command-build.txt`).
-- Context7 markers exist for any required packages (if applicable).
+All command evidence must show `exitCode: 0`. Run commands, fix failures, then capture.
 
 ## Critical Rules
 
 1. **Never orchestrate by default** – do not move tasks/QA or run promotion commands unless explicitly delegated.
-2. **Never implement without tests** – TDD is mandatory.
+2. **Never implement executable behavior without tests** – TDD is mandatory. Content-only Markdown/YAML/template edits do not require new tests, but must not be used to bypass TDD when code changes.
 3. **Always provide evidence** – no evidence = not ready for validation.
 4. **Always check delegation scope** – if mis-assigned, return MISMATCH rather than doing the wrong work.
 
@@ -992,12 +961,12 @@ Canonical format: **Markdown + YAML frontmatter** (LLM-readable body, machine-re
 
 ## Where it lives
 
-- Evidence root: `.project/qa/validation-evidence/<task-id>/`
+- Evidence root: `{{fn:evidence_root}}/<task-id>/`
 - Round directory: `round-<N>/` (append-only; never overwrite old rounds)
-- Report filename: **config-driven** (`validation.artifactPaths.implementationReportFile`, default `implementation-report.md`)
+- Report filename: **config-driven** (`validation.artifactPaths.implementationReportFile`, default `{{config.validation.artifactPaths.implementationReportFile}}`)
 
 Example path:
-- `.project/qa/validation-evidence/<task-id>/round-1/implementation-report.md`
+- `{{fn:evidence_root}}/<task-id>/round-1/{{config.validation.artifactPaths.implementationReportFile}}`
 
 ## Schema (single source of truth)
 
@@ -1005,7 +974,6 @@ See the schema for the exact required fields:
 - `edison read implementation-report.schema.yaml --type schemas/reports`
 
 ## Required machine fields (YAML frontmatter)
-
 ```yaml
 ---
 taskId: "<task-id>"
@@ -1030,8 +998,8 @@ blockers:
     owner: "user"
 tddCompliance:
   followed: true
-  redEvidence: "command-\"test\.txt"
-  greenEvidence: "command-\"test\.txt"
+  redEvidence: "{{fn:evidence_file(\"test\")}}"
+  greenEvidence: "{{fn:evidence_file(\"test\")}}"
   notes: ""
 tracking:
   processId: 12345
@@ -1039,7 +1007,6 @@ tracking:
   completedAt: "2025-12-02T10:31:12Z" # Optional until the round is completed
 ---
 ```
-
 ## Human body (Markdown)
 
 After the frontmatter, include a short Markdown body for humans/validators (recommended):
@@ -1053,6 +1020,55 @@ After the frontmatter, include a short Markdown body for humans/validators (reco
 - **`followUpTasks[]` is the canonical follow-up channel** for implementation-discovered work; `edison session next` reads it to propose splits and to enforce parent/child semantics.
 - Evidence files (automation logs, Context7 markers, screenshots, exports) must live in the same round directory and be referenced from the report and the QA brief.
 - Keep report content factual and actionable; no vague “done” statements without evidence pointers.
+
+## Guideline: agents/VALIDATION_AWARENESS
+
+# Validation Awareness (Agents)
+
+Agents implement; validators validate. Treat validation as a first-class deliverable: evidence + clear reports are part of “done”.
+
+## Validator Tiers (Waves)
+
+- **Global**: always runs first (e.g., `global-*`). Blocking validators must approve.
+- **Critical**: cross-cutting risk checks (e.g., security/performance). Blocking validators must approve.
+- **Comprehensive**: additional, specialized validators that are pattern-triggered (and may be advisory if `blocking=false`). The active roster is listed in `AVAILABLE_VALIDATORS.md`.
+
+## Source of Truth
+
+- Roster + wave membership: merged `validation.validators` config (core → packs → user → project) and `edison qa validate <task-id> --dry-run`.
+- Evidence requirements: `validation.evidence.requiredFiles` plus any preset-specific additions.
+
+## Guideline: includes/CLI_OUTPUTS
+
+# CLI Output Preference - Include-Only File
+<!-- WARNING: This file is for {{include-section:}} only. DO NOT read directly. -->
+
+<!-- section: principles -->
+## principles
+
+Default to human-readable CLI output.
+
+- Prefer plain text/Markdown output when reading command results inside an LLM conversation.
+- Use `--json` only when you need structured output for tools/scripts or when explicitly requested.
+<!-- /section: principles -->
+
+<!-- section: orchestrator -->
+## orchestrator
+
+Orchestrators should default to non-JSON output when making decisions and briefing sub-agents. Only use `--json` when piping into tooling or when you need exact structured fields.
+<!-- /section: orchestrator -->
+
+<!-- section: agent -->
+## agent
+
+Agents should default to non-JSON output while implementing; only use `--json` when required by a specific workflow step or when the orchestrator requests structured output.
+<!-- /section: agent -->
+
+<!-- section: validator -->
+## validator
+
+Validators should default to non-JSON output while reviewing. Use `--json` only when it is explicitly needed for structured extraction or reporting.
+<!-- /section: validator -->
 
 ## Guideline: includes/CONFIGURATION
 
@@ -1126,7 +1142,7 @@ max_items = config.get("pagination.maxItems")
 api:
   timeout: 5000
   baseUrl: https://api.example.com
-
+  
 pagination:
   maxItems: 100
   defaultPage: 1
@@ -1154,31 +1170,34 @@ api:
 <!-- section: workflow -->
 Use Context7 to refresh your knowledge **before** implementing or validating when work touches any configured post-training package.
 
-- Project overrides live in `.edison/config/context7.yaml`.
+- Project overrides live in `{{fn:project_config_dir}}/config/context7.yaml`.
 - To view the merged effective Context7 configuration (core → packs → user → project), run: `edison config show context7 --format yaml`.
 - If the task/change does not touch any configured package, do not spend context on Context7.
 - When required, record evidence using the project's configured evidence markers/locations (don’t invent new file names).
 <!-- /section: workflow -->
 
 <!-- section: agent -->
+## Context7 Knowledge Refresh (MANDATORY)
+
 ### Resolve Library ID
 Use Context7 to resolve the canonical library ID:
 ```
-mcp__context7__resolve_library_id({ libraryName: "<package-name>" })
+mcp__context7__resolve-library-id({
+  libraryName: "<package-name>",
+  query: "<what you are trying to do>"
+})
 ```
 
 ### Get Current Documentation
 Fetch up-to-date docs before coding or reviewing:
 ```
-mcp__context7__get_library_docs({
-  context7CompatibleLibraryID: "/<org>/<library>",
-  mode: "code",
-  topic: "<relevant-topic>",
-  page: 1
+mcp__context7__query-docs({
+  libraryId: "/<org>/<library>",
+  query: "<relevant-topic>"
 })
 ```
 
-- Check `.edison/config/context7.yaml` for active versions/topics used by this repo.
+- Check `{{fn:project_config_dir}}/config/context7.yaml` for active versions/topics used by this repo.
 <!-- /section: agent -->
 
 <!-- section: validator -->
@@ -1188,7 +1207,23 @@ If the change touches any configured post-training package, refresh docs via Con
 
 <!-- section: orchestrator -->
 ### Knowledge Refresh Enforcement
-If a task touches configured post-training packages, ensure the assigned agent refreshes Context7 docs and produces the required evidence markers before `wip → done`.
+If a task touches configured post-training packages, ensure the assigned agent refreshes Context7 docs and produces the required evidence markers before `{{fn:semantic_state("task","wip")}} → {{fn:semantic_state("task","done")}}`.
+
+### Context7 Error Handling
+When `edison task done` fails with Context7 errors:
+1. Review the error message—it shows detected packages and missing markers
+2. Check if detection is correct: `edison config show context7 --format yaml`
+3. If correct: have the agent create Context7 evidence markers
+4. If false positive: use `--skip-context7` bypass with justification
+
+### Bypass Flag (`--skip-context7`)
+For verified false positives only:
+```bash
+edison task done <task-id> --skip-context7 --skip-context7-reason "verified false positive: <why>"
+```
+- Prints a loud warning to stderr
+- Records audit trace in task history (transition reason)
+- Should be rare—most Context7 detections are legitimate
 <!-- /section: orchestrator -->
 
 ## Guideline: includes/EPHEMERAL_SUMMARIES
@@ -1199,14 +1234,14 @@ If a task touches configured post-training packages, ensure the assigned agent r
 
 <!-- section: principles -->
 - Do **not** create ad-hoc summary/report/status files.
-- Task + QA files under `.project/tasks/` and `.project/qa/` are the only approved tracking artifacts.
+- Task + QA files under `{{fn:tasks_root}}/` and `{{fn:qa_root}}/` are the only approved tracking artifacts.
 - Track progress in tasks/QA and git history (do not create parallel documents):
   - Task directories (`todo`, `wip`, `blocked`, `done`, `validated`) – implementation status + delegation logs.
   - QA directories (`waiting`, `todo`, `wip`, `done`, `validated`) – validator assignments, findings, verdicts, evidence links.
-    - `.project/qa/waiting/` = QA created, waiting for task to reach `done/`
-    - `.project/qa/todo/` = Ready to validate NOW (task is in `done/`)
+    - `{{fn:qa_state_dir("waiting")}}/` = QA created, waiting for task to reach `{{fn:semantic_state("task","done")}}/`
+    - `{{fn:qa_state_dir("todo")}}/` = Ready to validate NOW (task is in `{{fn:semantic_state("task","done")}}/`)
   - Git history – commits tied to task IDs (mention ID in commit body when useful).
-- Validation artefacts belong under `.project/qa/validation-evidence/<task-id>/round-<N>/` and must be referenced from the QA document.
+- Validation artefacts belong under `{{fn:evidence_root}}/<task-id>/round-<N>/` and must be referenced from the QA document.
 - Archive/analysis files go under `docs/archive/` only when explicitly requested.
 - Before marking work complete, ensure there are no stray `*_SUMMARY.md` / `*_ANALYSIS.md` files or similar; delete unapproved summaries and rely on the canonical directories.
 <!-- /section: principles -->
@@ -1311,6 +1346,107 @@ log_error(error, {
 - Errors logged without context
 <!-- /section: validator-check -->
 
+## Guideline: includes/EVIDENCE_WORKFLOW
+
+# Evidence Workflow - Include-Only File
+
+<!-- WARNING: This file is for {{include-section:}} only. DO NOT read directly. -->
+
+<!-- section: principles -->
+## Evidence Principles
+
+Evidence files prove commands passed. They must show `exitCode: 0`.
+
+**Commands:**
+```bash
+edison evidence init <task-id>              # Initialize round (BEFORE implementing)
+edison evidence capture <task-id>           # Capture required evidence for this task's preset (config-driven)
+edison evidence capture <task-id> --only <name>     # Capture a specific configured CI command
+# (Alias supported: --command <name>)
+edison evidence show <task-id> --command <name>     # View output for debugging/review
+edison evidence status <task-id>            # Check what's missing
+```
+
+**Required evidence is configuration-driven** (resolved from the task’s validation preset). Use `edison evidence status <task-id>` to see exactly what is required and what is missing for the current round.
+<!-- /section: principles -->
+
+<!-- section: agent-execution -->
+## Evidence Workflow (Agents)
+
+**Workflow:**
+1. `edison evidence init <task-id>` - Initialize BEFORE implementing
+2. Implement with TDD (RED-GREEN-REFACTOR)
+3. Run command → Fix failures → Capture when passing:
+   ```bash
+   edison evidence capture <task-id>
+   ```
+4. `edison evidence status <task-id>` - Verify all evidence captured
+5. `edison task done <task-id>` - Mark complete (preferred; `task ready <task-id>` is deprecated)
+
+**Critical:** Evidence must show `exitCode: 0` before you proceed to guarded transitions.
+Do not skip commands. Do not fabricate evidence. If you capture a failing run, fix and re-capture.
+<!-- /section: agent-execution -->
+
+<!-- section: validator-check -->
+## Evidence Verification (Validators)
+
+**Check:**
+- All evidence files present (`edison evidence status <task-id>`)
+- All show `exitCode: 0`
+- Outputs look real (not empty/fabricated)
+- Implementation report exists
+
+**Reject if:**
+- Missing evidence files
+- Any `exitCode: != 0`
+- Evidence looks fabricated
+<!-- /section: validator-check -->
+
+<!-- section: orchestrator-verify -->
+## Evidence Orchestration
+
+**Before delegating:** Remind agent to run `edison evidence init` first.
+
+**After agent returns:**
+```bash
+edison evidence status <task-id>  # Verify completeness
+```
+- All commands must show `exitCode: 0`
+- If missing: have agent run commands and capture
+
+**If `task done` fails:** Agent must fix issues, not bypass.
+<!-- /section: orchestrator-verify -->
+
+<!-- section: context7-bypass -->
+## Context7 Bypass
+
+`--skip-context7` bypasses Context7 checks for **verified false positives only**.
+
+```bash
+edison task done <task-id> --skip-context7 --skip-context7-reason "verified false positive: <why>"
+```
+
+Use ONLY when detection is wrong. Never use to skip required evidence.
+<!-- /section: context7-bypass -->
+
+## Guideline: includes/EXECUTION_WRAPPER
+
+# Shell Execution Wrapper - Include-Only File
+<!-- WARNING: This file is for {{include-section:}} only. DO NOT read directly. -->
+
+<!-- section: principles -->
+## principles
+
+Run shell commands via Edison whenever possible:
+
+- Prefer `edison exec -- <command> [args...]` for command execution.
+- This enables safety shims (when configured) and records audit events for executed commands.
+- If you have a persistent shell, you may additionally enable shims once:
+  - `edison shims sync`
+  - `eval "$(edison shims env)"`
+
+<!-- /section: principles -->
+
 ## Guideline: includes/GIT_WORKTREE_SAFETY
 
 # Worktree + Git Safety - Include-Only File
@@ -1321,13 +1457,13 @@ log_error(error, {
 ## Worktree Confinement (CRITICAL)
 - **All code changes must happen inside the session worktree directory** (never in the primary checkout).
 - After creating/resuming a session, run `edison session status --json`, read `git.worktreePath`, then `cd <worktreePath>` and stay there.
-- Edison shares local state into each worktree via symlinks: `.project/` (tasks, QA, logs, archive, sessions), `.edison/_generated` (composed constitutions/guidelines), and any configured `worktrees.sharedState.sharedPaths`. If these links are missing, task/QA commands may appear “empty” and start prompts/constitutions may be absent inside the worktree.
-- **Session runtime state is local-only.** Do not commit `.project/sessions/` or `.project/.session-id` (they should be gitignored).
+- Edison shares local state into each worktree via symlinks: `{{fn:project_management_dir}}/` (tasks, QA, logs, archive, sessions), `{{fn:project_config_dir}}/_generated` (composed constitutions/guidelines), and any configured `worktrees.sharedState.sharedPaths`. If these links are missing, task/QA commands may appear “empty” and start prompts/constitutions may be absent inside the worktree.
+- **Session runtime state is local-only.** Do not commit `{{fn:sessions_root}}/` or `{{fn:project_management_dir}}/.session-id` (they should be gitignored).
 <!-- /section: worktree-confinement -->
 
 <!-- section: worktree-isolation -->
 ## Worktree Isolation (Sessions)
-- Default session worktrees live at `../edison-ui-worktrees/{sessionId}` (config: `worktrees.pathTemplate`).
+- Default session worktrees live at `{{config.worktrees.pathTemplate}}` (config: `worktrees.pathTemplate`).
 - Create/restore via `edison session create` / `edison orchestrator start` / `edison git worktree-*` (do not DIY worktrees).
 - If `worktrees.sharedState.mode=meta`, initialize shared state with `edison git worktree-meta-init`. The meta worktree path is reserved for a git worktree (do not pre-create it as a plain directory). If you override `worktrees.baseDirectory`, also override `worktrees.sharedState.metaPathTemplate` to keep them aligned and avoid collisions.
 - Primary checkout safety is enforced: Edison must never switch the primary checkout branch during worktree operations.
@@ -1339,7 +1475,7 @@ log_error(error, {
 - To force a fixed base ref (e.g. always `main`): set `worktrees.baseBranchMode: fixed` + `worktrees.baseBranch: main` (or just `worktrees.baseBranch: main`).
 - Per command override:
   - `edison session create --base-branch <ref>`
-  - `edison git worktree-create <session-id> --branch <ref>`
+  - `edison git worktree-create [<session-id>] --branch <ref>`
 <!-- /section: worktree-base-ref -->
 
 <!-- section: git-safety -->
@@ -1407,7 +1543,7 @@ External APIs you don't control (third-party services, payment gateways, email p
 test("stores data correctly", async function() {
   record = create_in_real_database({ name: "Test" })
   assert_exists(record.id)
-
+  
   fetched = fetch_from_real_database(record.id)
   assert_equals(fetched.name, "Test")
 })
@@ -1419,7 +1555,7 @@ test("stores data correctly", async function() {
 test("writes file correctly", function(tmp_path) {
   file_path = tmp_path / "test.txt"
   write_file(file_path, "content")
-
+  
   content = read_file(file_path)
   assert_equals(content, "content")
 })
@@ -1430,7 +1566,7 @@ test("writes file correctly", function(tmp_path) {
 // ✅ CORRECT: Use real HTTP client
 test("returns correct response", async function() {
   response = await test_client.get("/api/users")
-
+  
   assert_equals(response.status, 200)
   assert_is_array(response.data)
 })
@@ -1557,10 +1693,10 @@ Examples of what to flag (language-agnostic):
 ### Verification Commands
 Before marking any task as ready, run:
 ```bash
-# Verify all automation passes
-make type-check && make lint && make test && npm run build
+edison evidence capture <task-id>
+edison evidence status <task-id>
 ```
-All must pass with zero warnings.
+All required evidence must be present and show `exitCode: 0`.
 <!-- /section: agent-checklist -->
 
 <!-- section: validator-checklist -->
@@ -1598,6 +1734,50 @@ All must pass with zero warnings.
 - [ ] No layer violations
 <!-- /section: validator-checklist -->
 
+## Guideline: includes/TASK_PLANNING
+
+# Task Waves (Parallelizable Waves) - Include-Only File
+<!-- WARNING: This file is for {{include-section:}} only. DO NOT read directly. -->
+
+<!-- section: orchestrator-step-snippet -->
+### Task Waves (Parallelizable Waves)
+
+Compute parallelizable “waves” from `depends_on`:
+
+```bash
+edison task waves
+```
+
+- Prefer **Wave 1** tasks for “start now”.
+- Respect the configured cap (`orchestration.maxConcurrentAgents`). If Wave 1 exceeds the cap, use the printed batch suggestions (or `--json` for structured batches).
+- Use `edison task relate <task-a> <task-b>` to link non-blocking “related” tasks (this influences within-wave grouping).
+- If a desired todo task isn’t in Wave 1, inspect why:
+  ```bash
+  edison task blocked <task-id>
+  ```
+<!-- /section: orchestrator-step-snippet -->
+
+<!-- section: orchestrator-cli-snippet -->
+### Task Waves (Parallelizable Waves)
+
+```bash
+edison task waves [--json] [--cap <n>]
+```
+
+**Purpose**: Compute topological “waves” of **todo** tasks based on `depends_on`, so you can safely delegate independent work in parallel without reading every task file.
+
+**How to use**:
+- Prefer **Wave 1** tasks for “start now”.
+- Respect the configured cap (`orchestration.maxConcurrentAgents`). Use `--json` only when you need structured batches for tools/scripts.
+- Use `edison task blocked` for detailed “why blocked” explanations on a specific task.
+<!-- /section: orchestrator-cli-snippet -->
+
+<!-- section: orchestrator-constitution-snippet -->
+### Task Waves (Parallelizable Waves)
+
+Use `edison task waves` to compute parallelizable waves of todo tasks from `depends_on` (Wave 1 = “start now”), and respect `orchestration.maxConcurrentAgents`. Use `edison task blocked <task-id>` for “why blocked” explanations.
+<!-- /section: orchestrator-constitution-snippet -->
+
 ## Guideline: includes/TDD
 
 # TDD (Test-Driven Development) - Include-Only File
@@ -1608,6 +1788,11 @@ All must pass with zero warnings.
 ## TDD Principles (All Roles)
 
 Test-Driven Development is NON-NEGOTIABLE for all implementation work.
+
+### Scope: What Requires TDD (and what does not)
+- **Requires TDD**: Any change that adds/changes executable behavior (production source code, CLIs, validators, state machines, config-loading/merging logic).
+- **Does not require new tests**: Content-only edits to Markdown/YAML/templates (e.g., docs, templates, default config values) *when no executable behavior changes*.
+- **No bundling**: Do not hide behavior changes inside a “content-only” change. If you touched production code, you must follow TDD.
 
 ### The RED-GREEN-REFACTOR Cycle
 - **RED**: Write a failing test first and confirm it fails for the right reason
@@ -1635,6 +1820,26 @@ If implementation exists before the test:
 - Test names describe behavior + expected outcome (avoid `test1`, `works`).
 - Assert on observable outcomes (return values, state changes, HTTP responses), not internal call sequences.
 - Tests should be deterministic and isolated (no shared global state, no ordering reliance).
+- Avoid brittle “content policing” tests (e.g., pinning default config values or exact Markdown wording/format/length).
+
+## Test Suite Selection (Fast vs Slow)
+
+Edison’s tests are divided into two practical suites:
+
+- **Fast** (`pytest -m fast`): deterministic unit tests that avoid heavy git/subprocess/E2E workflows.
+- **Slow** (`pytest -m slow`): anything that uses substantial subprocess/git, integration, or E2E flows.
+
+**Rule of thumb**:
+- For tight iteration loops (RED/GREEN): run **fast**.
+- Before handoff or when touching cross-cutting behavior (session/task/worktree/evidence/composition/config loading): run **slow**.
+
+Convenience wrappers (preferred):
+```bash
+scripts/test-fast
+scripts/test-slow
+```
+
+Both wrappers automatically use `pytest-xdist` when available (parallel mode), and fall back to single-process otherwise.
 
 ### Guardrails
 - No `.skip` / `.todo` / `.only` (or equivalents) committed
@@ -1655,10 +1860,11 @@ Commits MUST include explicit markers to document TDD compliance:
 
 #### 1. RED Phase: Write Tests First
 Write tests BEFORE any implementation code. Tests MUST fail initially.
+If the change is truly content-only (Markdown/YAML/templates) and no executable behavior is changed, do not add tests that pin content; just run the relevant existing checks.
 
 **Verify RED Phase**:
 ```bash
-make test
+{{fn:ci_command("test")}}
 # Expected: Test FAILS for the right reason (feature/behavior missing)
 ```
 
@@ -1675,7 +1881,7 @@ Write the MINIMUM code needed to make the test pass.
 
 **Verify GREEN Phase**:
 ```bash
-make test
+{{fn:ci_command("test")}}
 # Expected: Test PASSES
 ```
 
@@ -1690,7 +1896,7 @@ Improve code quality while keeping tests passing.
 
 **Verify REFACTOR Phase**:
 ```bash
-make test
+{{fn:ci_command("test")}}
 # Expected: ALL tests still PASS
 ```
 
@@ -1722,7 +1928,7 @@ make test
 - RED failure documented → GREEN pass documented → REFACTOR documented
 - Attach test output showing the failing run and the passing run
 - Include a coverage report for the round
-- Store evidence in the task round evidence directory using the **config-driven filenames** (e.g. `command-test.txt`, `coverage-*.txt` when configured)
+- Store evidence in the task round evidence directory using the **config-driven filenames** (e.g. `{{fn:evidence_file("test")}}`, `coverage-*.txt` when configured)
 - If TDD must be skipped, record the rationale in the implementation report + QA brief and create a follow-up task to add the missing tests; do not silently skip
 
 ### What NOT To Do
@@ -1747,6 +1953,27 @@ make test
 <!-- section: validator-check -->
 ## TDD Compliance Checking (Validators)
 
+### Verification Checklist
+- [ ] Tests exist in appropriate test directory
+- [ ] Test file created BEFORE implementation (check git history)
+- [ ] Tests cover the requirements specified in task
+- [ ] Tests validate behavior (avoid hard-pinning default config values or enforcing exact Markdown wording/format/length)
+
+### Red Phase Evidence
+- [ ] Sub-agent showed tests failing initially
+- [ ] Failure messages indicate tests were actually testing something
+- [ ] No skipped/disabled tests or commented-out tests
+
+### Green Phase Evidence
+- [ ] All tests now passing
+- [ ] No tests were removed or weakened to pass
+- [ ] Coverage meets minimum threshold
+
+### Refactor Phase (if applicable)
+- [ ] Tests still pass after refactoring
+- [ ] Code is cleaner without changing behavior
+- [ ] No new functionality added during refactor
+
 ### Red Flags (Immediate Rejection)
 🚩 **Immediate Rejection:**
 - Tests written AFTER implementation (check git history)
@@ -1756,6 +1983,7 @@ make test
 - Tests primarily assert on call counts/spies instead of observable behavior
 - Coverage below threshold with no justification
 - Tests removed to make suite pass
+- Tests added/modified to enforce specific default config values or doc/template wording (brittle content gates)
 
 🟡 **Needs Review:**
 - Coverage just barely meets threshold
@@ -1806,6 +2034,10 @@ CRITICAL: Follow TDD cycle strictly (RED-GREEN-REFACTOR)
 
 2. THEN: Implement component (`[Component].<ext>`)
    RUN TEST: Verify tests PASS
+   Document success in response
+
+3. FINALLY: Refactor (if needed)
+   RUN ALL TESTS: Verify tests still PASS
    Document success in response
 
 Return:
@@ -1898,7 +2130,7 @@ test_suite("Resource Tests"):
   // Clean up namespace after all tests
   after_all():
     delete_where(identifier.contains(TEST_NAMESPACE))
-
+  
   test("creates resource"):
     // Safe to run in parallel with other test suites
 ```
@@ -1913,7 +2145,7 @@ setup_once():
 // Clone for each test
 before_each():
   test_db = clone_database(template_db)
-
+  
 after_each():
   drop_database(test_db)
 ```
@@ -1965,6 +2197,63 @@ test("writes file", tmp_path):
 - Long test setup times (isolation overhead)
 - External service dependencies
 <!-- /section: validator-check -->
+
+## Guideline: includes/TEST_SUITES
+
+# Test Suites (Edison Development) - Include-Only File
+
+<!-- WARNING: This file is for {{include-section:}} only. DO NOT read directly. -->
+
+<!-- section: suite-selection -->
+## Test Suite Selection (Fast vs Slow)
+
+Edison’s tests are divided into two practical suites:
+
+- **Fast** (`pytest -m fast`): deterministic unit tests that avoid heavy git/subprocess/E2E workflows.
+- **Slow** (`pytest -m slow`): anything that uses substantial subprocess/git, integration, or E2E flows.
+
+**Rule of thumb**:
+- For tight iteration loops (RED/GREEN): run **fast**.
+- Before handoff or when touching cross-cutting behavior (session/task/worktree/evidence/composition/config loading): run **slow**.
+
+Convenience wrappers (preferred):
+```bash
+scripts/test-fast
+scripts/test-slow
+```
+
+Both wrappers automatically use `pytest-xdist` when available (parallel mode), and fall back to single-process otherwise.
+<!-- /section: suite-selection -->
+
+<!-- section: wiring -->
+## Wiring New Tests Correctly
+
+### 1) Put heavy tests in the right place (so they auto-mark correctly)
+The test harness auto-assigns markers based on test file location. Prefer these directories:
+- `tests/e2e/**` and `tests/integration/**` for end-to-end/integration flows (auto-marked `slow`)
+- `tests/unit/cli/**` for CLI subprocess-heavy tests (auto-marked `slow`)
+- `tests/unit/**` for pure unit behavior (auto-marked `fast`)
+
+If a test is subprocess/git-heavy but doesn’t live under a slow bucket, **explicitly add**:
+```python
+import pytest
+pytestmark = pytest.mark.slow
+```
+
+### 2) Use the shared fixtures (avoid per-test repo bootstrapping)
+For git/worktree behavior, prefer:
+- `git_repo` fixture (fast template copy)
+- `combined_env` fixture (project + git, both isolated)
+
+Do not call `git init` ad-hoc inside tests; use `TestGitRepo`/fixtures so the suite stays fast and parallel-safe.
+<!-- /section: wiring -->
+
+<!-- section: parallelism -->
+## Parallelism Notes (xdist)
+
+- `scripts/test-fast` and `scripts/test-slow` run with `-n auto --dist loadfile` when `pytest-xdist` is installed.
+- Tests must not write shared paths (repo root, fixed `/tmp/...` paths) without per-test isolation (`tmp_path`, per-test dirs).
+<!-- /section: parallelism -->
 
 ## Guideline: includes/TRACKING
 
@@ -2022,13 +2311,13 @@ Orchestrators can monitor tracking runs:
 
 ```bash
 edison session track active
-edison session track active --json
+edison session track active --json  # optional structured output
 
 # Detect stopped processes and append stop events
-edison session track sweep --json
+edison session track sweep           # (use --json if you need structured output)
 
 # Process index (computed from append-only JSONL process events)
-edison session track processes --json
+edison session track processes        # (use --json if you need structured output)
 ```
 
 `active` returns tracking records derived from evidence reports, including:
@@ -2095,7 +2384,7 @@ function process_user(user):
 
 ### Type Checking Command
 ```bash
-make type-check
+{{fn:ci_command("type-check")}}
 ```
 <!-- /section: agent-implementation -->
 
@@ -2126,7 +2415,9 @@ make type-check
 
 # Playwright E2E (Web)
 
-<!-- SECTION: agent-patterns -->
+> Include-only guideline. Do not read directly; include specific parts via `include-section` (e.g. `{{include-section:packs/e2e-web/guidelines/includes/e2e-web/PLAYWRIGHT.md#agent-patterns}}`).
+
+<!-- section: agent-patterns -->
 ## Agent Patterns: Real, Unmocked E2E
 
 ### Test Like a User (Selectors)
@@ -2173,9 +2464,9 @@ For each user-visible change, ensure tests cover:
 - Enable traces on failure in CI.
 - Keep screenshots/videos on failure only; don’t generate noise for green runs.
 - When debugging: run single worker, headed, with slowMo only temporarily.
-<!-- /SECTION: agent-patterns -->
+<!-- /section: agent-patterns -->
 
-<!-- SECTION: test-architecture -->
+<!-- section: test-architecture -->
 ## Suggested E2E Test Architecture
 
 Recommended structure (adapt to project conventions):
@@ -2200,9 +2491,9 @@ Rules:
   - `workers: process.env.CI ? 1 : undefined`
   - `reporter: 'html'`
   - `use.trace: 'on-first-retry'`
-<!-- /SECTION: test-architecture -->
+<!-- /section: test-architecture -->
 
-<!-- SECTION: validator-protocol -->
+<!-- section: validator-protocol -->
 ## Validator Protocol: Browser Validation via Playwright MCP
 
 When validating UI changes:
@@ -2219,7 +2510,7 @@ When validating UI changes:
 If Playwright MCP tools are unavailable:
 - Fall back to running `playwright test` locally and reviewing traces/screenshots.
 - Report the missing tooling as a blocking setup issue when UI changes require browser validation.
-<!-- /SECTION: validator-protocol -->
+<!-- /section: validator-protocol -->
 
 ## Guideline: includes/nextjs/ROUTING
 
@@ -2338,8 +2629,13 @@ const createSchema = z.object({
   title: z.string().min(1),
 });
 
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { title } = createSchema.parse(body);
+    
     // Perform action...
-
+    
     return NextResponse.json({ title }, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -2378,11 +2674,11 @@ import { auth } from '<auth-module>'; // Example auth import
 
 export async function GET(request: NextRequest) {
   const session = await auth();
-
+  
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
+  
   return NextResponse.json({ data: 'Protected data' });
 }
 ```
@@ -2626,7 +2922,7 @@ class Repo(Protocol):
 
 4. **Clear `.next` cache** after CSS changes:
    ```bash
-   rm -rf <framework-cache-dir> && <dev-command>
+   rm -rf <framework-cache-dir> && {{fn:ci_command("dev")}}
    ```
 
 5. **PostCSS plugin** (v4 syntax):
@@ -3053,7 +3349,7 @@ it('creates item', async () => {
 
 # Delegation Models (Orchestrators)
 
-> Canonical path: `.edison/_generated/guidelines/orchestrators/DELEGATION.md` (read via `edison read DELEGATION --type guidelines/orchestrators`; composed via ConfigManager overlays; never hardcode roles/models—resolve from YAML).
+> Canonical path: `{{fn:project_config_dir}}/_generated/guidelines/orchestrators/DELEGATION.md` (read via `edison read DELEGATION --type guidelines/orchestrators`; composed via ConfigManager overlays; never hardcode roles/models—resolve from YAML).
 
 ## Delegation Criteria
 
@@ -3105,7 +3401,9 @@ it('creates item', async () => {
 ## Verification Protocol
 
 - Require an implementation report per delegation; reject incomplete reports.
-- Re-run the listed commands (tests/lint/typecheck) locally; add missing automation if absent.
+- **Verify evidence is complete**: Run `edison evidence status <task-id>` to confirm all required evidence exists.
+- **Verify all commands passed**: All evidence files must show `exitCode: 0`. Failing evidence means the agent did not complete properly.
+- Re-run the listed commands (tests/lint/typecheck) locally if evidence is suspect; add missing automation if absent.
 - Diff review: confirm requirements met, no hardcoded values, config wired to YAML, and no legacy paths remain.
 - Validate integration: run minimal end-to-end path if feasible; ensure artifacts land in expected directories.
 - Record verdict and evidence in the session Activity Log and QA bundle before promotion.
@@ -3141,11 +3439,9 @@ This guide covers CLI commands for orchestrators managing sessions, coordinating
 ## Core Workflow Command (CRITICAL)
 
 ### Session Next
-
 ```bash
 edison session next <session-id>
 ```
-
 **Purpose**: Get recommended next actions for the session
 **When to use**: **BEFORE EVERY ACTION** in your orchestration workflow
 
@@ -3161,7 +3457,6 @@ edison session next <session-id>
 ```bash
 edison session next sess-001
 ```
-
 **Workflow loop:**
 ```
 1. Run: edison session next <session-id>
@@ -3169,33 +3464,27 @@ edison session next sess-001
 3. Execute recommended command
 4. REPEAT from step 1
 ```
-
 ---
 
 ## Session Management
 
 ### Create New Session
-
 ```bash
 edison session create [--session-id <id>]
 ```
-
-**Purpose**: Create a session record in `.project/sessions/wip/`
+**Purpose**: Create a session record in `{{fn:session_state_dir("active")}}/`
 **When to use**: Starting a new work session
 
 **Example:**
 ```bash
 edison session create --session-id sess-001
 ```
-
 ---
 
 ### Start Session with Orchestrator
-
 ```bash
 edison orchestrator start --profile <profile> [--detach] [--no-worktree]
 ```
-
 **Purpose**: Create session, optional worktree, and launch the orchestrator process
 **When to use**: Starting a new orchestration session end-to-end
 
@@ -3203,15 +3492,12 @@ edison orchestrator start --profile <profile> [--detach] [--no-worktree]
 ```bash
 edison orchestrator start --profile dev --detach
 ```
-
 ---
 
 ### Session Status
-
 ```bash
 edison session status <session-id> [--json]
 ```
-
 **Purpose**: Show current session state and scope
 **When to use**: Checking session progress, debugging state
 
@@ -3219,7 +3505,6 @@ edison session status <session-id> [--json]
 ```bash
 edison session status sess-001 --json
 ```
-
 **Output includes:**
 - Session state (active, waiting, closing)
 - Owner and timestamps
@@ -3229,11 +3514,9 @@ edison session status sess-001 --json
 ---
 
 ### Session Context (Hook-Safe Refresher)
-
 ```bash
 edison session context [<session-id>] [--json]
 ```
-
 **Purpose**: Print a compact, deterministic context refresher suitable for Claude Code hooks (SessionStart, PreCompact).
 
 **Includes:**
@@ -3246,22 +3529,18 @@ edison session context [<session-id>] [--json]
 ---
 
 ### Close Session
-
 ```bash
 edison session close <session-id>
 ```
-
 **Purpose**: Verify everything is ready and transition the session to the closing state
 **When to use**: When you want to stop active work and begin close-out (moves `active → closing` when guards allow)
 
 ---
 
 ### Complete Session (Promote to Validated)
-
 ```bash
 edison session complete <session-id>
 ```
-
 **Purpose**: Verify and promote the session to the validated/final state
 **When to use**: After close-out checks are satisfied and you’re ready to finalize the session lifecycle
 
@@ -3269,64 +3548,72 @@ edison session complete <session-id>
 
 ## Task Management
 
-### List Ready Tasks
+### Task Waves (Parallelizable Waves)
 
+```bash
+edison task waves [--json] [--cap <n>]
+```
+
+**Purpose**: Compute topological “waves” of **todo** tasks based on `depends_on`, so you can safely delegate independent work in parallel without reading every task file.
+
+**How to use**:
+- Prefer **Wave 1** tasks for “start now”.
+- Respect the configured cap (`orchestration.maxConcurrentAgents`). Use `--json` only when you need structured batches for tools/scripts.
+- Use `edison task blocked` for detailed “why blocked” explanations on a specific task.
+
+### List Ready Tasks
 ```bash
 edison task ready
 ```
-
 **Purpose**: Show tasks ready to be claimed (**derived from the task graph**, not just “todo”)
 **When to use**: Finding next task to work on
 
-**Readiness rule (default)**: A task is “ready” when it’s in `todo` and all `depends_on` tasks are in `done|validated`.
+**Readiness rule (default)**: A task is “ready” when it’s in `{{fn:semantic_state("task","todo")}}` and all `depends_on` tasks are in `{{fn:semantic_states("task","done,validated","pipe")}}`.
 
 Use `edison task blocked` to see why a todo task is not ready.
 
 **Example output:**
 ```
-TASK-123  [todo]   Implement user authentication
-TASK-124  [todo]   Add email validation
+TASK-123  [{{fn:semantic_state("task","todo")}}]   Implement user authentication
+TASK-124  [{{fn:semantic_state("task","todo")}}]   Add email validation
 ```
-
 ---
 
 ### List Blocked Todo Tasks (Why Not Ready?)
-
 ```bash
 edison task blocked [<task-id>] [--json]
 ```
-
 **Purpose**: Explain todo tasks blocked by unmet `depends_on` dependencies (and show the “why”).
 
 ---
 
 ### Claim Task
-
 ```bash
 edison task claim <task-id> [--session <session-id>]
 ```
-
-**Purpose**: Claim a task from `todo → wip` and bind to session
+**Purpose**: Claim a task from `{{fn:semantic_state("task","todo")}} → {{fn:semantic_state("task","wip")}}` and bind to session
 **When to use**: Starting work on a new task
 
+**Dependency enforcement**: Claim is fail-closed. If the task has unmet `depends_on`, the claim is blocked. Use:
+```bash
+edison task blocked <task-id>
+edison task waves
+```
 **Example:**
 ```bash
 edison task claim TASK-123 --session sess-001
 ```
-
 **Effects:**
-- Moves task to session scope: `.project/sessions/wip/sess-001/tasks/wip/TASK-123.md`
+- Moves task to session scope: `{{fn:session_state_dir("active")}}/sess-001/tasks/{{fn:semantic_state("task","wip")}}/TASK-123.md`
 - Stamps ownership and timestamps
 - Updates session graph
 
 ---
 
 ### Task Status
-
 ```bash
 edison task status <task-id> [--json]
 ```
-
 **Purpose**: Inspect task state and metadata
 **When to use**: Checking task progress, understanding requirements
 
@@ -3334,16 +3621,13 @@ edison task status <task-id> [--json]
 ```bash
 edison task status TASK-123 --json
 ```
-
 ---
 
-### Task Ready (Promote to Done)
-
+### Task Done (Promote to Done)
 ```bash
-edison task ready <task-id> [--session <session-id>]
+edison task done <task-id> [--session <session-id>]
 ```
-
-**Purpose**: Move task from `wip → done` with evidence checks
+**Purpose**: Move task from `{{fn:semantic_state("task","wip")}} → {{fn:semantic_state("task","done")}}` with evidence checks
 **When to use**: After implementation is complete, before validation
 
 **Checks:**
@@ -3354,23 +3638,20 @@ edison task ready <task-id> [--session <session-id>]
 
 **Example:**
 ```bash
-edison task ready TASK-123 --session sess-001
+edison task done TASK-123 --session sess-001
 ```
-
 **Effects:**
-- Task moves to `done`
-- Associated QA brief moves from `waiting → todo`
+- Task moves to `{{fn:semantic_state("task","done")}}`
+- Associated QA brief moves from `{{fn:semantic_state("qa","waiting")}} → {{fn:semantic_state("qa","todo")}}`
 
 ---
 
 ## QA and Validation
 
 ### Promote QA Brief
-
 ```bash
 edison qa promote <task-id> --status <state>
 ```
-
 **Purpose**: Advance QA brief through validation states
 **When to use**: After validation passes, to promote QA state
 
@@ -3379,27 +3660,25 @@ edison qa promote <task-id> --status <state>
 **Example:**
 ```bash
 # Start validation
-edison qa promote TASK-123 --status todo
+edison qa promote TASK-123 --status {{fn:semantic_state("qa","todo")}}
 
 # Mark validation in progress
-edison qa promote TASK-123 --status wip
+edison qa promote TASK-123 --status {{fn:semantic_state("qa","wip")}}
 
 # Mark validation complete
-edison qa promote TASK-123 --status done
+edison qa promote TASK-123 --status {{fn:semantic_state("qa","done")}}
 
 # Finalize after bundle approval
-edison qa promote TASK-123 --status validated
+edison qa promote TASK-123 --status {{fn:semantic_state("qa","validated")}}
 ```
-
-**Requirements for `done → validated`:**
-- `bundle-summary.md` exists
+**Requirements for `{{fn:semantic_state("qa","done")}} → {{fn:semantic_state("qa","validated")}}`:**
+- `{{config.validation.artifactPaths.bundleSummaryFile}}` exists
 - All required validator reports present
 - No blocking failures
 
 ---
 
 ### Validation Roster and Execution
-
 ```bash
 # Show validation roster (auto-detected from file patterns)
 edison qa validate <task-id>
@@ -3407,9 +3686,8 @@ edison qa validate <task-id>
 # Execute validators directly via CLI engines
 edison qa validate <task-id> --execute
 ```
-
 **Purpose**: View and execute validators for a task
-**When to use**: After task is in `done` state, to run validation
+**When to use**: After task is in `{{fn:semantic_state("task","done")}}` state, to run validation
 
 **How validators are selected:**
 1. **Always-run validators**: `always_run: true` in config (critical wave)
@@ -3438,7 +3716,6 @@ edison qa validate TASK-123 --add-validators <validator-id-1> <validator-id-2> -
 # Specify wave for added validators
 edison qa validate TASK-123 --add-validators <validator-id> --add-to-wave critical --execute
 ```
-
 **When the CLI shows "ORCHESTRATOR DECISION POINTS":**
 The CLI will suggest validators that might be relevant but weren't auto-triggered.
 Review these suggestions and add validators as needed.
@@ -3451,7 +3728,6 @@ The following validators were NOT auto-triggered but may be relevant:
     Reason: Found files matching an untriggered pattern: src/utils/helpers.<ext>
     To add: edison qa validate TASK-123 --add-validators <validator-id>
 ```
-
 ---
 
 ### Direct CLI Execution vs Delegation
@@ -3476,7 +3752,6 @@ edison qa validate TASK-123 --execute
 
 # For pending validators, follow the delegation instructions
 ```
-
 ---
 
 ### Trigger Validation (Orchestrator Initiates)
@@ -3487,7 +3762,6 @@ Orchestrators can trigger validation directly OR delegate to validator agents.
 ```bash
 edison qa validate TASK-123 --execute
 ```
-
 **Option 2: Delegate to validator agent:**
 ```
 Use Task/Delegation tool to invoke validator agent:
@@ -3495,13 +3769,11 @@ Use Task/Delegation tool to invoke validator agent:
 - Command: edison qa validate <task-id>
 - Monitor: Validator writes reports to evidence directory
 ```
-
 **Orchestrator checks results:**
 ```bash
 # After validation completes, check bundle
 edison qa bundle <task-id>
 ```
-
 ---
 
 ## Delegation Commands
@@ -3515,7 +3787,6 @@ Orchestrators use delegation tools (Task tool, agent invocation) to assign work 
 4. Default fallback (feature-implementer)
 
 **Common delegation patterns:**
-
 ```bash
 # Via Task tool (in agent context):
 delegate_to_agent(
@@ -3527,28 +3798,23 @@ delegate_to_agent(
 # Or via explicit agent file invocation
 # (in Claude Code context)
 ```
-
 ---
 
 ## Git and Worktree Management
 
 ### Sync Git Worktree
-
 ```bash
 edison session sync-git <session-id>
 ```
-
 **Purpose**: Create/sync git worktree for isolated work
 **When to use**: Setting up parallel development environments
 
 ---
 
 ### Conflict Check
-
 ```bash
 edison session conflict-check <session-id>
 ```
-
 **Purpose**: Dry-run merge against base branch
 **When to use**: Before promoting to ensure no merge conflicts
 
@@ -3557,11 +3823,9 @@ edison session conflict-check <session-id>
 ## Rules Query
 
 ### Show Rules for Context
-
 ```bash
 edison rules show-for-context <category> <context>
 ```
-
 **Purpose**: Query applicable rules for current situation
 **When to use**: Understanding constraints before making decisions
 
@@ -3576,13 +3840,11 @@ edison rules show-for-context transition "wip->done"
 # Context budget rules
 edison rules show-for-context context budget
 ```
-
 ---
 
 ## Common Workflows
 
 ### Starting a New Task
-
 ```bash
 # 1. Get next action
 edison session next sess-001
@@ -3599,31 +3861,27 @@ edison task claim TASK-123 --session sess-001
 # 5. Monitor progress
 edison session next sess-001
 ```
-
 ### Completing a Task
-
 ```bash
 # 1. Verify implementation complete
 edison task status TASK-123
 
 # 2. Promote to done
-edison task ready TASK-123 --session sess-001
+edison task done TASK-123 --session sess-001
 
 # 3. Start validation
-edison qa promote TASK-123 --status todo
+edison qa promote TASK-123 --status {{fn:semantic_state("qa","todo")}}
 
 # 4. Delegate to validator
 # (use Task tool to delegate to code-reviewer)
 
 # 5. After validation passes, promote QA
-edison qa promote TASK-123 --status validated
+edison qa promote TASK-123 --status {{fn:semantic_state("qa","validated")}}
 
 # 6. Check session state
 edison session next sess-001
 ```
-
 ### Parallel Work Coordination
-
 ```bash
 # 1. Claim multiple independent tasks
 edison task claim TASK-123 --session sess-001
@@ -3638,16 +3896,15 @@ edison session status sess-001
 # 4. Process completions as they arrive
 edison session next sess-001
 ```
-
 ---
 
 ## Output Locations
 
-**Session records**: `.project/sessions/wip/<session-id>/session.json`
-**Task files**: `.project/sessions/wip/<session-id>/tasks/<task-state>/`
-**QA briefs**: `.project/sessions/wip/<session-id>/qa/<qa-state>/`
-**Validation evidence**: `.project/qa/validation-evidence/<task-id>/round-N/`
-**Bundle summaries**: `.project/qa/validation-evidence/<task-id>/round-N/bundle-summary.md`
+**Session records**: `{{fn:session_state_dir("active")}}/<session-id>/session.json`
+**Task files**: `{{fn:session_state_dir("active")}}/<session-id>/tasks/<task-state>/`
+**QA briefs**: `{{fn:session_state_dir("active")}}/<session-id>/qa/<qa-state>/`
+**Validation evidence**: `{{fn:evidence_root}}/<task-id>/round-N/`
+**Bundle summaries**: `{{fn:evidence_root}}/<task-id>/round-N/{{config.validation.artifactPaths.bundleSummaryFile}}`
 
 ---
 
@@ -3658,7 +3915,7 @@ edison session next sess-001
 3. **Delegate 80%+ of work**: Orchestrators coordinate, agents implement
 4. **Keep context minimal**: Use snippets, not full files (<50K tokens)
 5. **Parallelize when possible**: Launch concurrent work for independent tasks
-6. **Validate before promoting**: Ensure validation passes before moving to `validated`
+6. **Validate before promoting**: Ensure validation passes before moving to `{{fn:semantic_state("qa","validated")}}`
 7. **Monitor session state**: Use `session status` to track progress
 
 ---
@@ -3680,11 +3937,11 @@ edison session next sess-001
 
 # Orchestrator Guidelines (Core)
 
-- Own the session: scope tasks/QA, keep the session record current, and run within the concurrency cap.
+- Own the session: scope tasks/QA, keep the session record current, and plan parallel work with `edison task waves` (respect the concurrency cap).
 - Delegate by default; only implement directly for trivial changes. Use the project’s delegation config and Pal role mappings.
 - Keep sub-agents independent: distinct roles/models for implementation vs validation.
 - Enforce TDD, Context7 refreshes for post-training packages, automation, and implementation reports before validation.
-- Launch validators in required waves (global → critical → specialized) and require `bundle-summary.md` before promotion.
+- Launch validators in required waves (global → critical → comprehensive) and require `{{config.validation.artifactPaths.bundleSummaryFile}}` before promotion.
 - Maintain honest status: task/QA locations must reflect reality; fix mismatches immediately.
 - Capture decisions and milestones in the session Activity Log (delegations, validator launches, rejections, follow-ups, completion).
 - Close sessions only when all scoped tasks and QA are validated and evidence is linked.
@@ -3693,17 +3950,19 @@ edison session next sess-001
 
 # Session Workflow (Active Session Playbook)
 
-Canonical path: `.edison/_generated/guidelines/orchestrators/SESSION_WORKFLOW.md` (read via `edison read SESSION_WORKFLOW --type guidelines/orchestrators`)
+> **Canonical Location**: `{{fn:project_config_dir}}/_generated/guidelines/orchestrators/SESSION_WORKFLOW.md` (read via `edison read SESSION_WORKFLOW --type guidelines/orchestrators`; bundled with the core guidelines).
 
-This guide assumes you already ran the appropriate intake prompt (the orchestrator constitution prompt, or a dedicated shared-QA variant) and a session record exists under `.project/sessions/`.
+Canonical path: `{{fn:project_config_dir}}/_generated/guidelines/orchestrators/SESSION_WORKFLOW.md` (read via `edison read SESSION_WORKFLOW --type guidelines/orchestrators`)
 
-Session JSON stores **session metadata only** (state, owner, timestamps, git info, activity log). Tasks and QA briefs are the single source of truth and are discovered by scanning task/QA frontmatter (session_id) and by the session-scoped directories under `.project/sessions/<state>/<session-id>/`.
+This guide assumes you already ran the appropriate intake prompt (the orchestrator constitution prompt, or a dedicated shared-QA variant) and a session record exists under `{{fn:sessions_root}}/`.
+
+Session JSON stores **session metadata only** (state, owner, timestamps, git info, activity log). Tasks and QA briefs are the single source of truth and are discovered by scanning task/QA frontmatter (session_id) and by the session-scoped directories under `{{fn:sessions_root}}/<state>/<session-id>/`.
 
 ## CLI naming (dispatcher + auto-start)
 - Orchestration is driven by the loop driver: `edison session next <session-id>`.
 - Session records are created with `edison session create [--session-id <id>]` (manual; ID auto-infers if omitted) or by launching an orchestrator process via `edison orchestrator start` (end-to-end).
 - Prompt templates for the current role/session are injected automatically by the launcher; do not hand-edit rendered prompts.
-- If your orchestration layer expects defaults, set the configured owner env var (from `.edison/config/project.yml`)  and optionally a session env var.
+- If your orchestration layer expects defaults, set the configured owner env var (from `{{fn:project_config_dir}}/config/project.yml`)  and optionally a session env var.
 
 ## Worktree Confinement (CRITICAL)
 - **All code changes must happen inside the session worktree directory** (never in the primary checkout).
@@ -3712,7 +3971,7 @@ Session JSON stores **session metadata only** (state, owner, timestamps, git inf
 - **Session runtime state is local-only.** Do not commit `.project/sessions/` or `.project/.session-id` (they should be gitignored).
 
 ## Worktree Isolation (Sessions)
-- Default session worktrees live at `../edison-ui-worktrees/{sessionId}` (config: `worktrees.pathTemplate`).
+- Default session worktrees live at `.worktrees/{sessionId}` (config: `worktrees.pathTemplate`).
 - Create/restore via `edison session create` / `edison orchestrator start` / `edison git worktree-*` (do not DIY worktrees).
 - If `worktrees.sharedState.mode=meta`, initialize shared state with `edison git worktree-meta-init`. The meta worktree path is reserved for a git worktree (do not pre-create it as a plain directory). If you override `worktrees.baseDirectory`, also override `worktrees.sharedState.metaPathTemplate` to keep them aligned and avoid collisions.
 - Primary checkout safety is enforced: Edison must never switch the primary checkout branch during worktree operations.
@@ -3722,7 +3981,7 @@ Session JSON stores **session metadata only** (state, owner, timestamps, git inf
 - To force a fixed base ref (e.g. always `main`): set `worktrees.baseBranchMode: fixed` + `worktrees.baseBranch: main` (or just `worktrees.baseBranch: main`).
 - Per command override:
   - `edison session create --base-branch <ref>`
-  - `edison git worktree-create <session-id> --branch <ref>`
+  - `edison git worktree-create [<session-id>] --branch <ref>`
 
 ## Git Safety (Non-Negotiable)
 - **Never switch branches in the primary checkout.** Edison/LLMs MUST NOT run `git checkout` / `git switch` in the primary worktree.
@@ -3735,13 +3994,13 @@ Orchestrators can monitor tracking runs:
 
 ```bash
 edison session track active
-edison session track active --json
+edison session track active --json  # optional structured output
 
 # Detect stopped processes and append stop events
-edison session track sweep --json
+edison session track sweep           # (use --json if you need structured output)
 
 # Process index (computed from append-only JSONL process events)
-edison session track processes --json
+edison session track processes        # (use --json if you need structured output)
 ```
 
 `active` returns tracking records derived from evidence reports, including:
@@ -3760,9 +4019,9 @@ Notes:
 ## Session States
 
 Sessions transition through three states:
-- **active** (located in `.project/sessions/wip/`)
-- **closing** (located in `.project/sessions/done/`)
-- **validated** (located in `.project/sessions/validated/`)
+- **active** (located in `{{fn:session_state_dir("active")}}/`)
+- **closing** (located in `{{fn:session_state_dir("closing")}}/`)
+- **validated** (located in `{{fn:session_state_dir("validated")}}/`)
 
 Directory naming: on-disk directories may reflect legacy nomenclature, but state metadata is canonical. Always use logical state names (active/closing/validated) in code and configuration.
 
@@ -3770,14 +4029,14 @@ Directory naming: on-disk directories may reflect legacy nomenclature, but state
 
 Session state names map to on-disk directories as follows:
 
-- `.project/sessions/wip/` (active)
-- `.project/sessions/done/` (closing)
-- `.project/sessions/validated/` (validated)
+- `{{fn:session_state_dir("active")}}/` (active)
+- `{{fn:session_state_dir("closing")}}/` (closing)
+- `{{fn:session_state_dir("validated")}}/` (validated)
 
 - 
-- Claiming a task into a session physically moves it under `.project/sessions/wip/<session-id>/tasks/<status>/` (session state: active). Paired QA lives under `.project/sessions/wip/<session-id>/qa/<status>/`.
+- Claiming a task into a session physically moves it under `{{fn:session_state_dir("active")}}/<session-id>/tasks/<status>/` (session state: active). Paired QA lives under `{{fn:session_state_dir("active")}}/<session-id>/qa/<status>/`.
 - While the session is active, operate on the session-scoped queues by passing `--session <id>` (or set your project’s session-owner environment variable so CLIs auto-detect).
-- Other agents must never touch items under another session’s `.project/sessions/wip/<id>/` (active) tree. Global queues contain only unclaimed work.
+- Other agents must never touch items under another session’s `{{fn:session_state_dir("active")}}/<id>/` (active) tree. Global queues contain only unclaimed work.
 - Session completion restores all session-scoped files back to the global queues, preserving final status.
 - 
 
@@ -3787,32 +4046,30 @@ Session state names map to on-disk directories as follows:
 - Stale detection cadence is configured via `session.stale_check_interval_hours` for schedulers.
 - When a session exceeds the timeout window (based on the most recent of `lastActive`, `claimedAt`, or `createdAt`):
   - `edison session cleanup-expired` detects and automatically cleans up expired sessions.
-  - Cleanup restores all session-scoped tasks/QA back to the global queues and moves the session JSON from `.project/sessions/wip/` → `.project/sessions/done/`.
+  - Cleanup restores all session-scoped tasks/QA back to the global queues and moves the session JSON from `{{fn:session_state_dir("active")}}/` → `{{fn:session_state_dir("closing")}}/`.
   - `meta.expiredAt` is stamped and an Activity Log entry is appended for auditability.
 - All claim paths fail-closed: `edison task claim` refuses operations into an expired session.
 - Clock skew handling: small positive skew (≤ 5 minutes) in timestamps is tolerated; otherwise the detector treats timestamps conservatively and never leaves sessions indefinitely active.
 
 ## Quick checklist (fail-closed) - ORCHESTRATOR
 
-- [ ] Session record in `.project/sessions/wip/` (active) is current (Owner, Last Active, Activity Log).
+- [ ] Session record in `{{fn:session_state_dir("active")}}/` (active) is current (Owner, Last Active, Activity Log).
 - [ ] Every claimed task has a matching QA brief (state: `waiting`, `todo`, `wip`, `done`, `validated`).
 - [ ] Implementation delegated to sub-agents (OR done yourself for trivial tasks) with TDD and an Implementation Report per round (run `edison read OUTPUT_FORMAT --type guidelines/agents`).
 - [ ] Sub-agents/implementers followed their workflow (tracking stamps, TDD, Context7, automation, reports).
 - [ ] Validation delegated to independent validators (NEVER self-validate your own implementation).
-- [ ] ALL blocking validators launched (global + critical + triggered specialized with `blocksOnFail=true`).
+- [ ] ALL blocking validators launched (global + critical + triggered comprehensive with `blocking=true`).
 - [ ] Validators run in batched waves up to concurrency cap; verdicts recorded in QA docs.
 - [ ] Approval decision based on ALL blocking validators (if ANY reject → task REJECTED).
-- [ ] Rejections keep tasks in `.project/tasks/wip/` and QA in `.project/qa/waiting/`. Follow-up tasks created immediately.
-- [ ] Session closes only after `edison session verify --phase closing` then `edison session close <session-id>` pass. Parent task must be `validated`. Child tasks can be `done|validated`. Parent QA must be `done|validated`. Child QA should be `done` when approved in the parent bundle (or `waiting|todo` only if intentionally deferred outside the bundle).
-- [ ] State transitions follow the canonical state machine (run `edison read STATE_MACHINE`); use guards (`edison task ready`, `edison qa bundle`) not manual moves.
+- [ ] Rejections keep tasks in `{{fn:task_state_dir("wip")}}/` and QA in `{{fn:qa_state_dir("waiting")}}/`. Follow-up tasks created immediately.
+- [ ] Session closes only after `edison session verify --phase closing` then `edison session close <session-id>` pass. Parent task must be `{{fn:semantic_state("task","validated")}}`. Child tasks can be `{{fn:semantic_states("task","done,validated","pipe")}}`. Parent QA must be `{{fn:semantic_states("qa","done,validated","pipe")}}`. Child QA should be `{{fn:semantic_state("qa","done")}}` when approved in the parent bundle (or `{{fn:semantic_states("qa","waiting,todo","pipe")}}` only if intentionally deferred outside the bundle).
+- [ ] State transitions follow the canonical state machine (run `edison read STATE_MACHINE`); use guards (`edison task done`, `edison qa bundle`) not manual moves.
 - [ ] Session is active (created via `edison session create` or `edison orchestrator start`) and worktree isolation is active for this session (external worktree path recorded).
 
 ## Context Budget (token minimization)
 
-<!-- section: context-budget -->
 Keep orchestrator context under roughly 50K tokens by default. Prefer concise summaries and diffs over full files, and aggressively trim stale or redundant content from the session.
 Use focused snippets around the relevant change (for example, 80–120 lines of code or a single section of a document) instead of entire files whenever possible.
-<!-- /section: context-budget -->
 
 Avoid loading very large files (logs, generated artefacts, bundled assets) into prompts unless absolutely necessary for the current decision. When large inputs are unavoidable, extract only the minimal relevant portion and reference the full artefact by path.
 
@@ -3822,37 +4079,39 @@ When sharing code or documentation with sub-agents, send focused snippets around
 
 | Task State | Required QA State | What to do | Scripts & Notes |
 |------------|------------------|------------|-----------------|
-| `.project/tasks/todo/` (new follow-ups created during the session) | `.project/qa/waiting/` | Decide whether to claim now. If claimed, move task → `wip/`, create QA via `edison qa new`, and add both IDs to the session scope. | `edison task status <id> --status wip`<br/>`edison qa new <id> --session <session-id>` |
-| `.project/tasks/wip/` | `.project/qa/waiting/` while implementing | Keep task + QA paired in your session scope. Update `Last Active` after every change, run Context7 + TDD cycle, delegate via Pal MCP as needed. | `edison task claim <id> --session <session-id>` updates timestamps + session record. |
-| `.project/tasks/wip/` (ready for validation) | `.project/qa/todo/` | Move QA to `todo/` when implementation is in `done/`. Do **not** move the task to `done/` until QA is ready. | `edison qa promote <task-id> --status todo` |
-| `.project/tasks/done/` | `.project/qa/wip/` | Launch validators in parallel waves (up to cap). Capture findings + evidence paths in QA doc. | Run `edison qa bundle <task-id>` to produce the manifest, then `edison qa promote <task-id> --status wip` to begin validation. |
-| `.project/tasks/wip/` (after rejection) | `.project/qa/waiting/` | Task returns/stays in `wip/` until fixes are validated. QA re-enters `waiting/` with a “Round N” section summarizing findings. | Spawn follow-ups in `.project/tasks/todo/` + `.project/qa/waiting/` immediately; link them in both task + QA documents. |
-| `.project/tasks/validated/` | `.project/qa/validated/` or `.project/qa/done/` | Only promote when **all** blocking validators approve and evidence is linked. Then update the session Activity Log and remove the task from the scope list. | `edison session verify --phase closing` transitions the session to closing, then `edison session close <session-id>` moves the session to `.project/sessions/validated/`. |
+| `{{fn:task_state_dir("todo")}}/` (new follow-ups created during the session) | `{{fn:qa_state_dir("waiting")}}/` | Decide whether to claim now. If claimed, move task → `{{fn:semantic_state("task","wip")}}/`, create QA via `edison qa new`, and add both IDs to the session scope. | `edison task status <id> --status {{fn:semantic_state("task","wip")}}`<br/>`edison qa new <id> --session <session-id>` |
+| `{{fn:task_state_dir("wip")}}/` | `{{fn:qa_state_dir("waiting")}}/` while implementing | Keep task + QA paired in your session scope. Update `Last Active` after every change, run Context7 + TDD cycle, delegate via Pal MCP as needed. | `edison task claim <id> --session <session-id>` updates timestamps + session record. |
+| `{{fn:task_state_dir("wip")}}/` (ready for validation) | `{{fn:qa_state_dir("todo")}}/` | Move QA to `{{fn:semantic_state("qa","todo")}}/` when implementation is in `{{fn:semantic_state("task","done")}}/`. Do **not** move the task to `{{fn:semantic_state("task","done")}}/` until QA is ready. | `edison qa promote <task-id> --status {{fn:semantic_state("qa","todo")}}` |
+| `{{fn:task_state_dir("done")}}/` | `{{fn:qa_state_dir("wip")}}/` | Launch validators in parallel waves (up to cap). Capture findings + evidence paths in QA doc. | Run `edison qa bundle <task-id>` to produce the manifest, then `edison qa promote <task-id> --status {{fn:semantic_state("qa","wip")}}` to begin validation. |
+| `{{fn:task_state_dir("wip")}}/` (after rejection) | `{{fn:qa_state_dir("waiting")}}/` | Task returns/stays in `{{fn:semantic_state("task","wip")}}/` until fixes are validated. QA re-enters `{{fn:semantic_state("qa","waiting")}}/` with a “Round N” section summarizing findings. | Spawn follow-ups in `{{fn:task_state_dir("todo")}}/` + `{{fn:qa_state_dir("waiting")}}/` immediately; link them in both task + QA documents. |
+| `{{fn:task_state_dir("validated")}}/` | `{{fn:qa_state_dir("validated")}}/` or `{{fn:qa_state_dir("done")}}/` | Only promote when **all** blocking validators approve and evidence is linked. Then update the session Activity Log and remove the task from the scope list. | `edison session verify --phase closing` transitions the session to closing, then `edison session close <session-id>` moves the session to `{{fn:session_state_dir("validated")}}/`. |
 
-> 💡 The board is bidirectional: any time a file is in the wrong combination (e.g., task in `done/` but QA still in `waiting/`), fix the mismatch before proceeding.
+> 💡 The board is bidirectional: any time a file is in the wrong combination (e.g., task in `{{fn:semantic_state("task","done")}}/` but QA still in `{{fn:semantic_state("qa","waiting")}}/`), fix the mismatch before proceeding.
 
 ### Hierarchy & State Machine
 
-- Session files now live in `.project/sessions/<state>/<session-id>/session.json` and store session metadata only. Task relationships (parent/child) live in task frontmatter; QA linkage lives in QA frontmatter. The canonical transitions are defined in the generated state machine (run `edison read STATE_MACHINE`); `edison session status <id>` renders the view for humans/LLMs.
+- Session files now live in `{{fn:sessions_root}}/<state>/<session-id>/session.json` and store session metadata only. Task relationships (parent/child) live in task frontmatter; QA linkage lives in QA frontmatter. The canonical transitions are defined in the generated state machine (run `edison read STATE_MACHINE`); `edison session status <id>` renders the view for humans/LLMs.
 
 - Use `edison task new --parent <id>` or `edison task link <parent> <child>` to register follow-ups. Linking MUST only occur within the current session scope; `edison task link` MUST refuse links where either side is out of scope unless `--force` is provided (and MUST log a warning in the session Activity Log).
 
-- Before promoting a task to `done/`, run `edison task ready <task-id>` to enforce automation evidence, QA pairing, and child readiness (all children in `done|validated`).
+- Before promoting a task to `{{fn:semantic_state("task","done")}}/`, run `edison task done <task-id>` to enforce automation evidence, QA pairing, and child readiness (all children in `{{fn:semantic_states("task","done,validated","pipe")}}`).
 - Before invoking validators, run `edison qa bundle <root-task>` to emit the cluster manifest (tasks, QA briefs, evidence directories) and paste it into the QA doc. Validators only accept bundles generated from this script.
 - Use `edison session status` for self-audits; this CLI surfaces the tasks you own, their blockers, and the bundle manifest without manually reading JSON.
 
+> All status moves are fail-closed and MUST go through guarded Python CLIs (`edison task status`, `edison qa promote`, `edison qa round`, `edison session`). Direct file moves or legacy TS movers are forbidden.
+
 All task/QA moves MUST go through guarded CLIs (`edison task status`, `edison qa promote`, `edison qa round`, `edison session`). Manual `git mv` or filesystem moves are prohibited.
 
-Create and pair a QA brief (`.project/qa/waiting/`) as soon as a task enters `.project/tasks/wip/`. Do not defer QA creation to later phases.
+Create and pair a QA brief (`{{fn:qa_state_dir("waiting")}}/`) as soon as a task enters `{{fn:task_state_dir("wip")}}/`. Do not defer QA creation to later phases.
 
-State transitions must be adjacent per the state machine; skipping states (e.g., `todo → validated`) is not allowed.
+State transitions must be adjacent per the state machine; skipping states (e.g., `{{fn:semantic_state("task","todo")}} → {{fn:semantic_state("task","validated")}}`) is not allowed.
 
-Close a session only when all scoped tasks are `validated`, paired QA are `done|validated`, and no unresolved blockers or report/schema errors remain.
+Close a session only when all scoped tasks are `{{fn:semantic_state("task","validated")}}`, paired QA are `{{fn:semantic_states("qa","done,validated","pipe")}}`, and no unresolved blockers or report/schema errors remain.
 
 ## 1. Keep the session record alive
 1. Use `edison session status <session-id>` at least every two hours to confirm every scoped task/QA still lives where you expect.
 2. Every time you run `edison task claim`/`status` or `edison qa new`, pass `--session <session-id>` so the scope lists stay accurate and the session's `Last Active` is refreshed.
-3. Work inside the session worktree shown by `edison session status` (typically `../${PROJECT}-worktrees/<session-id>`). If missing, restore with `edison git worktree-restore <session-id>` (or `worktree-create` for new sessions).
+3. Work inside the session worktree shown by `edison session status` (default: `.worktrees/<session-id>`, i.e. `{{config.worktrees.pathTemplate}}`). If missing, restore with `edison git worktree-restore [<session-id>]`.
 4. Log meaningful milestones (delegation dispatched, validators launched, follow-ups spawned, blockers encountered) in the session file’s Activity Log. This is the source of truth for resuming after crashes.
 
 ## 2. Implementation loop (per task) - ORCHESTRATOR DUTIES
@@ -3861,7 +4120,24 @@ Close a session only when all scoped tasks are `validated`, paired QA are `done|
 
 ### 2.1. Setup and Planning
 
-1. **Confirm QA exists:** `find .project/qa -name "*<task-id>*-qa.md"`. If missing, create via `edison qa new <task-id> --session <session-id>`.
+1. **Ensure QA exists (idempotent):** run `edison qa new <task-id> --session <session-id>`.
+
+2. **Plan parallel work (waves):**
+### Task Waves (Parallelizable Waves)
+
+Compute parallelizable “waves” from `depends_on`:
+
+```bash
+edison task waves
+```
+
+- Prefer **Wave 1** tasks for “start now”.
+- Respect the configured cap (`orchestration.maxConcurrentAgents`). If Wave 1 exceeds the cap, use the printed batch suggestions (or `--json` for structured batches).
+- Use `edison task relate <task-a> <task-b>` to link non-blocking “related” tasks (this influences within-wave grouping).
+- If a desired todo task isn’t in Wave 1, inspect why:
+  ```bash
+  edison task blocked <task-id>
+  ```
 
 2. **Decide approach:**
    - **Option A: Delegate to sub-agent** (recommended for complex/specialized work)
@@ -3871,7 +4147,7 @@ Close a session only when all scoped tasks are `validated`, paired QA are `done|
    ```bash
    edison session next <session-id>
    ```
-   Shows delegation suggestions, validator roster, related tasks, rules.
+Shows delegation suggestions, validator roster, related tasks, rules.
 
 ### 2.2a. If Delegating (RECOMMENDED)
 
@@ -3880,15 +4156,16 @@ Close a session only when all scoped tasks are `validated`, paired QA are `done|
 1. **Launch sub-agent via your project's orchestration layer:**
    ```bash
    # Example: Delegating implementation to a specialized agent role
-   <orchestrator-cli> --role <agent-name> --task <task-id> --prompt-source .edison/_generated/constitutions/AGENTS.md
+   <orchestrator-cli> --role <agent-name> --task <task-id> --prompt-source {{fn:project_config_dir}}/_generated/constitutions/AGENTS.md
    ```
-
 2. **Sub-agent will handle:**
    - ✅ Calling `edison session track start` (their mandatory first step)
+   - ✅ Initializing evidence round: `edison evidence init <task-id>`
    - ✅ Following TDD (RED → GREEN → REFACTOR)
    - ✅ Querying Context7 for post-training packages
    - ✅ Filling implementation report as they work
-   - ✅ Running automation commands (type-check, lint, test, build)
+   - ✅ Running and capturing evidence: `edison evidence capture <task-id>` (preset-required; config-driven)
+   - ✅ Fixing any failures before proceeding (evidence must show passing commands)
    - ✅ Calling `edison session track complete` (their mandatory last step)
 
 3. **Monitor progress:**
@@ -3896,9 +4173,9 @@ Close a session only when all scoped tasks are `validated`, paired QA are `done|
    edison session track active  # See if sub-agent is still working
    edison session verify <session-id>   # Detect metadata drift / stale state
    ```
-
 4. **When sub-agent reports back:**
-   - Review their implementation report at `.project/qa/validation-evidence/<task-id>/round-1/implementation-report.md`
+   - Review their implementation report at `{{fn:evidence_root}}/<task-id>/round-1/{{config.validation.artifactPaths.implementationReportFile}}`
+   - Verify evidence is complete: `edison evidence status <task-id>`
    - Check for blockers, follow-ups, completion status
    - Store `continuation_id` in task file and session record
 
@@ -3910,7 +4187,10 @@ Close a session only when all scoped tasks are `validated`, paired QA are `done|
 
 1. **YOU must follow the agent constitution (run `edison read AGENTS --type constitutions`):**
    - Call `edison session track start --task <id> --type implementation --model claude`
-   - Follow TDD, query Context7, fill report, run automation
+   - Initialize evidence: `edison evidence init <task-id>`
+   - Follow TDD, query Context7, fill report
+   - Run and capture evidence: `edison evidence capture <task-id>`
+   - Fix any failures before proceeding
    - Call `edison session track complete`
 
 2. **This is the SAME process sub-agents follow** - you get no shortcuts!
@@ -3919,27 +4199,52 @@ Close a session only when all scoped tasks are `validated`, paired QA are `done|
 
 1. **Review implementation report** for blockers and follow-ups.
 
+2. **Spawn follow-up tasks** (if any discovered):
+   - Create in `{{fn:task_state_dir("todo")}}/` with paired QA in `{{fn:qa_state_dir("waiting")}}/`
+   - Link to parent via `edison task link`
+   - Decide if they belong in current session (claim now) or future session (leave in `{{fn:semantic_state("task","todo")}}/`)
+
 3. **Update session Activity Log** with implementation milestone.
 
 4. **When ALL related work is done** (task + all follow-ups):
    - Run `edison qa bundle <root-task-id>` to generate validation manifest
    - Paste manifest into root task's QA brief
-   - Move QA from `waiting/` → `todo/` to signal ready for validation
+   - Move QA from `{{fn:semantic_state("qa","waiting")}}/` → `{{fn:semantic_state("qa","todo")}}/` to signal ready for validation
 
 ### 2.4. Verification Before Validation
 
 **Run readiness check:**
 ```bash
-edison task ready <task-id> --session <session-id>
+edison task done <task-id> --session <session-id>
 ```
-
 This transition is guarded (fail-closed) and should only be executed once implementation is complete. At minimum, ensure:
-- ✅ The latest round contains a non-empty implementation report (`implementation-report.md`; config-driven)
+- ✅ The latest round contains a non-empty implementation report (`{{config.validation.artifactPaths.implementationReportFile}}`; config-driven)
 - ✅ Automation evidence files exist per project config (required: `command-type-check.txt`, `command-lint.txt`, `command-test.txt`, `command-build.txt`)
+- ✅ All evidence files show `exitCode: 0` (commands must pass, not just be recorded)
 - ✅ Any required Context7 markers exist for Context7‑detected packages in scope (per merged config)
-- ✅ QA brief is ready to move `waiting → todo` once the task is `done`
+- ✅ Before session close: satisfy configured session-close evidence (`edison evidence capture <task-id> --session-close`), then review outputs (`edison evidence show ...`)
+- ✅ QA brief is ready to move `{{fn:semantic_state("qa","waiting")}} → {{fn:semantic_state("qa","todo")}}` once the task is `{{fn:semantic_state("task","done")}}`
 
-Parent tasks MUST NOT move to `done` until every child task in the session scope is `done|validated`.
+### Knowledge Refresh Enforcement
+If a task touches configured post-training packages, ensure the assigned agent refreshes Context7 docs and produces the required evidence markers before `wip → done`.
+
+### Context7 Error Handling
+When `edison task done` fails with Context7 errors:
+1. Review the error message—it shows detected packages and missing markers
+2. Check if detection is correct: `edison config show context7 --format yaml`
+3. If correct: have the agent create Context7 evidence markers
+4. If false positive: use `--skip-context7` bypass with justification
+
+### Bypass Flag (`--skip-context7`)
+For verified false positives only:
+```bash
+edison task done <task-id> --skip-context7 --skip-context7-reason "verified false positive: <why>"
+```
+- Prints a loud warning to stderr
+- Records audit trace in task history (transition reason)
+- Should be rare—most Context7 detections are legitimate
+
+Parent tasks MUST NOT move to `{{fn:semantic_state("task","done")}}` until every child task in the session scope is `{{fn:semantic_states("task","done,validated","pipe")}}`.
 
 **If guard fails:** Fix issues before proceeding. Guard errors are explicit about what's missing.
 
@@ -3968,7 +4273,7 @@ Parent tasks MUST NOT move to `done` until every child task in the session scope
 - ❌ Treating optional validators as "good enough"
 
 **REQUIRED:**
-- ✅ Launch ALL blocking validators (global + critical + triggered specialized with `blocksOnFail=true`)
+- ✅ Launch ALL blocking validators (global + critical + triggered comprehensive with `blocking=true`)
 - ✅ Use DIFFERENT models for validation than implementation (if possible)
 - ✅ Launch validators via delegation (Pal MCP) so they run independently
 - ✅ Wait for ALL blocking validators to complete before making approval decision
@@ -3978,54 +4283,52 @@ Parent tasks MUST NOT move to `done` until every child task in the session scope
 ### 3.2. Prepare for Validation
 
 1. **Verify task is ready:**
-   - Task in `.project/tasks/done/`
-   - QA in `.project/qa/todo/`
+   - Task in `{{fn:task_state_dir("done")}}/`
+   - QA in `{{fn:qa_state_dir("todo")}}/`
    - Implementation report complete with tracking stamps
    - Automation evidence files present
 
 2. **Move QA to wip:**
    ```bash
-   edison qa promote <task-id> --status wip
+   edison qa promote <task-id> --status {{fn:semantic_state("qa","wip")}}
    ```
-   This signals validation has started.
+This signals validation has started.
 
 3. **Identify required validators:**
    ```bash
    edison session next <session-id>
    ```
-   Shows complete validator roster (always-required + triggered + optional).
+Shows complete validator roster (always-required + triggered + optional).
 
 ### 3.3. Launch Validators (DELEGATED)
 
 **Launch validators in parallel waves up to concurrency cap (`orchestration.maxConcurrentAgents` = 4):**
 
 #### Wave 1: Global Validators (MANDATORY, BLOCKING)
+```bash
+# Global Validator (Model 1)
+<validator-cli> --model <model-1> --role validator-<model-1>-global --task <task-id> --qa {{fn:qa_state_dir("wip")}}/<task-id>-qa.md
 
 # Global Validator (Model 2)
-<validator-cli> --model <model-2> --role validator-<model-2>-global --task <task-id> --qa .project/qa/wip/<task-id>-qa.md
+<validator-cli> --model <model-2> --role validator-<model-2>-global --task <task-id> --qa {{fn:qa_state_dir("wip")}}/<task-id>-qa.md
 ```
-
 #### Wave 2: Critical Validators (MANDATORY, BLOCKING)
-
 ```bash
 # Security
-<validator-cli> --model <model> --role validator-security --task <task-id> --qa .project/qa/wip/<task-id>-qa.md
+<validator-cli> --model <model> --role validator-security --task <task-id> --qa {{fn:qa_state_dir("wip")}}/<task-id>-qa.md
 
 # Performance
-<validator-cli> --model <model> --role validator-performance --task <task-id> --qa .project/qa/wip/<task-id>-qa.md
+<validator-cli> --model <model> --role validator-performance --task <task-id> --qa {{fn:qa_state_dir("wip")}}/<task-id>-qa.md
 ```
-
-#### Wave 3: Specialized Validators (TRIGGERED, BLOCKING IF `blocksOnFail=true`)
+#### Wave 3: Comprehensive Validators (TRIGGERED, BLOCKING IF `blocking=true`)
 
 **Only launch if file patterns match** (session next shows which are triggered):
-
 ```bash
 # Specialized Validators (triggered by configured file patterns)
-<validator-cli> --model <model> --role validator-<type> --task <task-id> --qa .project/qa/wip/<task-id>-qa.md
+<validator-cli> --model <model> --role validator-<type> --task <task-id> --qa {{fn:qa_state_dir("wip")}}/<task-id>-qa.md
 
 # Check orchestrator manifest for active pack validators and their trigger patterns
 ```
-
 ### Validator Wave Details
 
 #### Wave 1: Global Validators
@@ -4095,7 +4398,6 @@ Parent tasks MUST NOT move to `done` until every child task in the session scope
 - ✅ Calling `edison session track complete` (their mandatory last step)
 
 ### 3.4. Monitor Validators
-
 ```bash
 # See which validators are running
 edison session track active
@@ -4103,7 +4405,6 @@ edison session track active
 # Detect crashed validators
 edison session verify <session-id>
 ```
-
 **If validator crashes:** Remove stale report, investigate logs, re-launch validator.
 
 ### 3.5. Aggregate Verdicts
@@ -4111,7 +4412,7 @@ edison session verify <session-id>
 **When all validators report back:**
 
 1. **Read each validator report:**
-   - `.project/qa/validation-evidence/<task-id>/round-1/validator-<id>-report.md`
+   - `{{fn:evidence_root}}/<task-id>/round-1/validator-<id>-report.md`
 
 2. **Check verdicts:**
    - ✅ `approve` - Validator passed the task
@@ -4119,7 +4420,7 @@ edison session verify <session-id>
    - ⚠️ `blocked` - Validator couldn't complete (missing evidence, etc.)
 
 3. **Aggregate blocking validators:**
-   - ALL blocking validators (global + critical + specialized with `blocksOnFail=true`) MUST approve
+   - ALL blocking validators (global + critical + comprehensive with `blocking=true`) MUST approve
    - If ANY blocking validator rejects, task is REJECTED
    - If ANY blocking validator is blocked, task is BLOCKED (fix and re-run)
 
@@ -4127,22 +4428,22 @@ edison session verify <session-id>
 
 #### If ALL Blocking Validators Approve:
 
-1. **Move task:** `.project/tasks/done/` → `.project/tasks/validated/`
-2. **Move QA:** `.project/qa/wip/` → `.project/qa/done/`
+1. **Move task:** `{{fn:task_state_dir("done")}}/` → `{{fn:task_state_dir("validated")}}/`
+2. **Move QA:** `{{fn:qa_state_dir("wip")}}/` → `{{fn:qa_state_dir("done")}}/`
 3. **Update session Activity Log** with validation milestone
 4. **Update QA brief** with final "Validator Findings & Verdicts" section summarizing all reports
 
 #### If ANY Blocking Validator Rejects:
 
-1. **Keep task in:** `.project/tasks/wip/` (or return from `done` to `wip`)
-2. **Move QA:** `.project/qa/wip/` → `.project/qa/waiting/`
+1. **Keep task in:** `{{fn:task_state_dir("wip")}}/` (or return from `{{fn:semantic_state("task","done")}}` to `{{fn:semantic_state("task","wip")}}`)
+2. **Move QA:** `{{fn:qa_state_dir("wip")}}/` → `{{fn:qa_state_dir("waiting")}}/`
 3. **Add "Round N" section to QA brief** with:
    - Date/time
    - Status: REJECTED
    - Validator findings (blocking issues)
    - Follow-up task IDs
 4. **Spawn follow-up tasks:**
-   - Create in `.project/tasks/todo/` with paired QA in `.project/qa/waiting/`
+   - Create in `{{fn:task_state_dir("todo")}}/` with paired QA in `{{fn:qa_state_dir("waiting")}}/`
    - Link to parent
    - Decide if current session or future session
 5. **Update session Activity Log** with rejection and follow-ups
@@ -4152,24 +4453,28 @@ edison session verify <session-id>
 ### 3.7. Summarize in QA Brief
 
 **Update QA brief with validator verdicts:**
-
 ```markdown
 ## Validator Findings & Verdicts
 
+### Global Validator 1 ✅ APPROVED
+- Report: `{{fn:evidence_root}}/<task-id>/round-1/validator-<name>-report.md`
+- Verdict: Approve
+- Summary: Excellent implementation quality...
+
 ### Global Validator 2 ✅ APPROVED
-- Report: `.project/qa/validation-evidence/<task-id>/round-1/validator-<name>-report.md`
+- Report: `{{fn:evidence_root}}/<task-id>/round-1/validator-<name>-report.md`
 - Verdict: Approve
 - Summary: Strong TDD compliance...
 
 ### Security ❌ REJECTED
-- Report: `.project/qa/validation-evidence/<task-id>/round-1/validator-security-report.md`
+- Report: `{{fn:evidence_root}}/<task-id>/round-1/validator-security-report.md`
 - Verdict: Reject
 - Summary: Critical issue found - missing rate limiting...
 - Blocking Issues: 2 (1 critical, 1 high)
 - Follow-Ups: Task <id> created for rate limiting
 
 ### Performance ✅ APPROVED
-- Report: `.project/qa/validation-evidence/<task-id>/round-1/validator-performance-report.md`
+- Report: `{{fn:evidence_root}}/<task-id>/round-1/validator-performance-report.md`
 - Verdict: Approve
 - Summary: No performance concerns...
 
@@ -4178,60 +4483,57 @@ edison session verify <session-id>
 - Action: Task <id> created and claimed for fixes
 - Next Step: After <id> completes, resubmit for Round 2 validation
 ```
-
 > **💡 MONITORING UTILITIES:**
 > - `edison session track active` - See all running validators (PIDs, models, start times)
 > - `edison session verify <session-id>` - Detect metadata drift and stale state
 > - `edison session track heartbeat` - Not typically needed (validators should complete quickly)
 
 ## 4. Handling rejections & follow-ups
-1. Rejected tasks **stay** in `.project/tasks/wip/`. Never move them back to `todo/`—they are still active work.
-2. Move the QA file to `.project/qa/waiting/` and add a “Round N” section capturing:
+1. Rejected tasks **stay** in `{{fn:task_state_dir("wip")}}/`. Never move them back to `{{fn:semantic_state("task","todo")}}/`—they are still active work.
+2. Move the QA file to `{{fn:qa_state_dir("waiting")}}/` and add a “Round N” section capturing:
    - Date/time
    - Status (`REJECTED`)
    - Validator findings
    - Follow-up task IDs
 3. Create follow-up tasks with numbering gaps (≥50). Each follow-up gets:
-   - Task file in `.project/tasks/todo/`
-   - QA brief in `.project/qa/waiting/`
+   - Task file in `{{fn:task_state_dir("todo")}}/`
+   - QA brief in `{{fn:qa_state_dir("waiting")}}/`
    - References back to the originating QA and session file
 4. Decide whether the follow-up belongs in the current session:
    - If yes, claim it immediately (intake-style) and add it to the session scope.
-   - If no, leave it in `.project/tasks/todo/` for a future session but document the handoff.
-5. After fixes are implemented, move the parent task to `done/`, QA to `todo/`, and re-run the validator waves (Round 2, Round 3, etc.).
+   - If no, leave it in `{{fn:task_state_dir("todo")}}/` for a future session but document the handoff.
+5. After fixes are implemented, move the parent task to `{{fn:semantic_state("task","done")}}/`, QA to `{{fn:semantic_state("qa","todo")}}/`, and re-run the validator waves (Round 2, Round 3, etc.).
 
 ### Linking semantics for follow-ups (fail-closed)
-- Linking a follow-up as a child of the parent denotes a hard dependency. If a follow-up is linked, it MUST be claimed into the same session and will block promotion of the parent until the child is `done|validated`.
+- Linking a follow-up as a child of the parent denotes a hard dependency. If a follow-up is linked, it MUST be claimed into the same session and will block promotion of the parent until the child is `{{fn:semantic_states("task","done,validated","pipe")}}`.
 - Only follow-ups marked as blocking (e.g., `blockingBeforeValidation=true` in the implementation report) should be linked to the parent.
-- The readiness gate runs `edison task ensure_followups --source implementation --enforce` and then enforces `childIds` readiness before `wip → done`.
+- The readiness gate runs `edison task ensure_followups --source implementation --enforce` and then enforces `childIds` readiness before `{{fn:semantic_state("task","wip")}} → {{fn:semantic_state("task","done")}}`.
 
 ### Duplicate prevention before creation
 - Before creating any follow-up, search existing tasks by slug/title similarity. If a near-duplicate (≥0.82) exists, do NOT create a new task—link/record the existing ID where appropriate.
 - The helper `edison task ensure_followups` performs this check automatically.
 
 ### Parent Requeue (auto‑suggested)
-- When a parent task is set to `blocked` and all its child follow‑ups are `done|validated`, the Active Session "next" plan will suggest:
-  - `task.unblock.wip` → `edison task status <parent> --status wip`
+- When a parent task is set to `{{fn:semantic_state("task","blocked")}}` and all its child follow‑ups are `{{fn:semantic_states("task","done,validated","pipe")}}`, the Active Session "next" plan will suggest:
+  - `task.unblock.wip` → `edison task status <parent> --status {{fn:semantic_state("task","wip")}}`
   - If automation evidence is present for the parent (type/lint/test/build + implementation‑report), it will also suggest:
-    - `task.promote.done` → `edison task status <parent> --status done`
-    - Followed by the usual QA `waiting → todo` then validator waves.
+    - `task.promote.done` → `edison task status <parent> --status {{fn:semantic_state("task","done")}}`
+    - Followed by the usual QA `{{fn:semantic_state("qa","waiting")}} → {{fn:semantic_state("qa","todo")}}` then validator waves.
 - Rationale: this keeps the parent on rails without manual bookkeeping once dependent work finishes.
 
 ## 5. Session close-out
-1. When every scoped task is `validated` and every scoped QA is `validated`, update the session Activity Log with a completion note.
+1. When every scoped task is `{{fn:semantic_state("task","validated")}}` and every scoped QA is `{{fn:semantic_state("qa","validated")}}`, update the session Activity Log with a completion note.
 2. Run `edison session complete <session-id>`:
-   - Confirms every listed task lives in `.project/tasks/validated/`.
-   - Confirms every listed QA lives in `.project/qa/validated/` (or `.project/qa/done/` if your policy treats it as final).
+   - Confirms every listed task lives in `{{fn:task_state_dir("validated")}}/`.
+   - Confirms every listed QA lives in `{{fn:qa_state_dir("validated")}}/` (or `{{fn:qa_state_dir("done")}}/` if your policy treats it as final).
    - Verifies each task has a populated evidence directory.
 3. If the script reports discrepancies, resolve them immediately (do not archive the session until it passes).
-4. On success, the script moves the session file from `.project/sessions/done/` (closing) → `.project/sessions/validated/`. Push commits only after this promotion, ensuring all documentation aligns.
+4. On success, the script moves the session file from `{{fn:session_state_dir("closing")}}/` (closing) → `{{fn:session_state_dir("validated")}}/`. Push commits only after this promotion, ensuring all documentation aligns.
 
 ## 6. Crash recovery / continuation
 - Session interruped? Run `edison session status <session-id>` to regenerate the scope snapshot, reopen each listed task/QA, and continue from the recorded Activity Log.
 - Rejoining later? Claim/resume each task via `edison task claim --session <session-id>` so `Last Active` timestamps confirm the work is in progress.
 - Handing off? Mention the session ID inside each task/QA file's metadata so the next orchestrator can pick it up.
-
-<!-- /section: workflow -->
 
 ---
 
@@ -4295,7 +4597,7 @@ The authoritative definition lives in the composed state machine (run `edison re
 
 - `tasks/status`: Calls `validate_state_transition` before any move and gates `… → done` via `tasks/ready`.
 - `tasks/ready`: Enforces completion requirements (implementation report, evidence files, validator config/TDD rules) and fails closed.
-- Pre-commit hook: `.git/hooks/pre-commit` invokes `edison git-hooks precommit-check` to block invalid staged renames under `.project/tasks/` and `.project/qa/`.
+- Pre-commit hook: `.git/hooks/pre-commit` invokes `edison git-hooks precommit-check` to block invalid staged renames under `{{fn:tasks_root}}/` and `{{fn:qa_root}}/`.
 
 ## Failure Mode (Fail-Closed)
 
@@ -4304,8 +4606,8 @@ The authoritative definition lives in the composed state machine (run `edison re
 
 ## Examples
 
-- Allowed: `task todo → wip`, `qa waiting → todo`, `task done → validated` (with approvals).
-- Blocked: `task todo → validated`, `qa todo → validated`, non-adjacent skips.
+- Allowed: `task {{fn:semantic_state("task","todo")}} → {{fn:semantic_state("task","wip")}}`, `qa {{fn:semantic_state("qa","waiting")}} → {{fn:semantic_state("qa","todo")}}`, `task {{fn:semantic_state("task","done")}} → {{fn:semantic_state("task","validated")}}` (with approvals).
+- Blocked: `task {{fn:semantic_state("task","todo")}} → {{fn:semantic_state("task","validated")}}`, `qa {{fn:semantic_state("qa","todo")}} → {{fn:semantic_state("qa","validated")}}`, non-adjacent skips.
 
 See tests under `tests/unit/framework/test_state_machine_guards.py` covering valid/invalid paths and edge cases.
 
@@ -4324,20 +4626,23 @@ For agent-specific workflow integration (tracking, evidence directories, and con
 - Check your project's `context7` config for the complete list and triggers
 
 ## Workflow (two steps)
+## Context7 Knowledge Refresh (MANDATORY)
+
 ### Resolve Library ID
 Use Context7 to resolve the canonical library ID:
 ```
-mcp__context7__resolve_library_id({ libraryName: "<package-name>" })
+mcp__context7__resolve-library-id({
+  libraryName: "<package-name>",
+  query: "<what you are trying to do>"
+})
 ```
 
 ### Get Current Documentation
 Fetch up-to-date docs before coding or reviewing:
 ```
-mcp__context7__get_library_docs({
-  context7CompatibleLibraryID: "/<org>/<library>",
-  mode: "code",
-  topic: "<relevant-topic>",
-  page: 1
+mcp__context7__query-docs({
+  libraryId: "/<org>/<library>",
+  query: "<relevant-topic>"
 })
 ```
 
@@ -4353,20 +4658,20 @@ mcp__context7__get_library_docs({
 - Type errors from validation/database packages after API shifts
 - Deprecation warnings
 
-**Context7 evidence:** Create `context7-<package>.txt` markers for every Context7‑detected package; guards block `wip→done` if missing.
+**Context7 evidence:** Create `context7-<package>.txt` markers for every Context7‑detected package; guards block `{{fn:semantic_state("task","wip")}}→{{fn:semantic_state("task","done")}}` if missing.
 
 ## Evidence markers (required when used)
 - When a task uses any Context7-detected package (driven by `context7.triggers` and optional `context7.contentDetection`), include a marker file per package in the current round evidence directory, e.g.:
-  - `.project/qa/validation-evidence/<task-id>/round-<N>/context7-<package>.txt`
+  - `{{fn:evidence_root}}/<task-id>/round-<N>/context7-<package>.txt`
   - Briefly list topics queried and the doc version/date.
 - To inspect the merged Context7 configuration: `edison config show context7 --format yaml`
-- Guards treat missing markers as a blocker for `wip → done` on tasks that touch these packages.
+- Guards treat missing markers as a blocker for `{{fn:semantic_state("task","wip")}} → {{fn:semantic_state("task","done")}}` on tasks that touch these packages.
 - Notes in task files (e.g., "Context7 (<library>)") are NOT accepted as evidence.
 - When HMAC stamping is enabled in config, include the stamped digest inside each marker.
 
 ## Auto-detection & enforcement
-- `edison task ready` auto-detects Context7‑detected packages from the git diff and blocks readiness if matching markers are absent.
-- State machine guards reuse the detection results; you cannot bypass Context7 by skipping the ready step.
+- `edison task done` auto-detects Context7‑detected packages from the git diff and blocks completion if matching markers are absent.
+- State machine guards reuse the detection results; you cannot bypass Context7 by skipping the done step.
 - Use `--session <id>` so detection runs against the correct session worktree.
 
 ## Guideline: shared/DELEGATION
@@ -4425,7 +4730,6 @@ mcp__context7__get_library_docs({
 - **Documentation**: Implementation report location and format
 
 ### Task Brief Template
-
 ```markdown
 # Task: <brief-title>
 
@@ -4465,7 +4769,7 @@ mcp__context7__get_library_docs({
 - Code changes in <file scope>
 - Tests added/updated
 - Evidence files recorded
-- Implementation report frontmatter (implementation-report.md)
+- Implementation report frontmatter ({{config.validation.artifactPaths.implementationReportFile}})
 ```
 
 ## Guideline: shared/EPHEMERAL_SUMMARIES_POLICY
@@ -4516,7 +4820,7 @@ mcp__context7__get_library_docs({
 - Git-required: Commands that create or manipulate worktrees (`session sync-git`, worktree archival/cleanup, git-based TDD enforcement) require a valid git repository; in non-git roots they must fail-closed or degrade with clear warnings instead of attempting git operations.
 
 ## Worktree Isolation (Sessions)
-- Default session worktrees live at `../edison-ui-worktrees/{sessionId}` (config: `worktrees.pathTemplate`).
+- Default session worktrees live at `.worktrees/{sessionId}` (config: `worktrees.pathTemplate`).
 - Create/restore via `edison session create` / `edison orchestrator start` / `edison git worktree-*` (do not DIY worktrees).
 - If `worktrees.sharedState.mode=meta`, initialize shared state with `edison git worktree-meta-init`. The meta worktree path is reserved for a git worktree (do not pre-create it as a plain directory). If you override `worktrees.baseDirectory`, also override `worktrees.sharedState.metaPathTemplate` to keep them aligned and avoid collisions.
 - Primary checkout safety is enforced: Edison must never switch the primary checkout branch during worktree operations.
@@ -4526,7 +4830,7 @@ mcp__context7__get_library_docs({
 - To force a fixed base ref (e.g. always `main`): set `worktrees.baseBranchMode: fixed` + `worktrees.baseBranch: main` (or just `worktrees.baseBranch: main`).
 - Per command override:
   - `edison session create --base-branch <ref>`
-  - `edison git worktree-create <session-id> --branch <ref>`
+  - `edison git worktree-create [<session-id>] --branch <ref>`
 
 ## Guideline: shared/HONEST_STATUS
 
@@ -4538,8 +4842,8 @@ mcp__context7__get_library_docs({
 - [ ] Clear distinction between task state directories (`todo`, `wip`, `blocked`, `done`, `validated`)—files only move forward when criteria are truly met.
 
 ## Rules
-- Default state for every task file is **NOT complete**. Treat everything in ``todo`, `wip`, `done`` as unfinished until validators sign off.
-- Only mark a task `validated` after: implementation complete, automated checks passed, QA brief approved by all blocking validators, and evidence links exist.
+- Default state for every task file is **NOT complete**. Treat everything in `{{fn:semantic_states("task","todo,wip,done","inline")}}` as unfinished until validators sign off.
+- Only mark a task `{{fn:semantic_state("task","validated")}}` after: implementation complete, automated checks passed, QA brief approved by all blocking validators, and evidence links exist.
 
 ## Reporting
 - Use the `Status Updates` + `Findings` sections in the task file for implementation progress.
@@ -4666,7 +4970,7 @@ mcp__context7__get_library_docs({
 - **Key Topics**: No NOTES.md, no SUMMARY.md, canonical evidence only
 
 ### Pack-Specific Patterns
-- **Path**: `packs/<pack>/guidelines/**` (composed into `.edison/_generated/guidelines/**` when active)
+- **Path**: `packs/<pack>/guidelines/**` (composed into `{{fn:project_config_dir}}/_generated/guidelines/**` when active)
 - **Purpose**: Technology-specific patterns provided by active packs
 - **When to Read**: When implementing features covered by an active pack
 - **Key Topics**: Pack-specific best practices, constraints, and checklists
@@ -4674,14 +4978,12 @@ mcp__context7__get_library_docs({
 ## Usage Pattern
 
 Reference guidelines selectively in prompts:
-
 ```markdown
 ## Mandatory Reading
 - Re-read your role constitution for TDD workflow
 - See `guidelines/python/TYPING.md` for type hint requirements
 - See `guidelines/agents/MANDATORY_WORKFLOW.md` for implementation steps
 ```
-
 ## How to Add New Guidelines
 
 1. Create file in appropriate subdirectory (`shared/`, `agents/`, `python/`, etc.)
@@ -4690,7 +4992,6 @@ Reference guidelines selectively in prompts:
 4. Update relevant constitution files to reference the new guideline if mandatory
 
 ## Guidelines Directory Structure
-
 ```
 guidelines/
 ├── shared/          # Cross-cutting guidelines for all roles
@@ -4699,8 +5000,7 @@ guidelines/
 ├── orchestrators/   # Orchestrator-specific guidelines
 └── python/          # Python pack guidelines (in packs/python/)
 ```
-
-Note: Python guidelines are stored in `src/edison/data/packs/python/guidelines/python/` and composed into `.edison/_generated/guidelines/python/` during build.
+Note: Python guidelines are stored in `src/edison/data/packs/python/guidelines/python/` and composed into `{{fn:project_config_dir}}/_generated/guidelines/python/` during build.
 
 ## Guideline: shared/PRINCIPLES_REFERENCE
 
@@ -4736,7 +5036,7 @@ All Edison development (Orchestrators, Agents, Validators) must follow the **16 
 For complete details, examples, and enforcement guidelines:
 
 1. **Primary**: `CLAUDE.md` (project root)
-2. **Detailed**: `.edison/guidelines/edison/CRITICAL_PRINCIPLES.md`
+2. **Detailed**: `{{fn:project_config_dir}}/guidelines/edison/CRITICAL_PRINCIPLES.md`
 
 ## Token Efficiency
 
@@ -4816,22 +5116,21 @@ This reference file prevents duplication of the full principle list (200+ tokens
 - Evidence paths are recorded in the task/QA docs, not just on disk.
 
 ## Task Completion Criteria
-A task moves to `.project/tasks/validated/` only when:
+A task moves to `{{fn:task_state_dir("validated")}}/` only when:
 1) Implementation is complete and documented in the task file.
 2) Tests for new/changed code are present and passing.
-3) Automation (type-check, lint, test, build or project equivalent) succeeds.
-4) All blocking validators approve and QA sits in `.project/qa/validated/` (or project-equivalent state).
+3) Required automation evidence succeeds (config-driven for the task’s validation preset).
+4) All blocking validators approve and QA sits in `{{fn:qa_state_dir("validated")}}/` (or project-equivalent state).
 5) Task and QA documents are up to date with status, findings, and evidence links.
 
 ## Verification Command
 
 Before marking any task as ready, run:
-
 ```bash
-make type-check && make lint && make test && npm run build
+edison evidence capture <task-id>
+edison evidence status <task-id>
 ```
-
-All must pass with zero warnings.
+All required evidence must be present and show `exitCode: 0`.
 
 ## No-Mock Policy
 
@@ -4845,12 +5144,10 @@ Use real behavior assertions, not mock verifications. Forbidden assertions inclu
 ## Test Database Setup
 
 Use project-configured test database isolation strategies:
-
 ```bash
 # Check project-specific test setup in pack guidelines
 # Typically involves containerized test databases or in-memory alternatives
 ```
-
 Use project test utilities for database isolation (e.g., `withTestDatabase()`, `withSeededDatabase()`). Do not hand-roll DB management or transactions for isolation. Refer to active database pack guidelines for specific setup instructions.
 
 ## Banned Test Patterns
@@ -4905,7 +5202,6 @@ Refactoring is performed continuously, preferably as part of the TDD loop (RED �
 1) RED: capture the desired behavior with a failing test.
 2) GREEN: write the minimal code to make it pass.
 3) REFACTOR: improve structure while keeping all tests green.
-
 ```pseudo
 # Example cadence
 write_failing_test()
@@ -4913,7 +5209,6 @@ minimal_implementation()
 refactor_names_extract_functions()
 run_all_tests()
 ```
-
 ---
 
 ## Refactoring Patterns
@@ -4933,7 +5228,6 @@ run_all_tests()
 - Extract Module / Package
 - Separate Commands from Queries (CQS)
 - Introduce Domain Language (ubiquitous vocabulary)
-
 ```pseudo
 # Before
 function price(items, taxRate) {
@@ -4946,7 +5240,6 @@ function discount(subtotal) { /* ... */ }
 function tax(amount, rate) { /* ... */ }
 function price(items, taxRate) { return tax(discount(subtotal(items)), taxRate) }
 ```
-
 ---
 
 ## SOLID During Refactors
@@ -4956,13 +5249,11 @@ function price(items, taxRate) { return tax(discount(subtotal(items)), taxRate) 
 - LSP: Respect substitutability; avoid tightening preconditions or loosening postconditions.
 - ISP: Keep interfaces small and specific; avoid fat interfaces.
 - DIP: Depend on abstractions; inject collaborators.
-
 ```pseudo
 # DIP example via constructor injection
 interface Clock { now(): Instant }
 class Session(clock: Clock) { /* ... */ }
 ```
-
 ---
 
 ## DRY and Duplication Tax
@@ -4971,12 +5262,10 @@ class Session(clock: Clock) { /* ... */ }
 - Consolidate validation rules and mapping logic.
 - Extract cross-cutting patterns (logging, error handling) into utilities.
 - Prefer composition utilities to inheritance hierarchies.
-
 ```pseudo
 # Repeated parsing replaced with a single, tested helper
 function parseAmount(s) { /* trims, validates, converts, returns result */ }
 ```
-
 ---
 
 ## Branching Strategy
@@ -5002,12 +5291,10 @@ function parseAmount(s) { /* trims, validates, converts, returns result */ }
 - Characterization tests: lock current behavior before modifying internals.
 - Anti-corruption layer: protect the core model from legacy external conventions.
 - Facade: provide a minimal surface for consumers while reworking internals.
-
 ```pseudo
 # Characterization test captures current (even if odd) behavior
 assert legacy_parse("  1,2  ") == ["1","2"]
 ```
-
 ---
 
 ## Naming and Intent
@@ -5024,13 +5311,11 @@ assert legacy_parse("  1,2  ") == ["1","2"]
 - Normalize inputs at module boundaries.
 - Use total functions where possible (handle all inputs).
 - Avoid hidden global state; make effects explicit.
-
 ```pseudo
 if (!isValid(input)) {
   return Err("Invalid customer ID: must be UUID")
 }
 ```
-
 ---
 
 ## Testing Support
@@ -5039,13 +5324,11 @@ if (!isValid(input)) {
 - Prefer property-based tests for parsers and converters.
 - Use golden files for stable, textual outputs.
 - Avoid mocking at boundaries; test real I/O via adapters.
-
 ```pseudo
 # Property-based example
 for all amount in valid_amounts():
   assert parseAmount(formatAmount(amount)) == amount
 ```
-
 ---
 
 ## Migration and Deprecation
@@ -5069,7 +5352,6 @@ for all amount in valid_amounts():
 ---
 
 ## Examples (additional)
-
 ```pseudo
 # Replace magic numbers with named constants
 const MAX_RETRY = 3
@@ -5087,7 +5369,6 @@ core /
 util /
 cli  /
 ```
-
 ---
 
 ## Anti‑Patterns
@@ -5111,38 +5392,35 @@ cli  /
 
 # Validation (Core)
 
-Run after implementation is complete and before a task can advance beyond `done/`. QA briefs are the canonical validation record.
+Run after implementation is complete and before a task can advance beyond `{{fn:semantic_state("task","done")}}/`. QA briefs are the canonical validation record.
 
 ## Validation Checklist (fail-closed)
 - Build the triggered validator roster from the merged `validation.validators` config (core → packs → user → project) and the task/session file context (git diff + primary files).
-- Automation passing for the round (type-check, lint, test, build or project equivalent).
-- QA brief exists in `qa/{waiting|todo|wip}` with roster, commands, expected results, and evidence links; never duplicate QA files.
+- Automation evidence passing for the round (config-driven; see required evidence for the task’s validation preset).
+- QA brief exists in `qa/{{fn:semantic_states("qa","waiting,todo,wip","brace")}}` with roster, commands, expected results, and evidence links; never duplicate QA files.
 - Bundle manifest generated before launching validators (see Bundle section).
 - Context7 refreshed for every Context7-detected package; add `context7-<pkg>.txt` markers per package in the round evidence directory.
 - Required validators launched in waves up to the concurrency cap; record the model used.
-- If any blocking validator rejects → task stays in `wip`, QA returns to `waiting`, follow-ups created.
+- If any blocking validator rejects → task stays in `{{fn:semantic_state("task","wip")}}`, QA returns to `{{fn:semantic_state("qa","waiting")}}`, follow-ups created.
 - If any validator is blocked or missing, halt and resolve before proceeding.
 
 ## Validator Roster & Waves
 To inspect the computed roster for a task (including triggered validators and wave membership), run:
-
 ```bash
 edison qa validate <task-id> --session <session-id> --dry-run
 ```
-
 **Global (blocking):** all global validators in the roster always run first and must approve.
 **Critical (blocking):** every critical validator in the roster is blocking for promotion.
-**Specialized (triggered, blocking if `blocksOnFail=true`):** driven by file triggers in the active validator roster (run `edison read AVAILABLE_VALIDATORS`); the active set is listed in `AVAILABLE_VALIDATORS.md`.
-**Specialized (triggered, blocking if `blocking=true`):** driven by validator `triggers` patterns in merged config and the task/session file context.
+**Comprehensive (triggered, specialized):** driven by file triggers in the active validator roster (run `edison read AVAILABLE_VALIDATORS`); the active set is listed in `AVAILABLE_VALIDATORS.md`.
+**Comprehensive (triggered, specialized, blocking if `blocking=true`):** driven by validator `triggers` patterns in merged config and the task/session file context.
 
-Wave order (mandatory): Global → Critical → Specialized (triggered). Launch in parallel per wave up to the configured cap; batch overflow.
+Wave order (mandatory): Global → Critical → Comprehensive (triggered). Launch in parallel per wave up to the configured cap; batch overflow.
 
 ## Batched Parallel Execution Model
 
 Validators run in waves for efficiency and fast feedback:
 
 ### Wave Execution Order
-
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ Wave 1: Global Validators (Parallel)                        │
@@ -5159,13 +5437,12 @@ Validators run in waves for efficiency and fast feedback:
 └─────────────────────────────────────────────────────────────┘
                           ↓ (if pass)
 ┌─────────────────────────────────────────────────────────────┐
-│ Wave 3: Specialized Validators (Parallel, Pattern-Triggered)│
+│ Wave 3: Comprehensive Validators (Parallel, Pattern-Triggered)│
 │ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐    │
 │ │ <v-a>  │ │ <v-b>  │ │ <v-c>  │ │ <v-d>  │ │ <v-e>  │    │
 │ └────────┘ └────────┘ └────────┘ └────────┘ └────────┘    │
 └─────────────────────────────────────────────────────────────┘
 ```
-
 ### Consensus Rules
 
 **Global Validators:**
@@ -5178,18 +5455,18 @@ Validators run in waves for efficiency and fast feedback:
 - Must fix ALL critical issues before re-validation
 - No partial approvals
 
-**Specialized Validators:**
+**Comprehensive Validators:**
 - Only triggered if relevant files changed
 - Failures are advisory unless configured as blocking
 - Can proceed with warnings noted
 
 ## Bundle-first rule
-Before any validator wave, run the guarded bundle helper (`edison qa bundle <root-task>`). Paste the manifest into the QA brief. Validators must load only what the bundle lists.
+Before any validator wave, run the guarded bundle helper (`edison qa bundle <task> --scope auto`). Paste the manifest into the QA brief. Validators must load only what the bundle lists.
 
 ### Bundle approval marker
-- Generate bundle manifest with `edison qa bundle <root-task>`; paste into QA before any validator runs.
-- After all blocking validators approve, produce `bundle-summary.md` in the round evidence directory (guards enforce its presence). Promotion `qa wip→done` and `task done→validated` is blocked until `approved=true` in this file.
-- QA promotion guards (`edison qa promote` and `edison qa promote <task-id> --status validated`) now enforce both bundle manifest + `bundle-summary.md` existence.
+- Generate bundle manifest with `edison qa bundle <task> --scope auto`; paste into QA before any validator runs.
+- After all blocking validators approve, produce `{{config.validation.artifactPaths.bundleSummaryFile}}` in the round evidence directory (guards enforce its presence). Promotion `qa {{fn:semantic_state("qa","wip")}}→{{fn:semantic_state("qa","done")}}` and `task {{fn:semantic_state("task","done")}}→{{fn:semantic_state("task","validated")}}` is blocked until `approved=true` in this file.
+- QA promotion guards (`edison qa promote` and `edison qa promote <task-id> --status validated`) now enforce both bundle manifest + `{{config.validation.artifactPaths.bundleSummaryFile}}` existence.
 
 ## Sequence (strict order)
 1) Automation evidence captured (required: `command-type-check.txt`, `command-lint.txt`, `command-test.txt`, `command-build.txt`).
@@ -5197,22 +5474,21 @@ Before any validator wave, run the guarded bundle helper (`edison qa bundle <roo
 3) Detect changed files → map to validator roster.
 4) Update QA with validator list, commands, expected results, evidence links, and bundle manifest.
 5) Run validators in waves (respect models and concurrency cap). Summarize each report in QA.
-6) Store raw artefacts under `.project/qa/validation-evidence/<task-id>/round-<N>/` and reference them in QA.
-7) Move QA/task only after ALL blocking validators approve and `approved=true` is recorded in `bundle-summary.md`.
+6) Store raw artefacts under `{{fn:evidence_root}}/<task-id>/round-<N>/` and reference them in QA.
+7) Move QA/task only after ALL blocking validators approve and `approved=true` is recorded in `{{config.validation.artifactPaths.bundleSummaryFile}}`.
 
 ## Failure & Re-runs
-- Blocking validator reject → task stays/returns to `wip`; QA → `waiting`; spawn follow-ups in `.project/tasks/todo/`; add "Round N" entry to QA.
+- Blocking validator reject → task stays/returns to `{{fn:semantic_state("task","wip")}}`; QA → `{{fn:semantic_state("qa","waiting")}}`; spawn follow-ups in `{{fn:tasks_root}}/{{fn:semantic_state("task","todo")}}/`; add "Round N" entry to QA.
 - Validator blocked/missing → stop; fix cause; rerun affected validators.
 - Each revalidation uses a new `round-<N>` directory; never overwrite prior evidence.
 
 ## Round N Rejection Cycle
 
 When validation fails:
-
 ```
 Round 1: Initial Validation
     ↓ (REJECT)
-Task returns to wip
+Task returns to {{fn:semantic_state("task","wip")}}
     ↓
 Fix issues identified
     ↓
@@ -5220,7 +5496,6 @@ Round 2: Re-validation
     ↓ (REJECT again?)
 Repeat until APPROVE or escalate
 ```
-
 ### Rejection Handling
 
 1. **Read rejection report**: Understand ALL issues
@@ -5236,29 +5511,31 @@ Repeat until APPROVE or escalate
 
 ## QA Ownership & Evidence
 - Assign a single QA owner; multiple validators may run, but one owner curates the QA brief.
-- Name evidence clearly (e.g., `validator-<id>-report.md`, `command-type-check.txt`, `command-lint.txt`, `command-test.txt`, `command-build.txt`, `bundle-summary.md`).
+- Name evidence clearly (e.g., `validator-<id>-report.md`, `command-type-check.txt`, `command-lint.txt`, `command-test.txt`, `command-build.txt`, `{{config.validation.artifactPaths.bundleSummaryFile}}`).
 - Validator reports must record the model used and it must match the config.
+- Evidence must be reviewed, not just generated: if a captured command fails, fix and re-run until `exitCode: 0`. Before session close, satisfy any configured `validation.sessionClose.*` evidence requirements.
 
-## Parent vs Child Tasks (Parallel Implementation)
+## Hierarchy vs Validation Bundles
 
-Bundle validation (cluster): Validators MUST review the entire cluster - the parent task + parent QA and all child tasks + their QA - using the bundle manifest from `edison qa bundle`.
+Edison supports two distinct ways to define a validation “cluster”:
+- **Hierarchy (`--scope hierarchy`)**: the root task plus all descendants via parent/child links (decomposition/follow-up structure).
+- **Validation bundle (`--scope bundle`)**: the root task plus all tasks with `bundle_root == <root>` (validation grouping, independent of hierarchy).
+- **Auto (`--scope auto`)**: prefers `bundle` when bundle members exist; otherwise falls back to `hierarchy` when descendants exist; otherwise validates a single task.
 
-- Run the unified validator: `edison qa validate <parent> --session <sid>`.
-- It writes a single `bundle-summary.md` under the parent's evidence directory with:
-  - `approved` (overall cluster decision)
-  - `tasks[]` array with per-task `approved` booleans for every task in the bundle (parent and children).
-- QA promotion rules:
-  - Parent QA `wip->done` requires the parent-level `bundle-summary.md` with `approved=true`.
-  - Child QA `wip->done` is permitted when the parent's `bundle-summary.md` exists and the child's entry shows `approved=true` (no duplicate per-child validation required). If no parent is present, fall back to single-task validation.
+Bundle validation (cluster): Validators MUST review the entire cluster using the bundle manifest from `edison qa bundle ... --scope <scope>`.
 
-Child tasks (owned by implementers) produce their own implementation evidence and can have their QA promoted to `done` when their blocking validators approve. Validators may mark some children approved and others not; the bundle captures per-task approvals. The parent cannot complete until every child in the bundle is approved.
+- Run: `edison qa validate <task> --scope <auto|hierarchy|bundle> --session <sid> --execute`
+- Evidence anchor: validators execute once at the **resolved root task**, and write `{{config.validation.artifactPaths.bundleSummaryFile}}` under the root’s round evidence directory.
+- For bundle members: Edison mirrors the bundle summary into each member’s evidence round directory so per-task promotion checks remain deterministic and task-local.
 
-Session completion enforces: parent is `.project/tasks/validated/` with QA in `done|validated`; children are `validated` (preferred) or `done` if explicitly staged for a follow-up round; child QA is `done|validated` (preferred). Use bundle validation to converge children to validated where possible.
+Task-level evidence remains per task (implementation reports, command evidence, Context7 markers). Bundle validation is about *validator execution + approval aggregation*, not about collapsing implementation evidence.
+
+Session completion enforces: parent is `{{fn:task_state_dir("validated")}}/` with QA in `{{fn:semantic_states("qa","done,validated","pipe")}}`; children are `{{fn:semantic_state("task","validated")}}` (preferred) or `{{fn:semantic_state("task","done")}}` if explicitly staged for a follow-up round; child QA is `{{fn:semantic_states("qa","done,validated","pipe")}}` (preferred). Use bundle validation to converge children to validated where possible.
 
 ## Validator Follow-ups
 
 ### Non-blocking follow-ups - create but do not link
-- For non-blocking follow-ups reported by validators, tasks MUST be created in `.project/tasks/todo/` before QA can move `wip -> done`, but MUST NOT be linked as children of the parent (to avoid gating the parent's promotion).
+- For non-blocking follow-ups reported by validators, tasks MUST be created in `{{fn:task_state_dir("todo")}}/` before QA can move `{{fn:semantic_state("qa","wip")}} -> {{fn:semantic_state("qa","done")}}`, but MUST NOT be linked as children of the parent (to avoid gating the parent's promotion).
 - The guard `edison qa promote` enforces this by calling `edison task ensure_followups --source validator --enforce`.
 
 ### When to create follow-up tasks
@@ -5272,20 +5549,16 @@ Session completion enforces: parent is `.project/tasks/validated/` with QA in `d
 ### Run Validators (writes reports automatically)
 
 Run the full roster (all waves in order) and write `validator-*-report.md` files into the current round:
-
 ```bash
 edison qa validate <task-id> --session <session-id> --execute
 ```
-
 Run a single validator (writes `validator-<id>-report.md` for CLI-executed validators; delegated validators emit `delegation-<id>.md` instructions):
-
 ```bash
 edison qa run <validator-id> <task-id> --session <session-id> --round <N>
 ```
-
 ## Promotion rules
-- QA may move `waiting→todo` only when the task is in `.project/tasks/done/`.
-- Tasks/QAs move to `validated` / `validated` only when all blocking validators approved and `bundle-summary.md` records `approved=true`; otherwise remain in `wip|done` with QA in `waiting|todo`.
+- QA may move `{{fn:semantic_state("qa","waiting")}}→{{fn:semantic_state("qa","todo")}}` only when the task is in `{{fn:task_state_dir("done")}}/`.
+- Tasks/QAs move to `{{fn:semantic_state("task","validated")}}` / `{{fn:semantic_state("qa","validated")}}` only when all blocking validators approved and `{{config.validation.artifactPaths.bundleSummaryFile}}` records `approved=true`; otherwise remain in `{{fn:semantic_states("task","wip,done","pipe")}}` with QA in `{{fn:semantic_states("qa","waiting,todo","pipe")}}`.
 
 ## Guideline: validators/EDISON_CLI
 
@@ -5305,17 +5578,16 @@ This guide covers CLI commands for validators who review implementation work, ru
 ## Commands
 
 ### Run Validation
-
 ```bash
-edison qa validate <task-id> [--round <N>] [--session <session-id>] [--execute]
+edison qa validate <task-id> [--scope <auto|hierarchy|bundle>] [--round <N>] [--session <session-id>] [--execute]
 ```
-
 **Purpose**: Validate validator reports for a task or bundle
-**When to use**: After implementation is complete and task is in `done` state
+**When to use**: After implementation is complete and task is in `{{fn:semantic_state("task","done")}}` state
 
 **Options:**
+- `--scope`: Validation cluster selection (default: config or `auto`)
 - `--round`: Round number (defaults to latest)
-- `--session`: Session ID for bundle mode (validates children)
+- `--session`: Session context (optional; used for worktree-aware file context when available)
 - `--execute`: Execute validators and write reports (otherwise shows roster)
 
 **Example:**
@@ -5326,21 +5598,21 @@ edison qa validate TASK-123
 # Validate specific round
 edison qa validate TASK-123 --round 2
 
-# Bundle mode (validate children in session)
-edison qa validate TASK-123 --session sess-001
-```
+# Validate a hierarchy cluster (root + descendants)
+edison qa validate TASK-123 --scope hierarchy
 
-**Input location**: `.project/qa/validation-evidence/<task-id>/round-N/`
-**Output**: `bundle-summary.md` or validation error report
+# Validate a bundle_root cluster (root + bundle_root members)
+edison qa validate TASK-123 --scope bundle
+```
+**Input location**: `{{fn:evidence_root}}/<task-id>/round-N/`
+**Output**: `{{config.validation.artifactPaths.bundleSummaryFile}}` or validation error report
 
 ---
 
 ### Check QA Status
-
 ```bash
 edison qa status [--json]
 ```
-
 **Purpose**: Check QA state and validation requirements
 **When to use**: Understanding what needs validation
 
@@ -5348,39 +5620,44 @@ edison qa status [--json]
 ```bash
 edison qa status --json
 ```
-
 ---
 
 ### Create Validation Bundle
-
 ```bash
-edison qa bundle <task-id>
+edison qa bundle <task-id> [--scope <auto|hierarchy|bundle>]
 ```
-
-**Purpose**: Inspect evidence paths and child tasks before validation
+**Purpose**: Inspect evidence paths and cluster tasks before validation
 **When to use**: Before running validation, to understand scope
 
 **Example:**
 ```bash
 edison qa bundle TASK-123
 ```
-
 **Output:**
 - Evidence directory structure
-- Child task list
+- Cluster task list (resolved root + members)
 - Required validators
 - Existing reports
 
 ---
 
 ### Start Validation Round
-
 ```bash
 edison qa round <task-id> --status <status>
 ```
-
 **Purpose**: Record validator outcomes for a validation round
 **When to use**: After running validation checks
+
+**Inspect rounds:**
+```bash
+edison qa round <task-id> --current
+edison qa round <task-id> --list
+```
+**Create a new evidence round directory (round-N/):**
+```bash
+edison qa round <task-id> --new
+```
+> Note: `edison qa round --status …` appends round history; it does not create evidence directories unless you pass `--new`.
 
 **Statuses:**
 - `approve` - All checks pass
@@ -5392,7 +5669,6 @@ edison qa round <task-id> --status <status>
 ```bash
 edison qa round TASK-123 --status approve
 ```
-
 ---
 
 ## Validation Report Format
@@ -5442,12 +5718,11 @@ Validator report format is defined in:
 ## Common Workflows
 
 ### Full Validation Workflow
-
 ```bash
 # 1. Check task is ready for validation
 edison task status TASK-123
 
-# Task should be in 'done' state with implementation-report.md
+# Task should be in '{{fn:semantic_state("task","done")}}' state with {{config.validation.artifactPaths.implementationReportFile}}
 
 # 2. Inspect validation bundle
 edison qa bundle TASK-123
@@ -5471,26 +5746,18 @@ edison qa round TASK-123 --status approve
 # 7. Orchestrator promotes QA to validated
 # (validators don't do this - orchestrator does)
 ```
-
 ### Bundle Validation (Multiple Tasks)
-
 ```bash
-# 1. Check bundle scope
-edison qa bundle TASK-123 --session sess-001
+# 1. Inspect cluster selection
+edison qa bundle TASK-123 --scope auto
 
-# Shows parent task + child tasks in session
+# 2. Validate the resolved cluster (runs once at root)
+edison qa validate TASK-123 --scope auto --execute
 
-# 2. Validate all tasks in bundle
-edison qa validate TASK-123 --session sess-001
-
-# Validates parent + all children
-
-# 3. Output: bundle-summary.md
+# 3. Output: {{config.validation.artifactPaths.bundleSummaryFile}}
 # Contains aggregated validation status for all tasks
 ```
-
 ### Incremental Validation (Rounds)
-
 ```bash
 # Round 1: Initial validation
 edison qa validate TASK-123 --round 1
@@ -5502,14 +5769,13 @@ edison qa validate TASK-123 --round 2
 
 # Continue until approve
 ```
-
 ---
 
 ## Output Locations
 
-**Validator reports**: `.project/qa/validation-evidence/<task-id>/round-N/validator-<id>-report.md`
-**Bundle summary**: `.project/qa/validation-evidence/<task-id>/round-N/bundle-summary.md`
-**Implementation report**: `.project/qa/validation-evidence/<task-id>/round-N/implementation-report.md`
+**Validator reports**: `{{fn:evidence_root}}/<task-id>/round-N/validator-<id>-report.md`
+**Bundle summary**: `{{fn:evidence_root}}/<task-id>/round-N/{{config.validation.artifactPaths.bundleSummaryFile}}`
+**Implementation report**: `{{fn:evidence_root}}/<task-id>/round-N/{{config.validation.artifactPaths.implementationReportFile}}`
 
 ---
 
@@ -5560,7 +5826,7 @@ Refer to active pack validators and focus areas: run `edison read AVAILABLE_VALI
 3. **Use correct severities**: Reserve `blocking` for critical issues
 4. **Write clear summaries**: Help developers understand findings
 5. **Track continuations**: Use `continuationId` for multi-round validation
-6. **Check all evidence**: Review `implementation-report.md` first
+6. **Check all evidence**: Review `{{config.validation.artifactPaths.implementationReportFile}}` first
 7. **Validate bundles holistically**: Check integration, not just individual tasks
 
 ---
@@ -5618,7 +5884,7 @@ Canonical format: **Markdown + YAML frontmatter** (LLM-readable body, machine-re
 - `edison read validator-report.schema.yaml --type schemas/reports`
 
 **Location (per round)**:
-- `.project/qa/validation-evidence/<task-id>/round-<N>/validator-<validatorId>-report.md`
+- `{{fn:evidence_root}}/<task-id>/round-<N>/validator-<validatorId>-report.md`
 
 **Minimal expected frontmatter (illustrative)**:
 ```yaml
@@ -5636,7 +5902,6 @@ tracking:
   completedAt: "2025-11-24T12:10:00Z" # Optional until the run is completed
 ---
 ```
-
 **Critical rules**
 - The `model` field is mandatory and MUST match the validator’s configured engine/model binding (see `validation.validators` in merged config).
 - The `tracking.processId` + `tracking.startedAt` fields are mandatory; `tracking.completedAt` is optional until completion. Start/complete tracking via the configured Edison tracking commands; do not fabricate timestamps.
@@ -5647,7 +5912,6 @@ tracking:
 ## Markdown Body (RECOMMENDED)
 
 After the frontmatter, include a short Markdown body for humans. For example:
-
 ```markdown
 # {Validator Name} Validation Report
 
@@ -5665,10 +5929,8 @@ After the frontmatter, include a short Markdown body for humans. For example:
 ## Evidence
 | Check | Command | Status |
 |-------|---------|--------|
-| Type Check | make type-check | ✅ PASS / ❌ FAIL |
-| Lint | make lint | ✅ PASS / ❌ FAIL |
-| Tests | make test | ✅ PASS / ❌ FAIL |
-| Build | npm run build | ✅ PASS / ❌ FAIL / N/A |
+| Command Evidence | <configured CI command> | ✅ PASS / ❌ FAIL / N/A |
+| Context7 Markers | context7-*.txt | ✅ PRESENT / ❌ MISSING / N/A |
 
 Reference the round evidence files (command-*.txt, context7-*.txt, validator-*-report.md, etc).
 
@@ -5698,7 +5960,6 @@ Reference the round evidence files (command-*.txt, context7-*.txt, validator-*-r
 **Status**: ✅ APPROVED | ⚠️ APPROVED WITH WARNINGS | ❌ REJECTED
 **Reasoning**: [1-2 sentence explanation]
 ```
-
 ---
 
 ## Section Requirements
@@ -5730,7 +5991,6 @@ Numbered checks with status indicators (✅ PASS | ⚠️ WARNING | ❌ FAIL)
 ### 1. Type Safety: ❌ FAIL
 - `path/to/file.ext:42` - Missing return type annotation
 ```
-
 ### 5. Critical Issues & Warnings
 - **Critical Issues**: Blocking issues (security, test failures, TDD violations)
 - **Warnings**: Non-blocking improvements (docs, style)
@@ -5821,7 +6081,6 @@ Collect evidence BEFORE validating:
 git diff --cached  # Staged changes
 git diff           # Unstaged changes
 ```
-
 **Critical Questions**:
 - ✅ **Scope Compliance**: Do changes match task requirements EXACTLY?
 - ✅ **Unintended Deletions**: Was any code accidentally removed?
@@ -5831,23 +6090,13 @@ git diff           # Unstaged changes
 
 #### Run Verification Commands
 
-Validators should run domain-specific verification commands and save output to evidence files. Examples:
-
+Validators should capture the configured evidence for the task’s validation preset (config-driven):
 ```bash
-# Type checking
-make type-check > command-type-check.txt 2>&1
-
-# Linting
-make lint > command-lint.txt 2>&1
-
-# Testing
-make test > command-test.txt 2>&1
-
-# Build
-npm run build > command-build.txt 2>&1
+edison evidence status <task-id>   # Confirm what’s required + what’s missing
+edison evidence capture <task-id>  # Run and capture required command evidence
+edison evidence show <task-id> --command <name>  # Review output for debugging
 ```
-
-**All evidence files must be created BEFORE validation begins.**
+**Evidence must be reviewed, not just generated:** if a captured run fails, fix and re-capture until `exitCode: 0`.
 
 ### Step 3: Run Domain-Specific Checks
 
@@ -5872,11 +6121,15 @@ Every validator MUST perform these universal checks:
 - ✅ All files created/modified as specified
 - ✅ No `TODO` or `FIXME` comments in production code
 - ✅ No commented-out code
-- ✅ Git diff shows ONLY changes related to this task
+- ✅ Prefer validating inside the session worktree so the git diff is scoped to this task
+- ✅ If the diff contains unrelated changes (multi-LLM / in-flight work is common):
+  - Do NOT suggest destructive "cleanup" (no `git reset/restore/clean/switch`, etc.)
+  - Focus only on the changes relevant to the task requirements
+  - If the unrelated changes prevent validation, mark the validator as `blocked` and ask for a clean, session-scoped worktree run
 - ✅ Test runners must not include focused/skipped/disabled tests in committed code (BLOCKING)
 
 **Fail if**:
-- Changes beyond task scope (scope creep)
+- Changes beyond task scope that appear to be part of this task's implementation (scope creep)
 - Missing required implementations
 - Partial/incomplete work
 
@@ -5960,12 +6213,14 @@ Every validator MUST perform these universal checks:
 - ✅ Tests use real behavior (NO MOCKS per CLAUDE.md)
 - ✅ Tests cover edge cases
 - ✅ Test suite passes with 100% pass rate
+- ✅ Tests assert behavior (avoid brittle tests that hard-pin default config values or enforce exact Markdown wording/format/length)
 
 **Fail if**:
 - New code without tests
 - Mock usage detected (violates NO MOCKS rule)
 - TDD order not followed
 - Tests don't cover edge cases
+- Tests were added/changed primarily to enforce specific default configuration values or doc/template wording (brittle content gates)
 
 ---
 
@@ -5988,7 +6243,7 @@ Every validator MUST perform these universal checks:
 
 ## Edison validation guards (current)
 
-- Validate only against bundles emitted by `edison qa bundle <root-task>`; return `BLOCKED` if the manifest or parent `bundle-summary.md` is missing.
+- Validate only against bundles emitted by `edison qa bundle <root-task>`; return `BLOCKED` if the manifest or parent `{{config.validation.artifactPaths.bundleSummaryFile}}` is missing.
 - Load roster, triggers, and blocking flags via ConfigManager overlays (roster: `edison read AVAILABLE_VALIDATORS`) instead of JSON.
 - `edison qa promote` enforces state machine rules plus bundle presence; ensure Markdown + JSON reports live in the round evidence directory referenced by the bundle.
 - Honor Context7 requirements: auto-detected post-training packages must have markers (HMAC when enabled) before issuing approval.
@@ -6105,7 +6360,7 @@ Production quality means PRODUCTION quality - no shortcuts.
 5. **Findings** – Document issues with severity, category, location, and recommended fix. Note any follow-up tasks needed and whether they are blocking.
 6. **Verdict** – Choose `approve` if all blocking issues are resolved, `reject` if blocking issues remain, or `blocked` if you could not complete validation. Never self-approve when evidence is missing.
 7. **Report** – Write the validator report (`validator-<id>-report.md`, see OUTPUT_FORMAT) and update the QA brief with findings, evidence links, and verdict. Include the model you used.
-8. **Handoff** – If rejected or blocked, ensure the QA returns to `waiting/` and follow-ups are created. If approved, signal readiness for bundle approval.
+8. **Handoff** – If rejected or blocked, ensure the QA returns to `{{fn:semantic_state("qa","waiting")}}/` and follow-ups are created. If approved, signal readiness for bundle approval.
 
 ## validator-tracking
 
@@ -6115,201 +6370,6 @@ Validators MUST stamp tracking at the beginning and end of validation.
 edison session track start --task <task-id> --type validation --validator <validator-id> --model <model> [--run-id <uuid>] [--process-id <pid>] [--continuation-id <id>]
 edison session track heartbeat --task <task-id>
 edison session track complete --task <task-id> --validator <validator-id> [--run-id <uuid>] [--process-id <pid>]
-```
-
-## Guideline: vitest/TESTING
-
-# Vitest Testing (Pack Guide)
-
-This guide contains **Vitest-specific** patterns and pitfalls. It intentionally avoids project-specific helpers and avoids re-stating core framework rules (TDD / NO MOCKS).
-
-See also:
-- `packs/vitest/guidelines/includes/vitest/tdd-workflow.md`
-- `packs/vitest/guidelines/includes/vitest/test-quality.md`
-- `packs/vitest/guidelines/includes/vitest/api-testing.md`
-- `packs/vitest/guidelines/includes/vitest/component-testing.md`
-- `packs/vitest/guidelines/includes/vitest/TESTING.md`
-
-### TDD workflow (Vitest)
-
-- Follow core TDD (see constitution): tests-first, minimal green, then refactor.
-- Keep the loop tight: run the smallest scope that proves correctness, then expand.
-
-#### Micro-template
-
-```typescript
-import { describe, it, expect } from 'vitest'
-
-describe('feature', () => {
-  it('RED: fails before implementation exists', () => {
-    // Arrange
-    // Act
-    // Assert
-    expect(actual).toEqual(expected)
-  })
-})
-```
-### Test quality (Vitest)
-
-- Use descriptive `describe`/`it` names that state **behavior**.
-- Prefer outcome assertions over internal call assertions.
-- Prefer user-facing assertions for UI; avoid brittle snapshots unless they add real value.
-- Ensure proper setup/teardown; avoid shared mutable state.
-
-#### GOOD: behavior-focused, outcome assertions
-
-```typescript
-import { describe, it, expect } from 'vitest'
-
-describe('createItem', () => {
-  it('rejects empty name with a typed error', () => {
-    expect(() => createItem({ name: '' })).toThrow(/name/i)
-  })
-})
-```
-
-#### BAD: implementation-detail assertions as “proof”
-
-```typescript
-import { it, expect } from 'vitest'
-
-it('creates item', async () => {
-  await createItem({ name: 'x' })
-
-  // ❌ proves only that an internal method was called, not that behavior is correct
-  expect(internalDbClient.insert).toHaveBeenCalled()
-})
-```
-### API testing (Vitest)
-
-- **Test the boundary**: Prefer exercising the real API boundary (real request/response) over calling internal helpers directly.
-- **Assert contracts**: Status codes + response envelope shape + key fields.
-- **Deterministic data**: Use per-test unique IDs / namespaces or transaction rollback (whatever your stack supports) to avoid cross-test collisions.
-- **No internal mocking**: Do not mock internal auth/data/business modules as “proof”. If a boundary double is unavoidable, limit it to **external services you do not control**.
-
-#### Minimal illustrative pattern (pseudocode)
-
-```pseudocode
-test("returns 400 on invalid input"):
-  client = create_real_test_client()
-
-  res = client.post("/api/v1/items", json={ name: "" })
-
-  assert res.status == 400
-  assert res.json.error == "Validation failed"
-```
-
-#### Anti-patterns
-
-- Using `sleep()`/timeouts to “wait for consistency”
-- Reusing static IDs across tests (not parallel-safe)
-- Asserting internal call counts instead of observable outcomes
-### Component testing (Vitest + Testing Library)
-
-- Interact like users: drive events and assert DOM updates.
-- Prefer queries by role/label/text; avoid test IDs unless necessary.
-- Keep tests isolated; render fresh components per test.
-
-#### Minimal illustrative pattern
-
-```typescript
-import { it, expect } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-
-it('submits form', async () => {
-  const user = userEvent.setup()
-  render(<MyForm />)
-
-  await user.type(screen.getByLabelText(/email/i), 'a@b.com')
-  await user.click(screen.getByRole('button', { name: /submit/i }))
-
-  expect(await screen.findByText(/success/i)).toBeInTheDocument()
-})
-```
-### Vitest fundamentals
-
-- **Structure**: Keep tests small and explicit (arrange → act → assert).
-- **Determinism**: Control time and randomness; avoid sleeps.
-- **Isolation**: No shared mutable globals; reset state between tests.
-- **Signals**: Assert outcomes (return values, state changes, emitted events), not internal call graphs.
-- **Boundary doubles only**: If stubbing is unavoidable, do it only at external boundaries you do not control.
-- **Guardrails**: Never commit `.only` / `.skip`.
-
-### Deterministic time (GOOD vs BAD)
-
-```typescript
-import { describe, it, expect, vi } from 'vitest'
-
-describe('time-dependent logic', () => {
-  it('expires after ttl', () => {
-    vi.useFakeTimers()
-    vi.setSystemTime(new Date('2025-01-01T00:00:00Z'))
-
-    const ttlMs = 60_000
-    const result = doSomethingTimeDependent({ ttlMs })
-
-    vi.advanceTimersByTime(ttlMs)
-    expect(result.isExpired()).toBe(true)
-
-    vi.useRealTimers()
-  })
-})
-```
-
-```typescript
-import { it } from 'vitest'
-
-it('expires after ttl', async () => {
-  await new Promise((r) => setTimeout(r, 60_000)) // ❌ flaky + slow
-})
-```
-
-### Stubbing boundaries (only external services)
-
-```typescript
-import { vi, it, expect } from 'vitest'
-
-it('handles external service error', async () => {
-  // ✅ acceptable: stub ONLY the external boundary (e.g. fetch to third-party)
-  vi.stubGlobal('fetch', async () => {
-    return new Response(JSON.stringify({ error: 'rate limited' }), { status: 429 })
-  })
-
-  const result = await callExternalService()
-  expect(result.ok).toBe(false)
-})
-```
-
-```typescript
-import { vi } from 'vitest'
-
-// ❌ forbidden: mocking internal modules/services as “proof”
-vi.mock('../services/items', () => ({ listItems: () => [] }))
-```
-
-## Guideline: vitest/tdd-workflow
-
-# TDD Workflow (Vitest)
-
-### TDD workflow (Vitest)
-
-- Follow core TDD (see constitution): tests-first, minimal green, then refactor.
-- Keep the loop tight: run the smallest scope that proves correctness, then expand.
-
-#### Micro-template
-
-```typescript
-import { describe, it, expect } from 'vitest'
-
-describe('feature', () => {
-  it('RED: fails before implementation exists', () => {
-    // Arrange
-    // Act
-    // Assert
-    expect(actual).toEqual(expected)
-  })
-})
 ```
 
 ## Role-Specific Rules
@@ -6340,6 +6400,7 @@ describe('feature', () => {
 - [NON-BLOCKING] No manual file moves; use guarded CLIs (category: transition)
 - [NON-BLOCKING] Create QA brief when task enters wip (category: validation)
 - [NON-BLOCKING] Disallow skipping states in task/QA transitions (category: transition)
+- [NON-BLOCKING] Never “clean up” unrelated diffs with destructive git (category: git)
 - [NON-BLOCKING] Close session only when no blockers remain and all scope is validated (category: session)
 - [NON-BLOCKING] Sub-agents must not re-delegate (category: delegation)
 - [NON-BLOCKING] Orchestrator Cannot Self-Validate (category: validation)

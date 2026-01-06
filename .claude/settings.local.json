@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(for task in 001-speckit-spec-audit-T005 001-speckit-spec-audit-T006 001-speckit-spec-audit-T007 001-speckit-spec-audit-T008 001-speckit-spec-audit-T032 001-speckit-spec-audit-T033 001-speckit-spec-audit-T034 001-speckit-spec-audit-T040)",
+      "Bash(do echo \"=== $task ===\")",
+      "Bash(done)"
+    ]
+  }
+}

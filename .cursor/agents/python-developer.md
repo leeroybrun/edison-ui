@@ -69,7 +69,7 @@ make test-coverage
 pytest tests/unit/test_module.py -v
 
 # Build package
-npm run build
+make build
 
 # Install in development mode
 pip install -e ".[dev]"
@@ -309,7 +309,7 @@ make type-check
 make lint
 
 # Build (if applicable)
-npm run build
+make build
 ```
 
 ## Output Format Requirements

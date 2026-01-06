@@ -56,7 +56,12 @@
     },
     "validator-browser-e2e": {
       "prompt_path": "../systemprompts/clink/project/validator-browser-e2e.txt",
-      "role_args": []
+      "role_args": [
+        "-c",
+        "mcp_servers.playwright.command=\"npx\"",
+        "-c",
+        "mcp_servers.playwright.args=[\"-y\", \"@playwright/mcp@latest\", \"--isolated\"]"
+      ]
     },
     "validator-coderabbit": {
       "prompt_path": "../systemprompts/clink/project/validator-coderabbit.txt",

@@ -3,7 +3,9 @@
     "--permission-mode",
     "acceptEdits",
     "--model",
-    "sonnet"
+    "opus",
+    "--allowedTools",
+    "mcp__playwright__*"
   ],
   "command": "claude",
   "env": {},

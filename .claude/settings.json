@@ -66,6 +66,26 @@
         ]
       }
     ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "command": "/Users/leeroy/Documents/Development/edison-ui/.claude/hooks/subagent-start-logger.sh",
+            "type": "command"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "command": "/Users/leeroy/Documents/Development/edison-ui/.claude/hooks/subagent-stop-logger.sh",
+            "type": "command"
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [
@@ -105,7 +125,46 @@
       "Bash(touch:*)",
       "Bash(pwd:*)",
       "WebSearch",
-      "WebFetch"
+      "WebFetch",
+      "Glob(./**)",
+      "Grep(./**)",
+      "Bash(edison:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(python3 -m pytest:*)",
+      "Bash(pytest:*)",
+      "Bash(python -m mypy:*)",
+      "Bash(python3 -m mypy:*)",
+      "Bash(mypy:*)",
+      "Bash(python -m ruff:*)",
+      "Bash(python3 -m ruff:*)",
+      "Bash(ruff:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm format:*)",
+      "Bash(pnpm exec:*)",
+      "Bash(npm ci:*)",
+      "Bash(npm install:*)",
+      "Bash(npm test:*)",
+      "Bash(npx:*)",
+      "Bash(node:*)",
+      "Bash(tsc:*)",
+      "Bash(eslint:*)",
+      "Bash(prettier:*)",
+      "Bash(next:*)",
+      "Bash(pnpm next:*)",
+      "Bash(npx next:*)",
+      "Bash(tailwindcss:*)",
+      "Bash(pnpm tailwindcss:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(vitest:*)",
+      "Bash(pnpm vitest:*)",
+      "Bash(npx vitest:*)",
+      "Bash(playwright:*)",
+      "Bash(pnpm playwright:*)",
+      "Bash(npx playwright:*)"
     ],
     "ask": [
       "Bash(git push:*)",
