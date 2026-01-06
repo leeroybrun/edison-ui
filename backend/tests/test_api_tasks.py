@@ -1033,3 +1033,44 @@ owner: "test-user"
         assert task.depends_on == ["T001", "T002"]
         assert task.tags == ["feature", "phase1"]
         assert task.owner == "test-user"
+
+    def test_parse_canonical_relationships(self, tmp_path: Path) -> None:
+        """Should derive legacy relationship fields from canonical relationships edges."""
+        from services.task_reader import TaskReaderService
+
+        project = tmp_path / "test-project-relationships"
+        project.mkdir()
+        (project / ".edison").mkdir()
+        project_dir = project / ".project"
+        project_dir.mkdir()
+        tasks_dir = project_dir / "tasks"
+        tasks_dir.mkdir()
+        (tasks_dir / "todo").mkdir()
+
+        task_content = """---
+id: T300
+title: Canonical relationships task
+relationships:
+  - type: depends_on
+    target: T001
+  - type: blocks
+    target: T002
+  - type: parent
+    target: T900
+  - type: child
+    target: T901
+tags: ["feature"]
+---
+# Task T300
+"""
+        (tasks_dir / "todo" / "T300.md").write_text(task_content)
+
+        service = TaskReaderService(str(project))
+        task = service.get_task("T300")
+
+        assert task is not None
+        assert task.task_id == "T300"
+        assert task.depends_on == ["T001"]
+        assert task.blocks_tasks == ["T002"]
+        assert task.parent_id == "T900"
+        assert task.child_ids == ["T901"]
