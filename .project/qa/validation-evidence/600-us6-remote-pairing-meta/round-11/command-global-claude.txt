@@ -1,0 +1,11 @@
+=== CLI Validator: global-claude ===
+Engine: claude-cli
+Command: claude
+Exit Code: 0
+
+=== STDOUT ===
+{"type":"result","subtype":"success","is_error":false,"duration_ms":513115,"duration_api_ms":296984,"num_turns":41,"result":"---\n\n**Verdict: approve**\n\n**Summary**: The remote pairing feature (US6) is production-ready. It implements a secure device pairing flow with time-limited codes, QR code support, token-based authentication, and proper WebSocket auth enforcement. All 45 backend pairing tests and 572 frontend tests pass. Security model is sound with proper token hashing, one-time code consumption, and auth bypass prevention.\n\n**Findings**:\n- ✅ Exposure modes (localhost/network/tailscale) correctly implemented\n- ✅ Pairing flow with 5-minute code expiration working\n- ✅ Token-based auth enforced in network mode for sensitive endpoints\n- ✅ WebSocket auth via query param and Sec-WebSocket-Protocol header\n- ✅ UI wizard with warning, QR/code display, and success states\n- ⚠️ Minor: 1 mypy type annotation warning (non-blocking)\n\n**Strengths**:\n- Security-first design: localhost by default, explicit opt-in for network exposure\n- Comprehensive test coverage: 45 backend tests for pairing/auth, 47 frontend tests\n- Clean architecture: Separated concerns (service, middleware, routes, UI)\n- Good UX: 3-step wizard with warning, countdown timer, polling for completion\n- Token security: SHA-256 hashing, secrets module for generation, 24h expiry","session_id":"6e3c9387-4f8a-470c-9065-47089a518d42","total_cost_usd":2.2182963499999993,"usage":{"input_tokens":54,"cache_creation_input_tokens":200028,"cache_read_input_tokens":957703,"output_tokens":6247,"server_tool_use":{"web_search_requests":0,"web_fetch_requests":0},"service_tier":"standard","cache_creation":{"ephemeral_1h_input_tokens":0,"ephemeral_5m_input_tokens":200028}},"modelUsage":{"claude-opus-4-5-20251101":{"inputTokens":1812,"outputTokens":6273,"cacheReadInputTokens":957703,"cacheCreationInputTokens":200028,"webSearchRequests":0,"costUSD":1.8949115,"contextWindow":200000},"claude-haiku-4-5-20251001":{"inputTokens":138492,"outputTokens":7539,"cacheReadInputTokens":786891,"cacheCreationInputTokens":54807,"webSearchRequests":0,"costUSD":0.3233848500000001,"contextWindow":200000}},"permission_denials":[],"uuid":"f8885cbd-2067-4962-a015-31549df81264"}
+
+
+=== STDERR ===
+

@@ -1,35 +1,39 @@
 ---
-id: 001-speckit-spec-audit-T031
-title: Add validation status summary onto task list payloads (for badges and filtering)
+id: 001-speckit-spec-audit-T061
+title: Implement pairing endpoints (start/complete) and token issuance/revocation
 owner: Leeroy Brun
-session_id: happy-pid-80994
-claimed_at: '2026-01-03T09:48:13Z'
-last_active: '2026-01-03T10:21:22Z'
+session_id: happy-pid-66368
+relationships:
+- type: parent
+  target: 600-us6-remote-pairing-meta
+parent_id: 600-us6-remote-pairing-meta
+claimed_at: '2026-01-05T14:13:06Z'
+last_active: '2026-01-05T15:48:34Z'
 created_at: '2025-12-27T13:25:20Z'
-updated_at: '2026-01-04T09:21:58Z'
+updated_at: '2026-01-05T15:48:34Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
-- user-story-3
+- user-story-6
 ---
-# Add validation status summary onto task list payloads (for badges and filtering)
+# Implement pairing endpoints (start/complete) and token issuance/revocation
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
-**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T031
+**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T061
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-3 | **User Story**: US3 | **Parallelizable**: Yes
+**Phase**: user-story-6 | **User Story**: US6 | **Parallelizable**: Yes
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md` -> User Story US3
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US6
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T031 [P] [US3] Add validation status summary onto task list payloads (for badges and filtering)
+> T061 [P] [US6] Implement pairing endpoints (start/complete) and token issuance/revocation
 
 <!-- /EXTENSIBLE: Summary -->
 

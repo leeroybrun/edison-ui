@@ -1,36 +1,40 @@
 ---
-id: 001-speckit-spec-audit-T033
-title: Build task detail QA panel with rounds timeline, evidence links (redacted),
-  and clear failure reasons in `frontend/app/projects/[projectId]/tasks/[taskId]/`
+id: 001-speckit-spec-audit-T060
+title: Implement server exposure modes (localhost vs network-exposed) and enforce
+  auth when exposed
 owner: Leeroy Brun
-session_id: happy-pid-24735
-claimed_at: '2026-01-04T09:34:46Z'
-last_active: '2026-01-04T09:34:46Z'
+session_id: happy-pid-66368
+relationships:
+- type: parent
+  target: 600-us6-remote-pairing-meta
+parent_id: 600-us6-remote-pairing-meta
+claimed_at: '2026-01-05T14:13:02Z'
+last_active: '2026-01-05T15:48:22Z'
 created_at: '2025-12-27T13:25:20Z'
-updated_at: '2026-01-04T10:10:31Z'
+updated_at: '2026-01-05T15:48:22Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
-- user-story-3
+- user-story-6
 ---
-# Build task detail QA panel with rounds timeline, evidence links (redacted), and clear failure reasons in `frontend/app/projects/[projectId]/tasks/[taskId]/`
+# Implement server exposure modes (localhost vs network-exposed) and enforce auth when exposed
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
-**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T033
+**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T060
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-3 | **User Story**: US3
+**Phase**: user-story-6 | **User Story**: US6
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md` -> User Story US3
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US6
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T033 [US3] Build task detail QA panel with rounds timeline, evidence links (redacted), and clear failure reasons in `frontend/app/projects/[projectId]/tasks/[taskId]/`
+> T060 [US6] Implement server exposure modes (localhost vs network-exposed) and enforce auth when exposed
 
 <!-- /EXTENSIBLE: Summary -->
 

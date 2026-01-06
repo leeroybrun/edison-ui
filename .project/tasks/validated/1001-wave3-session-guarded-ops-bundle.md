@@ -4,15 +4,6 @@ title: 'Bundle: Wave 3 Session Guarded Operations + Activity Endpoints'
 session_id: happy-pid-2708
 created_at: '2026-01-04T14:30:00Z'
 updated_at: '2026-01-04T14:30:00Z'
-relationships:
-- type: child
-  target: 001-speckit-spec-audit-T041
-- type: child
-  target: 001-speckit-spec-audit-T042
-- type: child
-  target: 001-speckit-spec-audit-T043
-- type: child
-  target: 001-speckit-spec-audit-T044
 ---
 # Bundle: Wave 3 Session Guarded Operations + Activity Endpoints
 

@@ -1,36 +1,39 @@
 ---
-id: 001-speckit-spec-audit-T026
-title: Implement keyboard navigation + command palette for core flows (open task,
-  switch view, filter) in `frontend/components/`
+id: 001-speckit-spec-audit-T062
+title: Implement UI pairing wizard (show warning, code/QR, confirm paired device)
 owner: Leeroy Brun
-session_id: happy-pid-80994
-claimed_at: '2026-01-03T09:48:10Z'
-last_active: '2026-01-03T10:21:09Z'
+session_id: happy-pid-66368
+relationships:
+- type: parent
+  target: 600-us6-remote-pairing-meta
+parent_id: 600-us6-remote-pairing-meta
+claimed_at: '2026-01-05T14:13:08Z'
+last_active: '2026-01-05T15:49:09Z'
 created_at: '2025-12-27T13:25:20Z'
-updated_at: '2026-01-04T09:21:57Z'
+updated_at: '2026-01-05T15:49:09Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
-- user-story-2
+- user-story-6
 ---
-# Implement keyboard navigation + command palette for core flows (open task, switch view, filter) in `frontend/components/`
+# Implement UI pairing wizard (show warning, code/QR, confirm paired device)
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
-**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T026
+**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T062
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-2 | **User Story**: US2
+**Phase**: user-story-6 | **User Story**: US6
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md` -> User Story US2
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US6
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T026 [US2] Implement keyboard navigation + command palette for core flows (open task, switch view, filter) in `frontend/components/`
+> T062 [US6] Implement UI pairing wizard (show warning, code/QR, confirm paired device)
 
 <!-- /EXTENSIBLE: Summary -->
 

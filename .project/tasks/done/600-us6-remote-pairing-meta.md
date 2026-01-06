@@ -1,61 +1,59 @@
 ---
-id: 001-speckit-spec-audit-T030
-title: Implement QA list + task QA detail endpoints (QARecord + evidence rounds, validators,
-  evidence artifacts)
+id: 600-us6-remote-pairing-meta
+title: 'Meta: us6 remote pairing meta'
 owner: Leeroy Brun
-session_id: happy-pid-80994
-claimed_at: '2026-01-03T09:48:11Z'
-last_active: '2026-01-03T10:21:21Z'
-created_at: '2025-12-27T13:25:20Z'
-updated_at: '2026-01-04T09:21:58Z'
-tags:
-- speckit
-- 001-speckit-spec-audit
-- user-story-3
+session_id: happy-pid-66368
+relationships:
+- type: child
+  target: 001-speckit-spec-audit-T060
+- type: child
+  target: 001-speckit-spec-audit-T061
+- type: child
+  target: 001-speckit-spec-audit-T062
+- type: child
+  target: 001-speckit-spec-audit-T063
+child_ids:
+- 001-speckit-spec-audit-T060
+- 001-speckit-spec-audit-T061
+- 001-speckit-spec-audit-T062
+- 001-speckit-spec-audit-T063
+claimed_at: '2026-01-05T14:13:24Z'
+last_active: '2026-01-05T15:49:57Z'
+created_at: '2026-01-05T14:12:41Z'
+updated_at: '2026-01-05T15:49:57Z'
 ---
-# Implement QA list + task QA detail endpoints (QARecord + evidence rounds, validators, evidence artifacts)
+# Meta: us6 remote pairing meta
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
-**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T030
-**Feature**: 001-speckit-spec-audit
-**Phase**: user-story-3 | **User Story**: US3
-
-## Required Reading
-Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md` -> User Story US3
-- `specs/001-speckit-spec-audit/data-model.md`
-- `specs/001-speckit-spec-audit/contracts/`
-- `specs/001-speckit-spec-audit/plan.md`
-
-## Original SpecKit Task
-> T030 [US3] Implement QA list + task QA detail endpoints (QARecord + evidence rounds, validators, evidence artifacts)
+Session: happy-pid-66368
 
 <!-- /EXTENSIBLE: Summary -->
 
 <!-- EXTENSIBLE: ProblemStatement -->
+<!-- REQUIRED FILL: ProblemStatement -->
 ## Problem Statement
 
-<!-- Describe the problem being solved -->
+<<FILL: describe the problem being solved>>
 
 <!-- /EXTENSIBLE: ProblemStatement -->
 
 <!-- EXTENSIBLE: Objectives -->
+<!-- REQUIRED FILL: Objectives -->
 ## Objectives
 
 <!-- List specific, measurable objectives with checkboxes -->
-- [ ] Objective 1
-- [ ] Objective 2
+- [ ] <<FILL: objective>>
 
 <!-- /EXTENSIBLE: Objectives -->
 
 <!-- EXTENSIBLE: AcceptanceCriteria -->
+<!-- REQUIRED FILL: AcceptanceCriteria -->
 ## Acceptance Criteria
 
 <!-- List specific criteria that must be met for task completion -->
-- [ ] Criterion 1
-- [ ] Criterion 2
+- [ ] <<FILL: acceptance criterion>>
 
 <!-- /EXTENSIBLE: AcceptanceCriteria -->
 
@@ -85,16 +83,16 @@ path/to/existing/file.py
 
 ### RED Phase
 <!-- Link to failing test output -->
-- Test file: 
-- Output: 
+- Test file:
+- Output:
 
 ### GREEN Phase
 <!-- Link to passing test output -->
-- Output: 
+- Output:
 
 ### REFACTOR Phase
 <!-- Notes on refactoring performed -->
-- Notes: 
+- Notes:
 
 <!-- /EXTENSIBLE: TDDEvidence -->
 
@@ -122,6 +120,16 @@ path/to/existing/file.py
 <!-- List related files for context -->
 
 <!-- /EXTENSIBLE: RelatedFiles -->
+
+<!-- EXTENSIBLE: PrimaryFiles -->
+<!-- REQUIRED FILL: PrimaryFiles -->
+## Primary Files / Areas
+
+Primary Files / Areas:
+<!-- Add one path per line -->
+- <<FILL: path/to/file.ext>>
+
+<!-- /EXTENSIBLE: PrimaryFiles -->
 
 <!-- EXTENSIBLE: Notes -->
 ## Notes

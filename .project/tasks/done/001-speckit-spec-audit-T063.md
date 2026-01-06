@@ -1,36 +1,40 @@
 ---
-id: 001-speckit-spec-audit-T041
-title: Implement guarded session create/transition endpoints (preview → confirm/apply)
-  + audit writes
+id: 001-speckit-spec-audit-T063
+title: Ensure realtime WS requires auth in remote mode; verify rejection behavior
+  for unpaired clients
 owner: Leeroy Brun
-session_id: happy-pid-2708
-claimed_at: '2026-01-04T11:05:03Z'
-last_active: '2026-01-04T11:36:20Z'
+session_id: happy-pid-66368
+relationships:
+- type: parent
+  target: 600-us6-remote-pairing-meta
+parent_id: 600-us6-remote-pairing-meta
+claimed_at: '2026-01-05T14:13:10Z'
+last_active: '2026-01-05T15:49:22Z'
 created_at: '2025-12-27T13:25:20Z'
-updated_at: '2026-01-04T11:36:20Z'
+updated_at: '2026-01-05T15:49:22Z'
 tags:
 - speckit
 - 001-speckit-spec-audit
-- user-story-4
+- user-story-6
 ---
-# Implement guarded session create/transition endpoints (preview → confirm/apply) + audit writes
+# Ensure realtime WS requires auth in remote mode; verify rejection behavior for unpaired clients
 
 <!-- EXTENSIBLE: Summary -->
 ## Summary
 
-**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T041
+**SpecKit Source**: `specs/001-speckit-spec-audit/tasks.md` -> T063
 **Feature**: 001-speckit-spec-audit
-**Phase**: user-story-4 | **User Story**: US4 | **Parallelizable**: Yes
+**Phase**: user-story-6 | **User Story**: US6
 
 ## Required Reading
 Before implementing this task, read:
-- `specs/001-speckit-spec-audit/spec.md` -> User Story US4
+- `specs/001-speckit-spec-audit/spec.md` -> User Story US6
 - `specs/001-speckit-spec-audit/data-model.md`
 - `specs/001-speckit-spec-audit/contracts/`
 - `specs/001-speckit-spec-audit/plan.md`
 
 ## Original SpecKit Task
-> T041 [P] [US4] Implement guarded session create/transition endpoints (preview → confirm/apply) + audit writes
+> T063 [US6] Ensure realtime WS requires auth in remote mode; verify rejection behavior for unpaired clients
 
 <!-- /EXTENSIBLE: Summary -->
 

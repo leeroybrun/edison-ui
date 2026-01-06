@@ -4,15 +4,6 @@ title: 'Bundle: Wave 2 QA UI + Guarded Task Operations'
 session_id: happy-pid-24735
 created_at: '2026-01-04T10:14:52Z'
 updated_at: '2026-01-04T10:14:52Z'
-relationships:
-- type: child
-  target: 001-speckit-spec-audit-T032
-- type: child
-  target: 001-speckit-spec-audit-T033
-- type: child
-  target: 001-speckit-spec-audit-T034
-- type: child
-  target: 001-speckit-spec-audit-T040
 ---
 # Bundle: Wave 2 QA UI + Guarded Task Operations
 
