@@ -257,6 +257,11 @@ def app_with_tasks(
     monkeypatch.setenv("SCAN_ROOTS", str(mock_edison_project_with_tasks.parent))
     monkeypatch.setenv("PIN_STORAGE_PATH", str(tmp_path / "pins.json"))
 
+    # Create settings file with localhost mode (no auth required)
+    settings_file = tmp_path / "settings.json"
+    settings_file.write_text('{"exposureMode": "localhost", "firstRunComplete": true}')
+    monkeypatch.setenv("SETTINGS_FILE", str(settings_file))
+
     from core.settings import get_settings
 
     get_settings.cache_clear()

@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from .routes.activity import router as activity_router
+from .routes.agents import router as agents_router
 from .routes.config import router as config_router
 from .routes.health import router as health_router
 from .routes.pairing import router as pairing_router
@@ -17,6 +18,7 @@ from .routes.tasks import router as tasks_router
 
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(activity_router)
+api_router.include_router(agents_router)
 api_router.include_router(config_router)
 api_router.include_router(global_search_router)
 api_router.include_router(health_router)

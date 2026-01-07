@@ -187,6 +187,8 @@ class QAReaderService:
                     state=r.state,
                     verdict=r.verdict,
                     session_id=r.session_id,
+                    round=r.round,
+                    validators=r.validators,
                     created_at=r.created_at,
                     updated_at=r.updated_at,
                 )

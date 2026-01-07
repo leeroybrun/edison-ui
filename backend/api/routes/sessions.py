@@ -22,9 +22,12 @@ from api.schemas.session_guards import (
     SessionTransitionResponse,
 )
 from api.schemas.sessions import (
+    SessionContextResponse,
     SessionGitInfo,
     SessionListItem,
     SessionListResponse,
+    SessionNextResponse,
+    SuggestedAction,
 )
 from core.settings import get_settings
 from models.actor import get_current_actor
@@ -32,6 +35,8 @@ from models.audit import AuditEntry, AuditTarget
 from services.audit import AuditWriter
 from services.project_discovery import ProjectDiscoveryService
 from services.session_guard import SessionGuardService
+from services.session_context import EdisonCLIError, SessionContextService
+from services.session_next import SessionNextService
 from services.session_reader import SessionReaderService
 from services.session_writer import SessionWriterService, generate_action_id
 
@@ -112,6 +117,38 @@ async def list_sessions(
         total=total,
         limit=limit,
         offset=offset,
+    )
+
+
+@router.get("/{session_id}", response_model=SessionListItem)
+async def get_session(
+    project_id: str,
+    session_id: str,
+) -> SessionListItem:
+    """Get a single session by ID."""
+    project_path = get_project_path(project_id)
+
+    session_reader = SessionReaderService(project_path)
+    session = session_reader.get_session(session_id)
+
+    if session is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Session {session_id} not found in project {project_id}",
+        )
+
+    return SessionListItem(
+        session_id=session.session_id,
+        state=session.state,
+        phase=session.phase,
+        owner=session.owner,
+        task_count=session.task_count,
+        created_at=session.created_at,
+        last_active_at=session.last_active_at,
+        git=SessionGitInfo(
+            branch_name=session.git.branch_name,
+            base_branch=session.git.base_branch,
+        ),
     )
 
 
@@ -315,4 +352,75 @@ async def transition_session(
         previous_state=previous_state,
         new_state=request.to_state,
         audit_entry_id=action_id,
+    )
+
+
+# =============================================================================
+# Session Context & Next Endpoints (T070)
+# =============================================================================
+
+
+@router.get("/{session_id}/context", response_model=SessionContextResponse)
+async def get_session_context(
+    project_id: str,
+    session_id: str,
+) -> SessionContextResponse:
+    """Get session context (computed state from Edison CLI).
+
+    Returns hook-safe session context including project info,
+    current task state, active packs, and constitutions.
+    """
+    project_path = get_project_path(project_id)
+    context_service = SessionContextService(project_path)
+
+    try:
+        context = context_service.get_context(session_id)
+    except EdisonCLIError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+
+    return SessionContextResponse(
+        is_edison_project=context.is_edison_project,
+        project_root=context.project_root,
+        session_id=context.session_id,
+        session_state=context.session_state,
+        worktree_path=context.worktree_path,
+        current_task_id=context.current_task_id,
+        current_task_state=context.current_task_state,
+        active_packs=context.active_packs,
+        constitutions=context.constitutions,
+    )
+
+
+@router.get("/{session_id}/next", response_model=SessionNextResponse)
+async def get_session_next(
+    project_id: str,
+    session_id: str,
+) -> SessionNextResponse:
+    """Get session next recommendation (computed from Edison CLI).
+
+    Returns the recommended next action for the session,
+    including suggested actions with task IDs and reasons.
+    """
+    project_path = get_project_path(project_id)
+    next_service = SessionNextService(project_path)
+
+    try:
+        next_data = next_service.get_next(session_id)
+    except EdisonCLIError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+
+    suggested_actions = [
+        SuggestedAction(
+            action_type=action.action_type,
+            task_id=action.task_id,
+            reason=action.reason,
+        )
+        for action in next_data.suggested_actions
+    ]
+
+    return SessionNextResponse(
+        session_id=next_data.session_id,
+        recommendation=next_data.recommendation,
+        suggested_actions=suggested_actions,
+        timestamp=next_data.timestamp,
     )

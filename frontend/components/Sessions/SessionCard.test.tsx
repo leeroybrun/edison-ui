@@ -69,6 +69,33 @@ describe("SessionCard", () => {
     expect(badge).toHaveClass("bg-red-100");
   });
 
+  it("renders state badge with correct styling for blocked state", () => {
+    const blockedSession: Session = { ...mockSession, state: "blocked" };
+    render(<SessionCard projectId="my-project" session={blockedSession} />);
+
+    const badge = screen.getByText("blocked");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("bg-orange-100");
+  });
+
+  it("renders state badge with correct styling for done state", () => {
+    const doneSession: Session = { ...mockSession, state: "done" };
+    render(<SessionCard projectId="my-project" session={doneSession} />);
+
+    const badge = screen.getByText("done");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("bg-teal-100");
+  });
+
+  it("renders state badge with correct styling for validated state", () => {
+    const validatedSession: Session = { ...mockSession, state: "validated" };
+    render(<SessionCard projectId="my-project" session={validatedSession} />);
+
+    const badge = screen.getByText("validated");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveClass("bg-emerald-100");
+  });
+
   it("displays task count", () => {
     render(<SessionCard projectId="my-project" session={mockSession} />);
 

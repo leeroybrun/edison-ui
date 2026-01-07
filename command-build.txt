@@ -1,0 +1,42 @@
+
+> edison-ui-frontend@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/7) ...
+   Generating static pages (1/7) 
+   Generating static pages (3/7) 
+   Generating static pages (5/7) 
+ ✓ Generating static pages (7/7)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                    Size     First Load JS
+┌ ○ /                                                          3.91 kB        99.9 kB
+├ ○ /_not-found                                                150 B          87.5 kB
+├ ƒ /api/v1/projects/[projectId]/sessions/[sessionId]/context  0 B                0 B
+├ ƒ /api/v1/projects/[projectId]/sessions/[sessionId]/next     0 B                0 B
+├ ○ /pair                                                      2.52 kB        89.8 kB
+├ ○ /projects                                                  150 B          87.5 kB
+├ ƒ /projects/[projectId]                                      150 B          87.5 kB
+├ ƒ /projects/[projectId]/activity                             4.34 kB        91.7 kB
+├ ƒ /projects/[projectId]/agents                               2.85 kB        90.2 kB
+├ ƒ /projects/[projectId]/qa                                   300 B          92.9 kB
+├ ƒ /projects/[projectId]/sessions                             3.22 kB        92.9 kB
+├ ƒ /projects/[projectId]/sessions/[sessionId]                 811 B           113 kB
+├ ƒ /projects/[projectId]/tasks                                196 B            96 kB
+└ ○ /settings                                                  4.51 kB        91.8 kB
++ First Load JS shared by all                                  87.3 kB
+  ├ chunks/117-2ae192e86733ff24.js                             31.7 kB
+  ├ chunks/fd9d1056-88bde84955fc9356.js                        53.6 kB
+  └ other shared chunks (total)                                1.95 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
