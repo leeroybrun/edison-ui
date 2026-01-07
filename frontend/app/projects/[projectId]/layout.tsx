@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 
 import { ProjectSidebar } from "../../../components/ProjectSidebar";
@@ -10,6 +11,8 @@ import {
 } from "../../../components/CommandPalette/KeyboardShortcuts";
 import { CommandPalette } from "../../../components/CommandPalette/CommandPalette";
 import type { Command } from "../../../components/CommandPalette/CommandPalette";
+import { SearchDialog } from "../../../components/Search";
+import type { SearchResult } from "../../../components/Search";
 
 /**
  * Navigation items for mobile view
@@ -26,12 +29,28 @@ const MOBILE_NAV_ITEMS = [
 /**
  * CommandPaletteWrapper renders the command palette using context
  */
-function CommandPaletteWrapper({ projectId }: { projectId: string }) {
+function CommandPaletteWrapper({
+  projectId,
+  onOpenSearch,
+}: {
+  projectId: string;
+  onOpenSearch: () => void;
+}) {
   const { isOpen, close } = useCommandPalette();
   const router = useRouter();
 
   // Define available commands for this project context
   const commands: Command[] = [
+    {
+      id: "search",
+      label: "Search",
+      shortcut: "/",
+      category: "actions",
+      action: () => {
+        close();
+        onOpenSearch();
+      },
+    },
     {
       id: "go-tasks",
       label: "Go to Tasks",
@@ -82,18 +101,6 @@ function CommandPaletteWrapper({ projectId }: { projectId: string }) {
         router.push(`/projects/${projectId}/settings`);
       },
     },
-    {
-      id: "focus-search",
-      label: "Focus Search",
-      shortcut: "/",
-      category: "actions",
-      action: () => {
-        const searchInput = document.getElementById("task-search");
-        if (searchInput) {
-          searchInput.focus();
-        }
-      },
-    },
   ];
 
   return <CommandPalette commands={commands} isOpen={isOpen} onClose={close} />;
@@ -129,10 +136,13 @@ interface ProjectLayoutProps {
  * - Mobile navigation bar (visible on small screens)
  * - Active state detection based on current route
  * - Responsive layout that works on all screen sizes
+ * - Integrated search dialog (T075)
  */
 export default function ProjectLayout({ children }: ProjectLayoutProps) {
   const params = useParams<{ projectId: string }>();
   const pathname = usePathname();
+  const router = useRouter();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const projectId = params.projectId;
   // Future: fetch project name from GET /api/v1/projects/{projectId}
@@ -140,10 +150,72 @@ export default function ProjectLayout({ children }: ProjectLayoutProps) {
   const projectName = projectId;
   const activeItem = getActiveItem(pathname, projectId);
 
+  // Get API base URL from environment or default (base origin, components add /api/v1)
+  const apiOrigin = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const apiBaseUrl = `${apiOrigin}/api/v1`;
+
+  const handleOpenSearch = useCallback(() => {
+    setIsSearchOpen(true);
+  }, []);
+
+  const handleCloseSearch = useCallback(() => {
+    setIsSearchOpen(false);
+  }, []);
+
+  // Global keyboard shortcut for "/" to open search
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input/textarea
+      const target = event.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      // "/" opens search dialog
+      if (event.key === "/" && !isSearchOpen) {
+        event.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isSearchOpen]);
+
+  const handleSearchSelect = useCallback(
+    (result: SearchResult) => {
+      // Navigate based on result type
+      if (result.type === "task" && result.taskId) {
+        router.push(`/projects/${projectId}/tasks?taskId=${result.taskId}`);
+      } else if (result.type === "session" && result.sessionId) {
+        router.push(`/projects/${projectId}/sessions/${result.sessionId}`);
+      } else if (result.type === "qa" && result.qaId) {
+        router.push(`/projects/${projectId}/qa?qaId=${result.qaId}`);
+      }
+    },
+    [router, projectId],
+  );
+
   return (
     <KeyboardShortcutsProvider>
       {/* Command Palette - rendered at top level for portal positioning */}
-      <CommandPaletteWrapper projectId={projectId} />
+      <CommandPaletteWrapper
+        projectId={projectId}
+        onOpenSearch={handleOpenSearch}
+      />
+
+      {/* Search Dialog (T075) */}
+      <SearchDialog
+        isOpen={isSearchOpen}
+        onClose={handleCloseSearch}
+        onSelect={handleSearchSelect}
+        projectId={projectId}
+        apiBaseUrl={apiBaseUrl}
+      />
 
       <div className="flex h-full">
         {/* Desktop sidebar - hidden on mobile */}
