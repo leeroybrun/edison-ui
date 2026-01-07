@@ -451,7 +451,7 @@ class ConfigService:
                 success=False,
                 audit_entry_id=None,
                 backup_path=str(backup_path) if backup_path else None,
-                reason=f"Failed to update config: {e}",
+                reason="Configuration file is malformed",
             )
         except Exception as e:
             logger.error("Unexpected error applying config change: %s", e)
