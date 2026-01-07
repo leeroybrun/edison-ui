@@ -1,9 +1,16 @@
 # Edison UI .gitignore
 
-# Edison project files
-.project/
+# Edison (meta-managed state is committable; runtime-only subtrees are not)
 .edison/_generated/
 _tx/
+.project/logs/
+.project/archive/
+.project/sessions/_tx/
+.project/sessions/_locks/
+.project/qa/evidence-snapshots/
+.project/qa/locks/
+.project/qa/score-history/
+.project/.session-id
 
 # Python
 __pycache__/
@@ -176,7 +183,12 @@ $RECYCLE.BIN/
 .codex/rules/default.rules
 
 .edison/config.local/
-.project/sessions/
 .project/logs/
 .project/archive/
 .worktrees/
+.project/sessions/_tx/
+.project/sessions/_locks/
+.project/qa/evidence-snapshots/
+.project/qa/locks/
+.project/qa/score-history/
+.project/.session-id
