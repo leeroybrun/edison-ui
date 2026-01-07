@@ -11,6 +11,7 @@ import type {
   QARecord,
   QAListResponse,
 } from "../../../../../components/QA/types";
+import { EntityAuditPanel } from "../../../../../components/Activity";
 import { SessionDetailTabs } from "./SessionDetailTabs";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -158,7 +159,12 @@ export default async function SessionDetailPage(props: SessionDetailPageProps) {
   const searchParams = await props.searchParams;
 
   // Determine active tab (default to tasks)
-  const activeTab = searchParams.tab === "qa" ? "qa" : "tasks";
+  const activeTab =
+    searchParams.tab === "qa"
+      ? "qa"
+      : searchParams.tab === "activity"
+        ? "activity"
+        : "tasks";
 
   // Fetch session details, tasks, and QA in parallel
   const [
@@ -235,13 +241,19 @@ export default async function SessionDetailPage(props: SessionDetailPageProps) {
           sessions={[]}
           tasks={tasks}
         />
-      ) : (
+      ) : activeTab === "qa" ? (
         <QAView
           error={error}
           initialView={qaInitialView}
           lockedSessionId={params.sessionId}
           qaRecords={qaRecords}
           sessions={[]}
+        />
+      ) : (
+        <EntityAuditPanel
+          entityId={params.sessionId}
+          entityType="session"
+          projectId={params.projectId}
         />
       )}
     </div>

@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export interface SessionDetailTabsProps {
   /** Currently active tab */
-  activeTab: "tasks" | "qa";
+  activeTab: "tasks" | "qa" | "activity";
   /** Project ID for URL generation */
   projectId: string;
   /** Session ID for URL generation */
@@ -17,7 +17,7 @@ export interface SessionDetailTabsProps {
 
 /**
  * Tab navigation component for session detail page.
- * Provides links to switch between Tasks and QA views.
+ * Provides links to switch between Tasks, QA, and Activity views.
  */
 export function SessionDetailTabs({
   activeTab,
@@ -75,6 +75,20 @@ export function SessionDetailTabs({
             >
               {qaCount}
             </span>
+          </Link>
+        </li>
+        <li role="presentation">
+          <Link
+            aria-selected={activeTab === "activity"}
+            className={`inline-flex items-center gap-2 border-b-2 px-1 py-3 text-sm font-medium transition-colors ${
+              activeTab === "activity"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700"
+            }`}
+            href={`${baseUrl}?tab=activity`}
+            role="tab"
+          >
+            Activity
           </Link>
         </li>
       </ul>
