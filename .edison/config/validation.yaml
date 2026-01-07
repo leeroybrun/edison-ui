@@ -29,14 +29,14 @@ validation:
         - browser-e2e
         optional:
         - global-codex
-  timeout: 1800
+  timeout: 1500
   validators:
     browser-e2e:
       blocking: true
       config:
         baseUrl: http://localhost:3334
         skipIfNoTriggers: true
-      timeout: 1800
+      timeout: 1500
       triggers:
       - '**/*.tsx'
       - '**/*.jsx'
@@ -46,7 +46,7 @@ validation:
       - '**/styles/**/*'
       - '**/public/**/*'
       web_server:
-        ref: edison-ui-browser-e2e
+        ref: browser-e2e
         stop_after: true
         url: http://localhost:3334
     global-auggie:
