@@ -165,7 +165,7 @@ describe("SessionsView", () => {
   });
 
   describe("Board View", () => {
-    it("renders five columns for draft, active, paused, completed, abandoned states", () => {
+    it("renders columns for all session states", () => {
       render(
         <SessionsView
           initialView="board"
@@ -177,8 +177,13 @@ describe("SessionsView", () => {
       // Check for column headings (h2 elements inside board columns)
       expect(screen.getByTestId("column-draft")).toBeInTheDocument();
       expect(screen.getByTestId("column-active")).toBeInTheDocument();
+      expect(screen.getByTestId("column-blocked")).toBeInTheDocument();
       expect(screen.getByTestId("column-paused")).toBeInTheDocument();
+      expect(screen.getByTestId("column-done")).toBeInTheDocument();
+      expect(screen.getByTestId("column-closing")).toBeInTheDocument();
       expect(screen.getByTestId("column-completed")).toBeInTheDocument();
+      expect(screen.getByTestId("column-validated")).toBeInTheDocument();
+      expect(screen.getByTestId("column-archived")).toBeInTheDocument();
       expect(screen.getByTestId("column-abandoned")).toBeInTheDocument();
     });
 

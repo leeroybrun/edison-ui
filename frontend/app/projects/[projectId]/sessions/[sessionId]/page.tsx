@@ -11,7 +11,9 @@ import type {
   QARecord,
   QAListResponse,
 } from "../../../../../components/QA/types";
-import { SessionDetailTabs } from "./SessionDetailTabs";
+import { SessionContextPanel } from "../../../../../components/Sessions/SessionContextPanel";
+import { SessionNextPanel } from "../../../../../components/Sessions/SessionNextPanel";
+import { SessionDetailTabs, type SessionDetailTab } from "./SessionDetailTabs";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -144,13 +146,25 @@ async function fetchSessionQA(
 }
 
 /**
- * Session Detail page - displays tasks and QA for a specific session.
+ * Determine active tab from search params.
+ */
+function getActiveTab(tab?: string): SessionDetailTab {
+  if (tab === "qa" || tab === "context" || tab === "next") {
+    return tab;
+  }
+  return "tasks";
+}
+
+/**
+ * Session Detail page - displays tasks, QA, context, and next for a specific session.
  *
  * This page provides a tabbed interface for viewing session-scoped:
  * - Tasks (using TasksView with locked session filter)
  * - QA records (using QAView with locked session filter)
+ * - Context (session configuration and state information)
+ * - Next (recommended next steps and suggested actions)
  *
- * Both views hide the session filter dropdown since we're in a session-specific context.
+ * Both Tasks and QA views hide the session filter dropdown since we're in a session-specific context.
  * Users can still filter by state, verdict, and search within the session.
  */
 export default async function SessionDetailPage(props: SessionDetailPageProps) {
@@ -158,7 +172,7 @@ export default async function SessionDetailPage(props: SessionDetailPageProps) {
   const searchParams = await props.searchParams;
 
   // Determine active tab (default to tasks)
-  const activeTab = searchParams.tab === "qa" ? "qa" : "tasks";
+  const activeTab = getActiveTab(searchParams.tab);
 
   // Fetch session details, tasks, and QA in parallel
   const [
@@ -227,7 +241,7 @@ export default async function SessionDetailPage(props: SessionDetailPageProps) {
       />
 
       {/* Tab content */}
-      {activeTab === "tasks" ? (
+      {activeTab === "tasks" && (
         <TasksView
           error={error}
           initialView={tasksInitialView}
@@ -235,13 +249,26 @@ export default async function SessionDetailPage(props: SessionDetailPageProps) {
           sessions={[]}
           tasks={tasks}
         />
-      ) : (
+      )}
+      {activeTab === "qa" && (
         <QAView
           error={error}
           initialView={qaInitialView}
           lockedSessionId={params.sessionId}
           qaRecords={qaRecords}
           sessions={[]}
+        />
+      )}
+      {activeTab === "context" && (
+        <SessionContextPanel
+          projectId={params.projectId}
+          sessionId={params.sessionId}
+        />
+      )}
+      {activeTab === "next" && (
+        <SessionNextPanel
+          projectId={params.projectId}
+          sessionId={params.sessionId}
         />
       )}
     </div>

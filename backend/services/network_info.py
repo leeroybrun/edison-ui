@@ -35,7 +35,7 @@ def get_local_ip() -> str | None:
         try:
             # Use Google's DNS as a reference (doesn't actually connect)
             s.connect(("8.8.8.8", 80))
-            ip = s.getsockname()[0]
+            ip: str = s.getsockname()[0]
             return ip
         finally:
             s.close()

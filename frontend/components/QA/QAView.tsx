@@ -194,7 +194,8 @@ export function QAView({
       // Validator filter
       if (filters.validator) {
         const validatorLower = filters.validator.toLowerCase();
-        const matchesValidator = record.validators.some((v) =>
+        const validators = record.validators ?? [];
+        const matchesValidator = validators.some((v) =>
           v.toLowerCase().includes(validatorLower),
         );
         if (!matchesValidator) {
@@ -481,7 +482,7 @@ export function QAView({
                       {record.round}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-500">
-                      {record.validators.length > 0
+                      {(record.validators ?? []).length > 0
                         ? record.validators.join(", ")
                         : "-"}
                     </td>

@@ -1,5 +1,5 @@
 All checks passed!
-Success: no issues found in 29 source files
+Success: no issues found in 82 source files
 
 > edison-ui-frontend@0.1.0 lint
 > next lint

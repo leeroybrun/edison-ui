@@ -50,6 +50,8 @@ class QARecord(BaseModel):
     state: str
     verdict: str | None = None
     session_id: str | None = Field(None, alias="sessionId")
+    round: int | None = None
+    validators: list[str] = Field(default_factory=list)
     created_at: str = Field(..., alias="createdAt")
     updated_at: str = Field(..., alias="updatedAt")
 

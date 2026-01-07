@@ -1,333 +1,432 @@
-...............FFF...................................................... [ 53%]
-...............................................................          [100%]
+........................................................................ [ 12%]
+........................................................................ [ 25%]
+........................................................................ [ 37%]
+........................................................................ [ 50%]
+................................FFFFF.F...........FF.................... [ 62%]
+........................................................................ [ 75%]
+........................................................................ [ 87%]
+.......................................................................  [100%]
 =================================== FAILURES ===================================
-_________________ TestPinProject.test_pin_project_returns_200 __________________
+______________ TestFileWatcher.test_watcher_detects_file_creation ______________
 
-self = <test_api_projects.TestPinProject object at 0x113894b90>
-app_with_scan_root = <starlette.testclient.TestClient object at 0x113c1c050>
+self = <test_realtime_watcher.TestFileWatcher object at 0x1075b1940>
+edison_project = PosixPath('/private/var/folders/d_/m9w88hfx52j5b2__r8mqj9v80000gn/T/pytest-of-leeroy/pytest-3030/test_watcher_detects_file_crea0/test-project')
+task_content = "---\nid: T001\ntitle: Test Task\ntype: implementation\ncreated_at: '2025-12-27T10:00:00Z'\nupdated_at: '2025-12-27T10:00:00Z'\n---\n# Task T001\nTest task content.\n"
 
-    def test_pin_project_returns_200(self, app_with_scan_root: TestClient) -> None:
-        """Should return 200 on success."""
-        list_response = app_with_scan_root.get("/api/v1/projects")
-        project_id = list_response.json()["items"][0]["projectId"]
-    
->       response = app_with_scan_root.patch(
-            f"/api/v1/projects/{project_id}/pin",
-            json={"pinned": True}
-        )
-
-tests/test_api_projects.py:295: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-.venv/lib/python3.13/site-packages/starlette/testclient.py:608: in patch
-    return super().patch(
-.venv/lib/python3.13/site-packages/httpx/_client.py:1218: in patch
-    return self.request(
-.venv/lib/python3.13/site-packages/starlette/testclient.py:445: in request
-    return super().request(
-.venv/lib/python3.13/site-packages/httpx/_client.py:825: in request
-    return self.send(request, auth=auth, follow_redirects=follow_redirects)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/httpx/_client.py:914: in send
-    response = self._send_handling_auth(
-.venv/lib/python3.13/site-packages/httpx/_client.py:942: in _send_handling_auth
-    response = self._send_handling_redirects(
-.venv/lib/python3.13/site-packages/httpx/_client.py:979: in _send_handling_redirects
-    response = self._send_single_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/httpx/_client.py:1014: in _send_single_request
-    response = transport.handle_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/starlette/testclient.py:348: in handle_request
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/testclient.py:345: in handle_request
-    portal.call(self.app, scope, receive, send)
-.venv/lib/python3.13/site-packages/anyio/from_thread.py:326: in call
-    return cast(T_Retval, self.start_task_soon(func, *args).result())
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
-    return self.__get_result()
-           ^^^^^^^^^^^^^^^^^^^
-/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
-    raise self._exception
-.venv/lib/python3.13/site-packages/anyio/from_thread.py:257: in _call_func
-    retval = await retval_or_awaitable
-             ^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/fastapi/applications.py:1135: in __call__
-    await super().__call__(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/applications.py:107: in __call__
-    await self.middleware_stack(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:186: in __call__
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:164: in __call__
-    await self.app(scope, receive, _send)
-.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
-    await self.app(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:63: in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
-    await app(scope, receive, sender)
-.venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
-    await self.app(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/routing.py:716: in __call__
-    await self.middleware_stack(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/routing.py:736: in app
-    await route.handle(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/routing.py:290: in handle
-    await self.app(scope, receive, send)
-.venv/lib/python3.13/site-packages/fastapi/routing.py:115: in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
-    await app(scope, receive, sender)
-.venv/lib/python3.13/site-packages/fastapi/routing.py:101: in app
-    response = await f(request)
-               ^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/fastapi/routing.py:355: in app
-    raw_response = await run_endpoint_function(
-.venv/lib/python3.13/site-packages/fastapi/routing.py:243: in run_endpoint_function
-    return await dependant.call(**values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-api/routes/projects.py:140: in pin_project
-    success = service.set_pinned(project_id, body.pinned)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-services/project_discovery.py:266: in set_pinned
-    self._save_pinned_projects()
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-
-self = <services.project_discovery.ProjectDiscoveryService object at 0x113c2e670>
-
-    def _save_pinned_projects(self) -> None:
-        """Save pinned project IDs to storage."""
-        if self.pin_storage_path:
-            self.pin_storage_path.parent.mkdir(parents=True, exist_ok=True)
->           with open(self.pin_storage_path, "w") as f:
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E           PermissionError: [Errno 1] Operation not permitted: '/Users/leeroy/.edison-ui/pins.json'
-
-services/project_discovery.py:83: PermissionError
-____________ TestPinProject.test_pin_project_returns_updated_status ____________
-
-self = <test_api_projects.TestPinProject object at 0x113894cd0>
-app_with_scan_root = <starlette.testclient.TestClient object at 0x113c48c90>
-
-    def test_pin_project_returns_updated_status(
-        self, app_with_scan_root: TestClient
+    @pytest.mark.asyncio
+    async def test_watcher_detects_file_creation(
+        self, edison_project: Path, task_content: str
     ) -> None:
-        """Should return updated pin status."""
-        list_response = app_with_scan_root.get("/api/v1/projects")
-        project_id = list_response.json()["items"][0]["projectId"]
+        """Should detect when a new task file is created."""
+        from services.realtime.watcher import ChangeType, EntityType, FileWatcher
     
->       response = app_with_scan_root.patch(
-            f"/api/v1/projects/{project_id}/pin",
-            json={"pinned": True}
+        watcher = FileWatcher(
+            project_path=str(edison_project),
+            coalesce_ms=50,  # Short coalesce for faster tests
         )
-
-tests/test_api_projects.py:308: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-.venv/lib/python3.13/site-packages/starlette/testclient.py:608: in patch
-    return super().patch(
-.venv/lib/python3.13/site-packages/httpx/_client.py:1218: in patch
-    return self.request(
-.venv/lib/python3.13/site-packages/starlette/testclient.py:445: in request
-    return super().request(
-.venv/lib/python3.13/site-packages/httpx/_client.py:825: in request
-    return self.send(request, auth=auth, follow_redirects=follow_redirects)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/httpx/_client.py:914: in send
-    response = self._send_handling_auth(
-.venv/lib/python3.13/site-packages/httpx/_client.py:942: in _send_handling_auth
-    response = self._send_handling_redirects(
-.venv/lib/python3.13/site-packages/httpx/_client.py:979: in _send_handling_redirects
-    response = self._send_single_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/httpx/_client.py:1014: in _send_single_request
-    response = transport.handle_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/starlette/testclient.py:348: in handle_request
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/testclient.py:345: in handle_request
-    portal.call(self.app, scope, receive, send)
-.venv/lib/python3.13/site-packages/anyio/from_thread.py:326: in call
-    return cast(T_Retval, self.start_task_soon(func, *args).result())
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
-    return self.__get_result()
-           ^^^^^^^^^^^^^^^^^^^
-/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
-    raise self._exception
-.venv/lib/python3.13/site-packages/anyio/from_thread.py:257: in _call_func
-    retval = await retval_or_awaitable
-             ^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/fastapi/applications.py:1135: in __call__
-    await super().__call__(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/applications.py:107: in __call__
-    await self.middleware_stack(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:186: in __call__
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:164: in __call__
-    await self.app(scope, receive, _send)
-.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
-    await self.app(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:63: in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
-    await app(scope, receive, sender)
-.venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
-    await self.app(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/routing.py:716: in __call__
-    await self.middleware_stack(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/routing.py:736: in app
-    await route.handle(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/routing.py:290: in handle
-    await self.app(scope, receive, send)
-.venv/lib/python3.13/site-packages/fastapi/routing.py:115: in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
-    await app(scope, receive, sender)
-.venv/lib/python3.13/site-packages/fastapi/routing.py:101: in app
-    response = await f(request)
-               ^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/fastapi/routing.py:355: in app
-    raw_response = await run_endpoint_function(
-.venv/lib/python3.13/site-packages/fastapi/routing.py:243: in run_endpoint_function
-    return await dependant.call(**values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-api/routes/projects.py:140: in pin_project
-    success = service.set_pinned(project_id, body.pinned)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-services/project_discovery.py:266: in set_pinned
-    self._save_pinned_projects()
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-
-self = <services.project_discovery.ProjectDiscoveryService object at 0x113c630b0>
-
-    def _save_pinned_projects(self) -> None:
-        """Save pinned project IDs to storage."""
-        if self.pin_storage_path:
-            self.pin_storage_path.parent.mkdir(parents=True, exist_ok=True)
->           with open(self.pin_storage_path, "w") as f:
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E           PermissionError: [Errno 1] Operation not permitted: '/Users/leeroy/.edison-ui/pins.json'
-
-services/project_discovery.py:83: PermissionError
-______________________ TestPinProject.test_unpin_project _______________________
-
-self = <test_api_projects.TestPinProject object at 0x11385f820>
-app_with_scan_root = <starlette.testclient.TestClient object at 0x113c1cad0>
-
-    def test_unpin_project(self, app_with_scan_root: TestClient) -> None:
-        """Should be able to unpin a project."""
-        list_response = app_with_scan_root.get("/api/v1/projects")
-        project_id = list_response.json()["items"][0]["projectId"]
     
-        # First pin
->       app_with_scan_root.patch(
-            f"/api/v1/projects/{project_id}/pin",
-            json={"pinned": True}
+        events: list[ChangeEvent] = []
+    
+        async def capture_event(event: ChangeEvent) -> None:
+            events.append(event)
+    
+        watcher.on_change(capture_event)
+    
+        # Start watcher
+        await watcher.start()
+    
+        try:
+            # Give watcher time to initialize
+            await asyncio.sleep(0.3)
+    
+            # Create a new task file
+            task_file = edison_project / ".project" / "tasks" / "todo" / "T001.md"
+            task_file.write_text(task_content)
+    
+            # Wait for FSEvents/polling to deliver the event
+            # Polling mode uses ~300ms intervals, so 1s gives enough margin
+            await asyncio.sleep(1.0)
+    
+        finally:
+            await watcher.stop()
+    
+        # Verify event captured
+>       assert len(events) >= 1
+E       assert 0 >= 1
+E        +  where 0 = len([])
+
+tests/test_realtime_watcher.py:269: AssertionError
+____________ TestFileWatcher.test_watcher_detects_file_modification ____________
+
+self = <test_realtime_watcher.TestFileWatcher object at 0x1075b1810>
+edison_project = PosixPath('/private/var/folders/d_/m9w88hfx52j5b2__r8mqj9v80000gn/T/pytest-of-leeroy/pytest-3030/test_watcher_detects_file_modi0/test-project')
+task_content = "---\nid: T001\ntitle: Test Task\ntype: implementation\ncreated_at: '2025-12-27T10:00:00Z'\nupdated_at: '2025-12-27T10:00:00Z'\n---\n# Task T001\nTest task content.\n"
+
+    @pytest.mark.asyncio
+    async def test_watcher_detects_file_modification(
+        self, edison_project: Path, task_content: str
+    ) -> None:
+        """Should detect when an existing task file is modified."""
+        from services.realtime.watcher import ChangeType, EntityType, FileWatcher
+    
+        # Pre-create the task file BEFORE starting the watcher
+        # This ensures it's in _known_files when the watcher starts
+        task_file = edison_project / ".project" / "tasks" / "wip" / "T002.md"
+        task_file.write_text(task_content.replace("T001", "T002"))
+    
+        watcher = FileWatcher(
+            project_path=str(edison_project),
+            coalesce_ms=50,
         )
+    
+        events: list[ChangeEvent] = []
+    
+        async def capture_event(event: ChangeEvent) -> None:
+            events.append(event)
+    
+        watcher.on_change(capture_event)
+    
+        await watcher.start()
+    
+        try:
+            # Wait for watcher to complete initial poll cycle
+            # In polling mode, awatch needs time to establish baseline state
+            # before it can detect changes. Use generous wait for CI stability.
+            await asyncio.sleep(1.5)
+    
+            # Modify the task file - ensure mtime changes
+            await asyncio.sleep(0.1)  # Small gap to ensure mtime differs
+            task_file.write_text(task_content.replace("T001", "T002") + "\nUpdated!")
+    
+            # Wait for FSEvents/polling to deliver the event with retry
+            # Polling mode can be slow in some CI environments
+            for _ in range(8):  # Retry up to 8 times (4 seconds total)
+                await asyncio.sleep(0.5)
+                if events:
+                    break
+    
+        finally:
+            await watcher.stop()
+    
+        # Should detect modification
+>       assert len(events) >= 1
+E       assert 0 >= 1
+E        +  where 0 = len([])
 
-tests/test_api_projects.py:323: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-.venv/lib/python3.13/site-packages/starlette/testclient.py:608: in patch
-    return super().patch(
-.venv/lib/python3.13/site-packages/httpx/_client.py:1218: in patch
-    return self.request(
-.venv/lib/python3.13/site-packages/starlette/testclient.py:445: in request
-    return super().request(
-.venv/lib/python3.13/site-packages/httpx/_client.py:825: in request
-    return self.send(request, auth=auth, follow_redirects=follow_redirects)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/httpx/_client.py:914: in send
-    response = self._send_handling_auth(
-.venv/lib/python3.13/site-packages/httpx/_client.py:942: in _send_handling_auth
-    response = self._send_handling_redirects(
-.venv/lib/python3.13/site-packages/httpx/_client.py:979: in _send_handling_redirects
-    response = self._send_single_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/httpx/_client.py:1014: in _send_single_request
-    response = transport.handle_request(request)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/starlette/testclient.py:348: in handle_request
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/testclient.py:345: in handle_request
-    portal.call(self.app, scope, receive, send)
-.venv/lib/python3.13/site-packages/anyio/from_thread.py:326: in call
-    return cast(T_Retval, self.start_task_soon(func, *args).result())
-                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:456: in result
-    return self.__get_result()
-           ^^^^^^^^^^^^^^^^^^^
-/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py:401: in __get_result
-    raise self._exception
-.venv/lib/python3.13/site-packages/anyio/from_thread.py:257: in _call_func
-    retval = await retval_or_awaitable
-             ^^^^^^^^^^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/fastapi/applications.py:1135: in __call__
-    await super().__call__(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/applications.py:107: in __call__
-    await self.middleware_stack(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:186: in __call__
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/middleware/errors.py:164: in __call__
-    await self.app(scope, receive, _send)
-.venv/lib/python3.13/site-packages/starlette/middleware/cors.py:85: in __call__
-    await self.app(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py:63: in __call__
-    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
-    await app(scope, receive, sender)
-.venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py:18: in __call__
-    await self.app(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/routing.py:716: in __call__
-    await self.middleware_stack(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/routing.py:736: in app
-    await route.handle(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/routing.py:290: in handle
-    await self.app(scope, receive, send)
-.venv/lib/python3.13/site-packages/fastapi/routing.py:115: in app
-    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:53: in wrapped_app
-    raise exc
-.venv/lib/python3.13/site-packages/starlette/_exception_handler.py:42: in wrapped_app
-    await app(scope, receive, sender)
-.venv/lib/python3.13/site-packages/fastapi/routing.py:101: in app
-    response = await f(request)
-               ^^^^^^^^^^^^^^^^
-.venv/lib/python3.13/site-packages/fastapi/routing.py:355: in app
-    raw_response = await run_endpoint_function(
-.venv/lib/python3.13/site-packages/fastapi/routing.py:243: in run_endpoint_function
-    return await dependant.call(**values)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-api/routes/projects.py:140: in pin_project
-    success = service.set_pinned(project_id, body.pinned)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-services/project_discovery.py:266: in set_pinned
-    self._save_pinned_projects()
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_realtime_watcher.py:322: AssertionError
+______________ TestFileWatcher.test_watcher_detects_file_deletion ______________
 
-self = <services.project_discovery.ProjectDiscoveryService object at 0x113a92cd0>
+self = <test_realtime_watcher.TestFileWatcher object at 0x1075e5910>
+edison_project = PosixPath('/private/var/folders/d_/m9w88hfx52j5b2__r8mqj9v80000gn/T/pytest-of-leeroy/pytest-3030/test_watcher_detects_file_dele0/test-project')
+task_content = "---\nid: T001\ntitle: Test Task\ntype: implementation\ncreated_at: '2025-12-27T10:00:00Z'\nupdated_at: '2025-12-27T10:00:00Z'\n---\n# Task T001\nTest task content.\n"
 
-    def _save_pinned_projects(self) -> None:
-        """Save pinned project IDs to storage."""
-        if self.pin_storage_path:
-            self.pin_storage_path.parent.mkdir(parents=True, exist_ok=True)
->           with open(self.pin_storage_path, "w") as f:
-                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-E           PermissionError: [Errno 1] Operation not permitted: '/Users/leeroy/.edison-ui/pins.json'
+    @pytest.mark.asyncio
+    async def test_watcher_detects_file_deletion(
+        self, edison_project: Path, task_content: str
+    ) -> None:
+        """Should detect when a task file is deleted."""
+        from services.realtime.watcher import ChangeType, EntityType, FileWatcher
+    
+        # Pre-create the task file
+        task_file = edison_project / ".project" / "tasks" / "done" / "T003.md"
+        task_file.write_text(task_content.replace("T001", "T003"))
+    
+        watcher = FileWatcher(
+            project_path=str(edison_project),
+            coalesce_ms=50,
+        )
+    
+        events: list[ChangeEvent] = []
+    
+        async def capture_event(event: ChangeEvent) -> None:
+            events.append(event)
+    
+        watcher.on_change(capture_event)
+    
+        await watcher.start()
+    
+        try:
+            await asyncio.sleep(0.3)
+    
+            # Delete the task file
+            task_file.unlink()
+    
+            # Wait for FSEvents/polling to deliver the event
+            # Polling mode uses ~300ms intervals, so 1s gives enough margin
+            await asyncio.sleep(1.0)
+    
+        finally:
+            await watcher.stop()
+    
+        # Should detect deletion
+>       assert len(events) >= 1
+E       assert 0 >= 1
+E        +  where 0 = len([])
 
-services/project_discovery.py:83: PermissionError
+tests/test_realtime_watcher.py:368: AssertionError
+_____________ TestFileWatcher.test_watcher_detects_session_changes _____________
+
+self = <test_realtime_watcher.TestFileWatcher object at 0x1075fc380>
+edison_project = PosixPath('/private/var/folders/d_/m9w88hfx52j5b2__r8mqj9v80000gn/T/pytest-of-leeroy/pytest-3030/test_watcher_detects_session_c0/test-project')
+session_content = {'id': 'session-001', 'meta': {'createdAt': '2025-12-27T10:00:00Z', 'lastActive': '2025-12-27T10:00:00Z', 'sessionId': 'session-001'}, 'phase': 'implementation', 'state': 'active', ...}
+
+    @pytest.mark.asyncio
+    async def test_watcher_detects_session_changes(
+        self, edison_project: Path, session_content: dict[str, object]
+    ) -> None:
+        """Should detect session.json file changes."""
+        from services.realtime.watcher import EntityType, FileWatcher
+    
+        watcher = FileWatcher(
+            project_path=str(edison_project),
+            coalesce_ms=50,
+        )
+    
+        events: list[ChangeEvent] = []
+    
+        async def capture_event(event: ChangeEvent) -> None:
+            events.append(event)
+    
+        watcher.on_change(capture_event)
+    
+        await watcher.start()
+    
+        try:
+            await asyncio.sleep(0.3)
+    
+            # Create session directory and file
+            session_dir = (
+                edison_project / ".project" / "sessions" / "active" / "session-001"
+            )
+            session_dir.mkdir(parents=True, exist_ok=True)
+            session_file = session_dir / "session.json"
+            session_file.write_text(json.dumps(session_content))
+    
+            # Wait for FSEvents/polling to deliver the event
+            # Polling mode uses ~300ms intervals, so 1s gives enough margin
+            await asyncio.sleep(1.0)
+    
+        finally:
+            await watcher.stop()
+    
+        # Should detect session creation
+>       assert len(events) >= 1
+E       assert 0 >= 1
+E        +  where 0 = len([])
+
+tests/test_realtime_watcher.py:414: AssertionError
+_______________ TestFileWatcher.test_watcher_detects_qa_changes ________________
+
+self = <test_realtime_watcher.TestFileWatcher object at 0x1075fc490>
+edison_project = PosixPath('/private/var/folders/d_/m9w88hfx52j5b2__r8mqj9v80000gn/T/pytest-of-leeroy/pytest-3030/test_watcher_detects_qa_change0/test-project')
+qa_content = "---\nid: T001-qa\ntask_id: T001\nround: 1\nvalidators:\n  - validator-a\ncreated_at: '2025-12-27T10:00:00Z'\nupdated_at: '2025-12-27T10:00:00Z'\n---\n# QA for T001\n"
+
+    @pytest.mark.asyncio
+    async def test_watcher_detects_qa_changes(
+        self, edison_project: Path, qa_content: str
+    ) -> None:
+        """Should detect QA file changes."""
+        from services.realtime.watcher import EntityType, FileWatcher
+    
+        watcher = FileWatcher(
+            project_path=str(edison_project),
+            coalesce_ms=50,
+        )
+    
+        events: list[ChangeEvent] = []
+    
+        async def capture_event(event: ChangeEvent) -> None:
+            events.append(event)
+    
+        watcher.on_change(capture_event)
+    
+        await watcher.start()
+    
+        try:
+            await asyncio.sleep(0.3)
+    
+            # Create QA file
+            qa_file = edison_project / ".project" / "qa" / "wip" / "T001-qa.md"
+            qa_file.write_text(qa_content)
+    
+            # Wait for FSEvents/polling to deliver the event
+            # Polling mode uses ~300ms intervals, so 1s gives enough margin
+            await asyncio.sleep(1.0)
+    
+        finally:
+            await watcher.stop()
+    
+        # Should detect QA creation
+>       assert len(events) >= 1
+E       assert 0 >= 1
+E        +  where 0 = len([])
+
+tests/test_realtime_watcher.py:455: AssertionError
+_________ TestChangeCoalescing.test_does_not_coalesce_different_files __________
+
+self = <test_realtime_watcher.TestChangeCoalescing object at 0x1075a6fd0>
+edison_project = PosixPath('/private/var/folders/d_/m9w88hfx52j5b2__r8mqj9v80000gn/T/pytest-of-leeroy/pytest-3030/test_does_not_coalesce_differe0/test-project')
+task_content = "---\nid: T001\ntitle: Test Task\ntype: implementation\ncreated_at: '2025-12-27T10:00:00Z'\nupdated_at: '2025-12-27T10:00:00Z'\n---\n# Task T001\nTest task content.\n"
+
+    @pytest.mark.asyncio
+    async def test_does_not_coalesce_different_files(
+        self, edison_project: Path, task_content: str
+    ) -> None:
+        """Should not coalesce changes to different files."""
+        from services.realtime.watcher import FileWatcher
+    
+        watcher = FileWatcher(
+            project_path=str(edison_project),
+            coalesce_ms=100,
+        )
+    
+        events: list[ChangeEvent] = []
+    
+        async def capture_event(event: ChangeEvent) -> None:
+            events.append(event)
+    
+        watcher.on_change(capture_event)
+    
+        await watcher.start()
+    
+        try:
+            await asyncio.sleep(0.3)
+    
+            # Create two different files
+            task1 = edison_project / ".project" / "tasks" / "todo" / "T011.md"
+            task2 = edison_project / ".project" / "tasks" / "todo" / "T012.md"
+            task1.write_text(task_content.replace("T001", "T011"))
+            task2.write_text(task_content.replace("T001", "T012"))
+    
+            # Wait for FSEvents/polling to deliver the events
+            # Polling mode uses ~300ms intervals, so 1s gives enough margin
+            await asyncio.sleep(1.0)
+    
+        finally:
+            await watcher.stop()
+    
+        # Should have events for both files
+        entity_ids = {e.entity_id for e in events}
+>       assert "T011" in entity_ids
+E       AssertionError: assert 'T011' in set()
+
+tests/test_realtime_watcher.py:550: AssertionError
+___________________ TestRealtimePipeline.test_full_pipeline ____________________
+
+self = <test_realtime_watcher.TestRealtimePipeline object at 0x1075a7890>
+edison_project = PosixPath('/private/var/folders/d_/m9w88hfx52j5b2__r8mqj9v80000gn/T/pytest-of-leeroy/pytest-3030/test_full_pipeline0/test-project')
+task_content = "---\nid: T001\ntitle: Test Task\ntype: implementation\ncreated_at: '2025-12-27T10:00:00Z'\nupdated_at: '2025-12-27T10:00:00Z'\n---\n# Task T001\nTest task content.\n"
+
+    @pytest.mark.asyncio
+    async def test_full_pipeline(self, edison_project: Path, task_content: str) -> None:
+        """Should detect changes, compute diffs, and publish events."""
+        from services.realtime.differ import Differ
+        from services.realtime.publisher import MemoryPublisher
+        from services.realtime.watcher import EntityType, FileWatcher
+    
+        publisher = MemoryPublisher(max_queue_size=100)
+        differ = Differ(project_path=str(edison_project))
+        watcher = FileWatcher(
+            project_path=str(edison_project),
+            coalesce_ms=50,
+        )
+    
+        async def process_change(event: ChangeEvent) -> None:
+            result = differ.process_change(event)
+            if result:
+                await publisher.publish(result)
+    
+        watcher.on_change(process_change)
+    
+        await watcher.start()
+    
+        try:
+            await asyncio.sleep(0.3)
+    
+            # Create a task
+            task_file = edison_project / ".project" / "tasks" / "todo" / "T100.md"
+            task_file.write_text(task_content.replace("T001", "T100"))
+    
+            # Wait for FSEvents/polling to deliver the event
+            # Polling mode uses ~300ms intervals, so 1s gives enough margin
+            await asyncio.sleep(1.0)
+    
+        finally:
+            await watcher.stop()
+    
+        # Verify full pipeline worked
+        events = publisher.get_events()
+>       assert len(events) >= 1
+E       assert 0 >= 1
+E        +  where 0 = len([])
+
+tests/test_realtime_watcher.py:832: AssertionError
+___________ TestRealtimePipeline.test_pipeline_handles_rapid_updates ___________
+
+self = <test_realtime_watcher.TestRealtimePipeline object at 0x1075a79d0>
+edison_project = PosixPath('/private/var/folders/d_/m9w88hfx52j5b2__r8mqj9v80000gn/T/pytest-of-leeroy/pytest-3030/test_pipeline_handles_rapid_up0/test-project')
+task_content = "---\nid: T001\ntitle: Test Task\ntype: implementation\ncreated_at: '2025-12-27T10:00:00Z'\nupdated_at: '2025-12-27T10:00:00Z'\n---\n# Task T001\nTest task content.\n"
+
+    @pytest.mark.asyncio
+    async def test_pipeline_handles_rapid_updates(
+        self, edison_project: Path, task_content: str
+    ) -> None:
+        """Pipeline should handle rapid file updates gracefully."""
+        from services.realtime.differ import Differ
+        from services.realtime.publisher import MemoryPublisher
+        from services.realtime.watcher import FileWatcher
+    
+        publisher = MemoryPublisher(max_queue_size=100)
+        differ = Differ(project_path=str(edison_project))
+        watcher = FileWatcher(
+            project_path=str(edison_project),
+            coalesce_ms=100,
+        )
+    
+        async def process_change(event: ChangeEvent) -> None:
+            result = differ.process_change(event)
+            if result:
+                await publisher.publish(result)
+    
+        watcher.on_change(process_change)
+    
+        await watcher.start()
+    
+        try:
+            await asyncio.sleep(0.3)
+    
+            task_file = edison_project / ".project" / "tasks" / "wip" / "T200.md"
+    
+            # Rapid updates
+            for i in range(10):
+                content = task_content.replace("T001", "T200") + f"\nUpdate {i}"
+                task_file.write_text(content)
+                await asyncio.sleep(0.05)  # 50ms between updates
+    
+            # Wait for FSEvents/polling + coalescing
+            # Polling mode uses ~300ms intervals, so 1.2s gives enough margin
+            await asyncio.sleep(1.2)
+    
+        finally:
+            await watcher.stop()
+    
+        # Should have processed events without errors
+        events = publisher.get_events()
+        # Due to coalescing, should have fewer than 10 events
+        assert len(events) < 10
+>       assert len(events) >= 1
+E       assert 0 >= 1
+E        +  where 0 = len([])
+
+tests/test_realtime_watcher.py:888: AssertionError
 =========================== short test summary info ============================
-FAILED tests/test_api_projects.py::TestPinProject::test_pin_project_returns_200
-FAILED tests/test_api_projects.py::TestPinProject::test_pin_project_returns_updated_status
-FAILED tests/test_api_projects.py::TestPinProject::test_unpin_project - Permi...
-3 failed, 132 passed in 0.87s
+FAILED tests/test_realtime_watcher.py::TestFileWatcher::test_watcher_detects_file_creation
+FAILED tests/test_realtime_watcher.py::TestFileWatcher::test_watcher_detects_file_modification
+FAILED tests/test_realtime_watcher.py::TestFileWatcher::test_watcher_detects_file_deletion
+FAILED tests/test_realtime_watcher.py::TestFileWatcher::test_watcher_detects_session_changes
+FAILED tests/test_realtime_watcher.py::TestFileWatcher::test_watcher_detects_qa_changes
+FAILED tests/test_realtime_watcher.py::TestChangeCoalescing::test_does_not_coalesce_different_files
+FAILED tests/test_realtime_watcher.py::TestRealtimePipeline::test_full_pipeline
+FAILED tests/test_realtime_watcher.py::TestRealtimePipeline::test_pipeline_handles_rapid_updates
+8 failed, 567 passed in 59.13s
 make: *** [backend-test] Error 1
