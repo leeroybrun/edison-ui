@@ -254,4 +254,74 @@ describe("AuditEventList", () => {
     // session-1 appears in 2 events
     expect(screen.getAllByText("session-1")).toHaveLength(2);
   });
+
+  it("handles null exitCode gracefully", () => {
+    const itemsWithNullExitCode: AuditEvent[] = [
+      {
+        ts: "2025-12-27T10:00:00Z",
+        event: "cli.invocation.start",
+        invocationId: "inv-null",
+        sessionId: null,
+        taskId: null,
+        command: "edison task list",
+        exitCode: null,
+        durationMs: 100,
+        projectRoot: null,
+        pid: null,
+      },
+    ];
+
+    render(
+      <AuditEventList
+        items={itemsWithNullExitCode}
+        loading={false}
+        hasMore={false}
+        onLoadMore={() => {}}
+        showRaw={false}
+      />,
+    );
+
+    // Should display "-" for null exit code, not "null"
+    const badges = screen.getAllByText("-");
+    expect(badges.length).toBeGreaterThanOrEqual(1);
+
+    // Tooltip should show "N/A" for null exit code
+    const badge = screen.getByTitle("Exit code: N/A");
+    expect(badge).toBeInTheDocument();
+  });
+
+  it("handles null durationMs gracefully", () => {
+    const itemsWithNullDuration: AuditEvent[] = [
+      {
+        ts: "2025-12-27T10:00:00Z",
+        event: "cli.invocation.end",
+        invocationId: "inv-null-dur",
+        sessionId: null,
+        taskId: null,
+        command: "edison session start",
+        exitCode: 0,
+        durationMs: null,
+        projectRoot: null,
+        pid: null,
+      },
+    ];
+
+    render(
+      <AuditEventList
+        items={itemsWithNullDuration}
+        loading={false}
+        hasMore={false}
+        onLoadMore={() => {}}
+        showRaw={false}
+      />,
+    );
+
+    // Should display "-" for null duration, not "null" or "nullms"
+    const durationElements = screen.getAllByText("-");
+    expect(durationElements.length).toBeGreaterThanOrEqual(1);
+
+    // Should NOT display "nullms"
+    expect(screen.queryByText(/nullms/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/null/)).not.toBeInTheDocument();
+  });
 });

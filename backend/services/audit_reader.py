@@ -7,11 +7,50 @@ with filtering, pagination, and automatic redaction of sensitive data.
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel
+
+
+def _parse_timestamp(ts: str) -> datetime | None:
+    """Parse an ISO timestamp string to a timezone-aware datetime.
+
+    Handles various formats:
+    - Full ISO with Z suffix: 2025-12-27T10:00:00Z
+    - Full ISO with offset: 2025-12-27T10:00:00+00:00
+    - Date only: 2025-12-27 (assumes start of day UTC)
+    - Naive datetime: 2025-12-27T10:00:00 (assumes UTC)
+
+    Returns None if parsing fails.
+    """
+    if not ts:
+        return None
+
+    try:
+        # Handle Z suffix
+        ts_normalized = ts.replace("Z", "+00:00")
+
+        # Try parsing as full ISO format
+        dt = datetime.fromisoformat(ts_normalized)
+
+        # If naive (no timezone), assume UTC
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+
+        return dt
+    except ValueError:
+        pass
+
+    # Try parsing as date only
+    try:
+        date_only = datetime.strptime(ts, "%Y-%m-%d")
+        return date_only.replace(tzinfo=timezone.utc)
+    except ValueError:
+        pass
+
+    return None
 
 
 class AuditEventItem(BaseModel):
@@ -165,12 +204,7 @@ class AuditReaderService:
         entries = self._read_entries()
 
         # Parse since timestamp if provided
-        since_dt: datetime | None = None
-        if since:
-            try:
-                since_dt = datetime.fromisoformat(since.replace("Z", "+00:00"))
-            except ValueError:
-                pass  # Invalid timestamp, ignore filter
+        since_dt = _parse_timestamp(since) if since else None
 
         # Filter entries
         filtered: list[dict[str, Any]] = []
@@ -188,15 +222,9 @@ class AuditReaderService:
             # Since timestamp filter
             if since_dt is not None:
                 entry_ts = entry.get("ts")
-                if entry_ts:
-                    try:
-                        entry_dt = datetime.fromisoformat(
-                            entry_ts.replace("Z", "+00:00")
-                        )
-                        if entry_dt < since_dt:
-                            continue
-                    except ValueError:
-                        pass  # Invalid timestamp, include the entry
+                entry_dt = _parse_timestamp(entry_ts) if entry_ts else None
+                if entry_dt is not None and entry_dt < since_dt:
+                    continue
 
             filtered.append(entry)
 
@@ -258,12 +286,7 @@ class AuditReaderService:
         entries = self._read_entries()
 
         # Parse since timestamp if provided
-        since_dt: datetime | None = None
-        if since:
-            try:
-                since_dt = datetime.fromisoformat(since.replace("Z", "+00:00"))
-            except ValueError:
-                pass
+        since_dt = _parse_timestamp(since) if since else None
 
         # Filter to CLI invocation end events only (they have exit_code)
         # This gives us complete invocations with outcome
@@ -288,15 +311,18 @@ class AuditReaderService:
             # Since timestamp filter
             if since_dt is not None:
                 entry_ts = entry.get("ts")
-                if entry_ts:
-                    try:
-                        entry_dt = datetime.fromisoformat(
-                            entry_ts.replace("Z", "+00:00")
-                        )
-                        if entry_dt < since_dt:
-                            continue
-                    except ValueError:
-                        pass
+                entry_dt = _parse_timestamp(entry_ts) if entry_ts else None
+                if entry_dt is not None and entry_dt < since_dt:
+                    continue
+
+            # Derive event type from command for filtering
+            command = entry.get("command", "")
+            event_type_derived = command.replace(" ", ".") if command else "unknown"
+
+            # Filter by event_type if provided (do this before limiting)
+            if event_type is not None:
+                if event_type_derived != event_type:
+                    continue
 
             cli_events.append(entry)
 
@@ -315,11 +341,6 @@ class AuditReaderService:
             # Derive event type from command
             # e.g., "session create" -> "session.create"
             event_type_derived = command.replace(" ", ".") if command else "unknown"
-
-            # Filter by event_type if provided
-            if event_type is not None:
-                if event_type_derived != event_type:
-                    continue
 
             # Generate summary
             exit_code = entry.get("exit_code", 0)

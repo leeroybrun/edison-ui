@@ -171,9 +171,9 @@ export function AuditEventList({
                 {/* Exit code badge */}
                 <span
                   className={`rounded-full px-2 py-0.5 text-xs font-medium ${getExitCodeColor(item.exitCode)}`}
-                  title={`Exit code: ${item.exitCode}`}
+                  title={item.exitCode !== null ? `Exit code: ${item.exitCode}` : "Exit code: N/A"}
                 >
-                  {item.exitCode}
+                  {item.exitCode !== null ? item.exitCode : "-"}
                 </span>
 
                 {/* Duration */}
@@ -261,12 +261,12 @@ export function AuditEventList({
                     )}
                     <div>
                       <dt className="text-gray-500">Exit Code</dt>
-                      <dd className="text-gray-900">{item.exitCode}</dd>
+                      <dd className="text-gray-900">{item.exitCode ?? "-"}</dd>
                     </div>
                     <div>
                       <dt className="text-gray-500">Duration</dt>
                       <dd className="text-gray-900">
-                        {formatDuration(item.durationMs)} ({item.durationMs}ms)
+                        {formatDuration(item.durationMs)}{item.durationMs !== null ? ` (${item.durationMs}ms)` : ""}
                       </dd>
                     </div>
                   </dl>

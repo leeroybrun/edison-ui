@@ -299,3 +299,201 @@ class TestActivityConversion:
         # Only CLI invocation should show, not subprocess
         assert len(result.items) == 1
         assert result.items[0].event_type == "session.create"
+
+
+class TestTimestampParsing:
+    """Test cases for _parse_timestamp datetime handling."""
+
+    def test_parse_iso_with_z_suffix(self) -> None:
+        """Should parse ISO timestamp with Z suffix."""
+        from datetime import timezone
+
+        from services.audit_reader import _parse_timestamp
+
+        result = _parse_timestamp("2026-01-01T10:00:00Z")
+        assert result is not None
+        assert result.tzinfo == timezone.utc
+        assert result.year == 2026
+        assert result.month == 1
+        assert result.hour == 10
+
+    def test_parse_iso_with_offset(self) -> None:
+        """Should parse ISO timestamp with explicit offset."""
+        from services.audit_reader import _parse_timestamp
+
+        result = _parse_timestamp("2026-01-01T10:00:00+00:00")
+        assert result is not None
+        assert result.tzinfo is not None
+
+    def test_parse_date_only(self) -> None:
+        """Should parse date-only string as start of day UTC."""
+        from datetime import timezone
+
+        from services.audit_reader import _parse_timestamp
+
+        result = _parse_timestamp("2026-01-01")
+        assert result is not None
+        assert result.tzinfo == timezone.utc
+        assert result.hour == 0
+        assert result.minute == 0
+        assert result.second == 0
+
+    def test_parse_naive_datetime(self) -> None:
+        """Should parse naive datetime and assume UTC."""
+        from datetime import timezone
+
+        from services.audit_reader import _parse_timestamp
+
+        result = _parse_timestamp("2026-01-01T10:00:00")
+        assert result is not None
+        assert result.tzinfo == timezone.utc
+
+    def test_parse_empty_string(self) -> None:
+        """Should return None for empty string."""
+        from services.audit_reader import _parse_timestamp
+
+        result = _parse_timestamp("")
+        assert result is None
+
+    def test_parse_invalid_format(self) -> None:
+        """Should return None for invalid timestamp format."""
+        from services.audit_reader import _parse_timestamp
+
+        result = _parse_timestamp("not-a-timestamp")
+        assert result is None
+
+    def test_filter_since_with_date_only(self, tmp_path: Path) -> None:
+        """Should correctly filter using date-only since parameter."""
+        import json
+
+        from services.audit_reader import AuditReaderService
+
+        # Create project structure
+        edison_logs = tmp_path / ".project" / "logs" / "edison"
+        edison_logs.mkdir(parents=True)
+
+        # Create audit log with entries on different dates
+        entries = [
+            {
+                "ts": "2026-01-01T10:00:00Z",
+                "event": "cli.invocation.end",
+                "command": "old command",
+                "exit_code": 0,
+            },
+            {
+                "ts": "2026-01-02T10:00:00Z",
+                "event": "cli.invocation.end",
+                "command": "new command",
+                "exit_code": 0,
+            },
+        ]
+        audit_path = edison_logs / "audit.jsonl"
+        with open(audit_path, "w") as f:
+            for entry in entries:
+                f.write(json.dumps(entry) + "\n")
+
+        service = AuditReaderService(tmp_path)
+        # Filter since 2026-01-02 (date only)
+        result = service.read_audit_events(since="2026-01-02")
+
+        # Should only include the entry from 2026-01-02
+        assert len(result.items) == 1
+        assert result.items[0].command == "new command"
+
+
+class TestActivityPaginationWithFiltering:
+    """Test correct pagination when filtering is applied."""
+
+    def test_event_type_filter_before_limit(self, tmp_path: Path) -> None:
+        """Event type filtering should be applied before limiting for correct pagination."""
+        import json
+
+        from services.audit_reader import AuditReaderService
+
+        # Create project structure
+        edison_logs = tmp_path / ".project" / "logs" / "edison"
+        edison_logs.mkdir(parents=True)
+
+        # Create audit log with mixed event types
+        # If filtering happens after limiting, we'd get wrong results
+        entries = []
+        for i in range(10):
+            # 5 entries with "session create" command
+            entries.append({
+                "ts": f"2026-01-01T{10+i:02d}:00:00Z",
+                "event": "cli.invocation.end",
+                "command": "session create",
+                "exit_code": 0,
+            })
+            # 5 entries with "task claim" command
+            entries.append({
+                "ts": f"2026-01-01T{10+i:02d}:30:00Z",
+                "event": "cli.invocation.end",
+                "command": "task claim",
+                "exit_code": 0,
+            })
+
+        audit_path = edison_logs / "audit.jsonl"
+        with open(audit_path, "w") as f:
+            for entry in entries:
+                f.write(json.dumps(entry) + "\n")
+
+        service = AuditReaderService(tmp_path)
+
+        # Request 3 items with event_type filter
+        # If filter happens before limit: returns 3 "session.create" items, has_more=True
+        # If filter happens after limit: would return fewer items incorrectly
+        result = service.read_activity(event_type="session.create", limit=3)
+
+        # Should get exactly 3 items
+        assert len(result.items) == 3
+        # All items should match the filter
+        for item in result.items:
+            assert item.event_type == "session.create"
+        # Should indicate more items are available (5 total, only 3 returned)
+        assert result.has_more is True
+
+    def test_event_type_filter_has_more_false_when_exhausted(self, tmp_path: Path) -> None:
+        """has_more should be False when all matching items are returned."""
+        import json
+
+        from services.audit_reader import AuditReaderService
+
+        edison_logs = tmp_path / ".project" / "logs" / "edison"
+        edison_logs.mkdir(parents=True)
+
+        # Only 2 items with matching event type
+        entries = [
+            {
+                "ts": "2026-01-01T10:00:00Z",
+                "event": "cli.invocation.end",
+                "command": "session create",
+                "exit_code": 0,
+            },
+            {
+                "ts": "2026-01-01T11:00:00Z",
+                "event": "cli.invocation.end",
+                "command": "session create",
+                "exit_code": 0,
+            },
+            {
+                "ts": "2026-01-01T12:00:00Z",
+                "event": "cli.invocation.end",
+                "command": "task claim",  # Different event type
+                "exit_code": 0,
+            },
+        ]
+
+        audit_path = edison_logs / "audit.jsonl"
+        with open(audit_path, "w") as f:
+            for entry in entries:
+                f.write(json.dumps(entry) + "\n")
+
+        service = AuditReaderService(tmp_path)
+        # Request up to 10 "session.create" items
+        result = service.read_activity(event_type="session.create", limit=10)
+
+        # Should get 2 items
+        assert len(result.items) == 2
+        # has_more should be False since we got all matching items
+        assert result.has_more is False
