@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 
 import { ProjectSidebar } from "../../../components/ProjectSidebar";
@@ -150,9 +150,9 @@ export default function ProjectLayout({ children }: ProjectLayoutProps) {
   const projectName = projectId;
   const activeItem = getActiveItem(pathname, projectId);
 
-  // Get API base URL from environment or default
-  const apiBaseUrl =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  // Get API base URL from environment or default (base origin, components add /api/v1)
+  const apiOrigin = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const apiBaseUrl = `${apiOrigin}/api/v1`;
 
   const handleOpenSearch = useCallback(() => {
     setIsSearchOpen(true);
@@ -161,6 +161,30 @@ export default function ProjectLayout({ children }: ProjectLayoutProps) {
   const handleCloseSearch = useCallback(() => {
     setIsSearchOpen(false);
   }, []);
+
+  // Global keyboard shortcut for "/" to open search
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input/textarea
+      const target = event.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      // "/" opens search dialog
+      if (event.key === "/" && !isSearchOpen) {
+        event.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isSearchOpen]);
 
   const handleSearchSelect = useCallback(
     (result: SearchResult) => {

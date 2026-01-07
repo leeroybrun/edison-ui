@@ -19,9 +19,9 @@ export default function SettingsPage() {
   const params = useParams<{ projectId: string }>();
   const projectId = params.projectId;
 
-  // Get API base URL from environment or default
-  const apiBaseUrl =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+  // Get API base URL from environment or default (base origin, component expects /api/v1)
+  const apiOrigin = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const apiBaseUrl = `${apiOrigin}/api/v1`;
 
   return (
     <div className="mx-auto max-w-4xl">
