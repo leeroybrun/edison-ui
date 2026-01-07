@@ -1,12 +1,11 @@
 validation:
   context7:
     enabled: false
-  timeout: 1800
+  defaultPreset: custom-minimal
   defaults:
     web_server:
       lock:
         enabled: true
-  defaultPreset: custom-minimal
   presets:
     custom-minimal:
       blocking_validators:
@@ -30,24 +29,7 @@ validation:
         - browser-e2e
         optional:
         - global-codex
-  web_servers:
-    edison-ui-browser-e2e:
-      url: http://localhost:3334
-      healthcheck_url: http://localhost:3334
-      ensure_running: true
-      start:
-        command: "./.edison/scripts/start-server.sh"
-        cwd: "."
-      stop:
-        command: "./.edison/scripts/stop-server.sh"
-        cwd: "."
-        run_even_if_no_process: true
-      verify:
-        steps:
-          - kind: http
-            url: "{probe_url}"
-          - kind: command
-            command: "./.edison/scripts/verify-server.sh"
+  timeout: 1800
   validators:
     browser-e2e:
       blocking: true
@@ -64,9 +46,9 @@ validation:
       - '**/styles/**/*'
       - '**/public/**/*'
       web_server:
-        ref: edison-ui-browser-e2e
-        url: http://localhost:3334
+        ref: browser-e2e
         stop_after: true
+        url: http://localhost:3334
     global-auggie:
       enabled: false
     global-claude:
@@ -79,3 +61,31 @@ validation:
       enabled: false
     testing:
       blocking: false
+  web_servers:
+    browser-e2e:
+      cwd: ''
+      ensure_running: true
+      healthcheck_url: ''
+      start:
+        command: null
+      stop:
+        command: ''
+      stop_after: ''
+      url: http://localhost:3000
+    edison-ui-browser-e2e:
+      ensure_running: true
+      healthcheck_url: http://localhost:3334
+      start:
+        command: ./.edison/scripts/start-server.sh
+        cwd: .
+      stop:
+        command: ./.edison/scripts/stop-server.sh
+        cwd: .
+        run_even_if_no_process: true
+      url: http://localhost:3334
+      verify:
+        steps:
+        - kind: http
+          url: '{probe_url}'
+        - command: ./.edison/scripts/verify-server.sh
+          kind: command

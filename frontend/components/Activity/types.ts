@@ -20,7 +20,7 @@ export interface ActivityItem {
   sessionId: string | null;
   taskId: string | null;
   invocationId: string | null;
-  actor: Actor;
+  actor: Actor | null;
 }
 
 /**
@@ -37,11 +37,14 @@ export interface ActivityResponse {
 export interface AuditEvent {
   ts: string;
   event: string;
-  invocationId: string;
+  invocationId: string | null;
   sessionId: string | null;
-  command: string;
-  exitCode: number;
-  durationMs: number;
+  taskId: string | null;
+  command: string | null;
+  exitCode: number | null;
+  durationMs: number | null;
+  projectRoot: string | null;
+  pid: number | null;
 }
 
 /**

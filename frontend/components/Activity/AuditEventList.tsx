@@ -7,7 +7,10 @@ import type { AuditEvent } from "./types";
 /**
  * Format duration in human-readable format
  */
-function formatDuration(ms: number): string {
+function formatDuration(ms: number | null): string {
+  if (ms === null) {
+    return "-";
+  }
   if (ms < 1000) {
     return `${ms}ms`;
   }
@@ -32,7 +35,10 @@ function formatTimestamp(timestamp: string): string {
 /**
  * Get exit code badge color
  */
-function getExitCodeColor(exitCode: number): string {
+function getExitCodeColor(exitCode: number | null): string {
+  if (exitCode === null) {
+    return "bg-gray-100 text-gray-800";
+  }
   if (exitCode === 0) {
     return "bg-green-100 text-green-800";
   }
@@ -71,7 +77,8 @@ export function AuditEventList({
 }: AuditEventListProps) {
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
 
-  const toggleExpanded = (invocationId: string) => {
+  const toggleExpanded = (invocationId: string | null) => {
+    if (invocationId === null) return;
     setExpandedItems((prev) => {
       const next = new Set(prev);
       if (next.has(invocationId)) {
@@ -141,11 +148,12 @@ export function AuditEventList({
     <div className="space-y-4">
       <ul className="space-y-2" role="list">
         {items.map((item, index) => {
-          const isExpanded = expandedItems.has(item.invocationId) || showRaw;
+          const itemKey = item.invocationId ?? `event-${index}`;
+          const isExpanded = (item.invocationId && expandedItems.has(item.invocationId)) || showRaw;
 
           return (
             <li
-              key={`${item.invocationId}-${index}`}
+              key={`${itemKey}-${index}`}
               className="rounded-lg border bg-white shadow-sm"
             >
               {/* Main row */}
