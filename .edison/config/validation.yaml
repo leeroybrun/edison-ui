@@ -46,7 +46,7 @@ validation:
       - '**/styles/**/*'
       - '**/public/**/*'
       web_server:
-        ref: browser-e2e
+        ref: edison-ui-browser-e2e
         stop_after: true
         url: http://localhost:3334
     global-auggie:

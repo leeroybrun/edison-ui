@@ -5,12 +5,18 @@
 /**
  * Session states from backend SessionReaderService.
  * These match the directory names under .project/sessions/
+ * Must stay in sync with backend VALID_SESSION_STATES.
  */
 export type SessionState =
   | "draft"
   | "active"
+  | "blocked"
   | "paused"
+  | "done"
+  | "closing"
   | "completed"
+  | "validated"
+  | "archived"
   | "abandoned";
 
 export type ViewMode = "list" | "board";

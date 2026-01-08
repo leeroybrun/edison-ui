@@ -13,12 +13,18 @@ import type {
 
 /**
  * All valid session states matching backend SESSION_STATES
+ * Must stay in sync with backend VALID_SESSION_STATES.
  */
 const SESSION_STATES: SessionState[] = [
   "draft",
   "active",
+  "blocked",
   "paused",
+  "done",
+  "closing",
   "completed",
+  "validated",
+  "archived",
   "abandoned",
 ];
 
@@ -28,8 +34,13 @@ const SESSION_STATES: SessionState[] = [
 const STATE_COLORS: Record<SessionState, string> = {
   draft: "bg-gray-100 text-gray-800",
   active: "bg-blue-100 text-blue-800",
+  blocked: "bg-orange-100 text-orange-800",
   paused: "bg-yellow-100 text-yellow-800",
+  done: "bg-teal-100 text-teal-800",
+  closing: "bg-purple-100 text-purple-800",
   completed: "bg-green-100 text-green-800",
+  validated: "bg-emerald-100 text-emerald-800",
+  archived: "bg-slate-100 text-slate-800",
   abandoned: "bg-red-100 text-red-800",
 };
 
@@ -39,8 +50,13 @@ const STATE_COLORS: Record<SessionState, string> = {
 const COLUMN_LABELS: Record<SessionState, string> = {
   draft: "Draft",
   active: "Active",
+  blocked: "Blocked",
   paused: "Paused",
+  done: "Done",
+  closing: "Closing",
   completed: "Completed",
+  validated: "Validated",
+  archived: "Archived",
   abandoned: "Abandoned",
 };
 
@@ -108,12 +124,20 @@ export function SessionsView({
     const grouped: Record<SessionState, Session[]> = {
       draft: [],
       active: [],
+      blocked: [],
       paused: [],
+      done: [],
+      closing: [],
       completed: [],
+      validated: [],
+      archived: [],
       abandoned: [],
     };
     filteredSessions.forEach((session) => {
-      grouped[session.state].push(session);
+      // Handle unknown states gracefully by only pushing to known states
+      if (session.state in grouped) {
+        grouped[session.state].push(session);
+      }
     });
     return grouped;
   }, [filteredSessions]);
