@@ -115,6 +115,35 @@ async def list_sessions(
     )
 
 
+@router.get("/{session_id}", response_model=SessionListItem)
+async def get_session(
+    project_id: str,
+    session_id: str,
+) -> SessionListItem:
+    """Get a specific session by ID."""
+    project_path = get_project_path(project_id)
+
+    session_reader = SessionReaderService(project_path)
+    session = session_reader.get_session(session_id)
+
+    if session is None:
+        raise HTTPException(status_code=404, detail=f"Session {session_id} not found")
+
+    return SessionListItem(
+        session_id=session.session_id,
+        state=session.state,
+        phase=session.phase,
+        owner=session.owner,
+        task_count=session.task_count,
+        created_at=session.created_at,
+        last_active_at=session.last_active_at,
+        git=SessionGitInfo(
+            branch_name=session.git.branch_name,
+            base_branch=session.git.base_branch,
+        ),
+    )
+
+
 # =============================================================================
 # Guarded Session Create Endpoints (T041)
 # =============================================================================

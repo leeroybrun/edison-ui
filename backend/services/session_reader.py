@@ -40,6 +40,7 @@ class SessionReaderService:
     SESSION_STATES = [
         "draft",
         "active",
+        "wip",
         "blocked",
         "paused",
         "done",
