@@ -68,13 +68,13 @@ export function AuditFilters({
   return (
     <div className="flex flex-wrap gap-4">
       {/* Session filter */}
-      <div className="flex flex-col">
+      <div className="flex min-w-0 flex-col">
         <label className="sr-only" htmlFor="session-filter">
           Filter by session
         </label>
         <select
           aria-label="Filter by session"
-          className="h-9 rounded-md border border-gray-300 bg-white px-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="h-9 max-w-[200px] truncate rounded-md border border-gray-300 bg-white px-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="session-filter"
           onChange={handleSessionChange}
           value={filters.sessionId || ""}
@@ -89,13 +89,13 @@ export function AuditFilters({
       </div>
 
       {/* Task filter */}
-      <div className="flex flex-col">
+      <div className="flex min-w-0 flex-col">
         <label className="sr-only" htmlFor="task-filter">
           Filter by task
         </label>
         <select
           aria-label="Filter by task"
-          className="h-9 rounded-md border border-gray-300 bg-white px-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="h-9 max-w-[280px] truncate rounded-md border border-gray-300 bg-white px-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="task-filter"
           onChange={handleTaskChange}
           value={filters.taskId || ""}
@@ -110,13 +110,13 @@ export function AuditFilters({
       </div>
 
       {/* Event type filter */}
-      <div className="flex flex-col">
+      <div className="flex min-w-0 flex-col">
         <label className="sr-only" htmlFor="event-type-filter">
           Filter by event type
         </label>
         <select
           aria-label="Filter by event type"
-          className="h-9 rounded-md border border-gray-300 bg-white px-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="h-9 max-w-[180px] truncate rounded-md border border-gray-300 bg-white px-3 pr-8 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           id="event-type-filter"
           onChange={handleEventTypeChange}
           value={filters.eventType || ""}
