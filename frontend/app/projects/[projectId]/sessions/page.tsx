@@ -58,14 +58,20 @@ function parseViewMode(view?: string): ViewMode {
 
 /**
  * Validate state filter from search params.
- * Matches backend SESSION_STATES: draft, active, paused, completed, abandoned
+ * Matches backend SESSION_STATES - all valid session lifecycle states.
  */
 function parseStateFilter(state?: string): SessionState | undefined {
   const validStates: SessionState[] = [
     "draft",
     "active",
+    "wip",
+    "blocked",
     "paused",
+    "done",
+    "closing",
     "completed",
+    "validated",
+    "archived",
     "abandoned",
   ];
   if (state && validStates.includes(state as SessionState)) {

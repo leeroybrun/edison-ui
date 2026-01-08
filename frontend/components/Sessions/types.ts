@@ -10,6 +10,7 @@
 export type SessionState =
   | "draft"
   | "active"
+  | "wip"
   | "blocked"
   | "paused"
   | "done"

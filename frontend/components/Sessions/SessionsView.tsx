@@ -18,6 +18,7 @@ import type {
 const SESSION_STATES: SessionState[] = [
   "draft",
   "active",
+  "wip",
   "blocked",
   "paused",
   "done",
@@ -34,6 +35,7 @@ const SESSION_STATES: SessionState[] = [
 const STATE_COLORS: Record<SessionState, string> = {
   draft: "bg-gray-100 text-gray-800",
   active: "bg-blue-100 text-blue-800",
+  wip: "bg-indigo-100 text-indigo-800",
   blocked: "bg-orange-100 text-orange-800",
   paused: "bg-yellow-100 text-yellow-800",
   done: "bg-teal-100 text-teal-800",
@@ -50,6 +52,7 @@ const STATE_COLORS: Record<SessionState, string> = {
 const COLUMN_LABELS: Record<SessionState, string> = {
   draft: "Draft",
   active: "Active",
+  wip: "WIP",
   blocked: "Blocked",
   paused: "Paused",
   done: "Done",
@@ -124,6 +127,7 @@ export function SessionsView({
     const grouped: Record<SessionState, Session[]> = {
       draft: [],
       active: [],
+      wip: [],
       blocked: [],
       paused: [],
       done: [],
