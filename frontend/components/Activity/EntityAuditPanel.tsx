@@ -35,47 +35,59 @@ export function EntityAuditPanel({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
+  const [offset, setOffset] = useState(0);
 
-  const fetchActivity = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const fetchActivity = useCallback(
+    async (fetchOffset: number = 0, append: boolean = false) => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      const params = new URLSearchParams();
-      if (entityType === "task") {
-        params.set("taskId", entityId);
-      } else {
-        params.set("sessionId", entityId);
+      try {
+        const params = new URLSearchParams();
+        if (entityType === "task") {
+          params.set("taskId", entityId);
+        } else {
+          params.set("sessionId", entityId);
+        }
+        params.set("limit", "50");
+        params.set("offset", String(fetchOffset));
+
+        const response = await fetch(
+          `${API_BASE_URL}/api/v1/projects/${projectId}/activity?${params.toString()}`,
+          { cache: "no-store" },
+        );
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch activity: ${response.statusText}`);
+        }
+
+        const data: ActivityResponse = await response.json();
+        if (append) {
+          setItems((prev) => [...prev, ...data.items]);
+        } else {
+          setItems(data.items);
+        }
+        setHasMore(data.hasMore);
+        setOffset(fetchOffset + data.items.length);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch activity",
+        );
+      } finally {
+        setLoading(false);
       }
-
-      const response = await fetch(
-        `${API_BASE_URL}/api/v1/projects/${projectId}/activity?${params.toString()}`,
-        { cache: "no-store" },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch activity: ${response.statusText}`);
-      }
-
-      const data: ActivityResponse = await response.json();
-      setItems(data.items);
-      setHasMore(data.hasMore);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch activity");
-    } finally {
-      setLoading(false);
-    }
-  }, [entityType, entityId, projectId]);
+    },
+    [entityType, entityId, projectId],
+  );
 
   useEffect(() => {
-    fetchActivity();
+    setOffset(0);
+    fetchActivity(0, false);
   }, [fetchActivity]);
 
   const handleLoadMore = useCallback(async () => {
-    // In a real implementation, this would fetch more items with pagination
-    // For now, just refetch
-    await fetchActivity();
-  }, [fetchActivity]);
+    await fetchActivity(offset, true);
+  }, [fetchActivity, offset]);
 
   const toggleExpanded = () => {
     setIsExpanded((prev) => !prev);

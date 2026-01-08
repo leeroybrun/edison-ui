@@ -62,6 +62,7 @@ async def get_activity(
         str | None, Query(description="Filter events since timestamp")
     ] = None,
     limit: Annotated[int, Query(ge=1, le=500, description="Max items")] = 50,
+    offset: Annotated[int, Query(ge=0, description="Items to skip")] = 0,
 ) -> ActivityResponse:
     """Get activity timeline for a project.
 
@@ -82,6 +83,7 @@ async def get_activity(
         event_type=eventType,
         since=since,
         limit=limit,
+        offset=offset,
     )
 
     # Convert to API schema
@@ -112,6 +114,7 @@ async def get_audit(
         str | None, Query(description="Filter events since timestamp")
     ] = None,
     limit: Annotated[int, Query(ge=1, le=500, description="Max items")] = 50,
+    offset: Annotated[int, Query(ge=0, description="Items to skip")] = 0,
 ) -> AuditResponse:
     """Get raw audit events for a project.
 
@@ -131,6 +134,7 @@ async def get_audit(
         invocation_id=invocationId,
         since=since,
         limit=limit,
+        offset=offset,
     )
 
     # Convert to API schema

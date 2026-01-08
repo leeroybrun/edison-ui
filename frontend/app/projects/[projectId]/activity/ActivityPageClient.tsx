@@ -64,6 +64,7 @@ export function ActivityPageClient({
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [filters, setFilters] = useState<AuditFiltersState>(initialFilters);
+  const [offset, setOffset] = useState(initialItems.length);
 
   const updateURL = useCallback(
     (newFilters: AuditFiltersState, newView: "activity" | "audit") => {
@@ -84,6 +85,8 @@ export function ActivityPageClient({
     async (
       currentFilters: AuditFiltersState,
       currentView: "activity" | "audit",
+      fetchOffset: number = 0,
+      append: boolean = false,
     ) => {
       setLoading(true);
 
@@ -96,6 +99,7 @@ export function ActivityPageClient({
           params.set("eventType", currentFilters.eventType);
         if (currentFilters.since) params.set("since", currentFilters.since);
         params.set("limit", "50");
+        params.set("offset", String(fetchOffset));
 
         const endpoint = currentView === "audit" ? "audit" : "activity";
         const url = `${API_BASE_URL}/api/v1/projects/${projectId}/${endpoint}?${params.toString()}`;
@@ -109,11 +113,20 @@ export function ActivityPageClient({
         const data = await response.json();
 
         if (currentView === "audit") {
-          setAuditItems(data.items);
+          if (append) {
+            setAuditItems((prev) => [...prev, ...data.items]);
+          } else {
+            setAuditItems(data.items);
+          }
         } else {
-          setActivityItems(data.items);
+          if (append) {
+            setActivityItems((prev) => [...prev, ...data.items]);
+          } else {
+            setActivityItems(data.items);
+          }
         }
         setHasMore(data.hasMore);
+        setOffset(fetchOffset + data.items.length);
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -127,8 +140,9 @@ export function ActivityPageClient({
     (newFilters: Partial<AuditFiltersState>) => {
       const updatedFilters = { ...filters, ...newFilters };
       setFilters(updatedFilters);
+      setOffset(0);
       updateURL(updatedFilters, view);
-      fetchData(updatedFilters, view);
+      fetchData(updatedFilters, view, 0, false);
     },
     [filters, view, updateURL, fetchData],
   );
@@ -136,17 +150,16 @@ export function ActivityPageClient({
   const handleViewChange = useCallback(
     (newView: "activity" | "audit") => {
       setView(newView);
+      setOffset(0);
       updateURL(filters, newView);
-      fetchData(filters, newView);
+      fetchData(filters, newView, 0, false);
     },
     [filters, updateURL, fetchData],
   );
 
   const handleLoadMore = useCallback(async () => {
-    // In a real implementation, this would use cursor-based pagination
-    // For now, just refetch
-    await fetchData(filters, view);
-  }, [filters, view, fetchData]);
+    await fetchData(filters, view, offset, true);
+  }, [filters, view, offset, fetchData]);
 
   if (error) {
     return (

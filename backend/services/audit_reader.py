@@ -189,6 +189,7 @@ class AuditReaderService:
         invocation_id: str | None = None,
         since: str | None = None,
         limit: int = 100,
+        offset: int = 0,
     ) -> AuditEventResult:
         """Read raw audit events with optional filtering.
 
@@ -197,6 +198,7 @@ class AuditReaderService:
             invocation_id: Filter by invocation ID.
             since: Filter events since this ISO timestamp.
             limit: Maximum number of items to return.
+            offset: Number of items to skip (for pagination).
 
         Returns:
             AuditEventResult with filtered items and pagination flag.
@@ -233,11 +235,10 @@ class AuditReaderService:
             key=lambda e: e.get("ts", ""), reverse=True
         )
 
-        # Check if there are more items
-        has_more = len(filtered) > limit
-
-        # Apply limit
-        limited = filtered[:limit]
+        # Apply offset and limit for pagination
+        total_after_offset = len(filtered) - offset
+        has_more = total_after_offset > limit
+        limited = filtered[offset : offset + limit]
 
         # Redact sensitive paths and convert to models
         items: list[AuditEventItem] = []
@@ -267,6 +268,7 @@ class AuditReaderService:
         event_type: str | None = None,
         since: str | None = None,
         limit: int = 50,
+        offset: int = 0,
     ) -> ActivityResult:
         """Read high-level activity items derived from audit events.
 
@@ -279,6 +281,7 @@ class AuditReaderService:
             event_type: Filter by event type.
             since: Filter events since this ISO timestamp.
             limit: Maximum number of items to return.
+            offset: Number of items to skip (for pagination).
 
         Returns:
             ActivityResult with activity items and pagination flag.
@@ -329,9 +332,10 @@ class AuditReaderService:
         # Sort by timestamp descending
         cli_events.sort(key=lambda e: e.get("ts", ""), reverse=True)
 
-        # Check pagination
-        has_more = len(cli_events) > limit
-        limited = cli_events[:limit]
+        # Apply offset and limit for pagination
+        total_after_offset = len(cli_events) - offset
+        has_more = total_after_offset > limit
+        limited = cli_events[offset : offset + limit]
 
         # Convert to activity items
         items: list[ActivityItem] = []
