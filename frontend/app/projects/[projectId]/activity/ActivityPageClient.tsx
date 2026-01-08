@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import {
@@ -18,7 +18,9 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export interface ActivityPageClientProps {
   /** Initial activity items */
-  initialItems: ActivityItem[];
+  initialActivityItems: ActivityItem[];
+  /** Initial audit items */
+  initialAuditItems: AuditEvent[];
   /** Initial hasMore state */
   hasMore: boolean;
   /** Project ID */
@@ -45,7 +47,8 @@ export interface ActivityPageClientProps {
  * - URL state sync
  */
 export function ActivityPageClient({
-  initialItems,
+  initialActivityItems,
+  initialAuditItems,
   hasMore: initialHasMore,
   projectId,
   sessions,
@@ -59,12 +62,53 @@ export function ActivityPageClient({
 
   const [view, setView] = useState<"activity" | "audit">(initialView);
   const [activityItems, setActivityItems] =
-    useState<ActivityItem[]>(initialItems);
-  const [auditItems, setAuditItems] = useState<AuditEvent[]>([]);
+    useState<ActivityItem[]>(initialActivityItems);
+  const [auditItems, setAuditItems] = useState<AuditEvent[]>(initialAuditItems);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [filters, setFilters] = useState<AuditFiltersState>(initialFilters);
-  const [offset, setOffset] = useState(initialItems.length);
+  const [offset, setOffset] = useState(
+    initialView === "audit"
+      ? initialAuditItems.length
+      : initialActivityItems.length,
+  );
+
+  // Track if this is the initial mount to avoid double-fetching
+  const isInitialMount = useRef(true);
+
+  // Sync state from URL changes (browser back/forward)
+  useEffect(() => {
+    // Skip on initial mount since we have server-provided data
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    // Read current URL state
+    const urlView =
+      searchParams.get("view") === "audit" ? "audit" : "activity";
+    const urlFilters: AuditFiltersState = {
+      sessionId: searchParams.get("sessionId") || undefined,
+      taskId: searchParams.get("taskId") || undefined,
+      eventType: searchParams.get("eventType") || undefined,
+      since: searchParams.get("since") || undefined,
+    };
+
+    // Update state if URL changed
+    const viewChanged = urlView !== view;
+    const filtersChanged =
+      urlFilters.sessionId !== filters.sessionId ||
+      urlFilters.taskId !== filters.taskId ||
+      urlFilters.eventType !== filters.eventType ||
+      urlFilters.since !== filters.since;
+
+    if (viewChanged || filtersChanged) {
+      setView(urlView);
+      setFilters(urlFilters);
+      setOffset(0);
+      fetchData(urlFilters, urlView, 0, false);
+    }
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateURL = useCallback(
     (newFilters: AuditFiltersState, newView: "activity" | "audit") => {
