@@ -110,6 +110,7 @@ async def get_audit(
     invocationId: Annotated[
         str | None, Query(description="Filter by invocation ID")
     ] = None,
+    eventType: Annotated[str | None, Query(description="Filter by event type")] = None,
     since: Annotated[
         str | None, Query(description="Filter events since timestamp")
     ] = None,
@@ -132,6 +133,7 @@ async def get_audit(
     result = reader.read_audit_events(
         session_id=sessionId,
         invocation_id=invocationId,
+        event_type=eventType,
         since=since,
         limit=limit,
         offset=offset,

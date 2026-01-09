@@ -187,6 +187,7 @@ class AuditReaderService:
         self,
         session_id: str | None = None,
         invocation_id: str | None = None,
+        event_type: str | None = None,
         since: str | None = None,
         limit: int = 100,
         offset: int = 0,
@@ -196,6 +197,7 @@ class AuditReaderService:
         Args:
             session_id: Filter by session ID.
             invocation_id: Filter by invocation ID.
+            event_type: Filter by event type.
             since: Filter events since this ISO timestamp.
             limit: Maximum number of items to return.
             offset: Number of items to skip (for pagination).
@@ -219,6 +221,11 @@ class AuditReaderService:
             # Invocation ID filter
             if invocation_id is not None:
                 if entry.get("invocation_id") != invocation_id:
+                    continue
+
+            # Event type filter
+            if event_type is not None:
+                if entry.get("event") != event_type:
                     continue
 
             # Since timestamp filter

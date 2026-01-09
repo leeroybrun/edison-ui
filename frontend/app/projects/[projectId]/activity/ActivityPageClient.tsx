@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import {
@@ -76,6 +76,21 @@ export function ActivityPageClient({
 
   // Track if this is the initial mount to avoid double-fetching
   const isInitialMount = useRef(true);
+
+  const availableEventTypes = useMemo(() => {
+    const fromItems =
+      view === "activity"
+        ? activityItems.map((item) => item.eventType)
+        : auditItems.map((item) => item.event);
+
+    const unique = Array.from(new Set(fromItems)).filter(Boolean).sort();
+
+    if (filters.eventType && !unique.includes(filters.eventType)) {
+      unique.unshift(filters.eventType);
+    }
+
+    return unique;
+  }, [activityItems, auditItems, filters.eventType, view]);
 
   // Sync state from URL changes (browser back/forward)
   useEffect(() => {
@@ -252,6 +267,7 @@ export function ActivityPageClient({
 
         {/* Filters */}
         <AuditFilters
+          eventTypes={availableEventTypes}
           filters={filters}
           onChange={handleFiltersChange}
           sessions={sessions}

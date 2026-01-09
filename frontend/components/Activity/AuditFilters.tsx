@@ -27,6 +27,8 @@ export interface AuditFiltersProps {
   sessions: Session[];
   /** Available tasks for dropdown */
   tasks: TaskRef[];
+  /** Optional event type list override (defaults to common event types) */
+  eventTypes?: string[];
 }
 
 /**
@@ -44,6 +46,7 @@ export function AuditFilters({
   onChange,
   sessions,
   tasks,
+  eventTypes = EVENT_TYPES,
 }: AuditFiltersProps) {
   const handleSessionChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
@@ -122,7 +125,7 @@ export function AuditFilters({
           value={filters.eventType || ""}
         >
           <option value="">All event types</option>
-          {EVENT_TYPES.map((eventType) => (
+          {eventTypes.map((eventType) => (
             <option key={eventType} value={eventType}>
               {eventType}
             </option>
