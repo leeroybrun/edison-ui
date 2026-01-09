@@ -225,6 +225,23 @@ describe("AuditFilters", () => {
     ).toBeInTheDocument();
   });
 
+  it("uses provided eventTypes override list when set", () => {
+    render(
+      <AuditFilters
+        eventTypes={["session.create", "task.claim"]}
+        filters={defaultFilters}
+        onChange={() => {}}
+        sessions={mockSessions}
+        tasks={mockTasks}
+      />,
+    );
+
+    expect(
+      screen.getByRole("option", { name: "session.create" }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "task.claim" })).toBeInTheDocument();
+  });
+
   it("has accessible labels for all controls", () => {
     render(
       <AuditFilters

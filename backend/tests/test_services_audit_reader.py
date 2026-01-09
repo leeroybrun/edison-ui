@@ -132,6 +132,19 @@ class TestAuditReaderService:
         for item in result.items:
             assert item.invocation_id == "inv-002"
 
+    def test_filter_by_event_type(
+        self, project_root: Path, audit_file: Path
+    ) -> None:
+        """Should filter audit entries by event type."""
+        from services.audit_reader import AuditReaderService
+
+        service = AuditReaderService(project_root)
+        result = service.read_audit_events(event_type="cli.invocation.end")
+
+        assert len(result.items) == 2
+        for item in result.items:
+            assert item.event == "cli.invocation.end"
+
     def test_filter_by_since_timestamp(
         self, project_root: Path, audit_file: Path
     ) -> None:

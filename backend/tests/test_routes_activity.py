@@ -203,6 +203,27 @@ class TestActivityEndpoints:
         data = response.json()
         assert len(data["items"]) == 2
 
+    def test_audit_filter_by_event_type(
+        self, app_client: TestClient, edison_project_with_audit: Path
+    ) -> None:
+        """Audit should filter by eventType."""
+        from services.project_discovery import ProjectDiscoveryService
+
+        service = ProjectDiscoveryService(
+            scan_roots=[str(edison_project_with_audit.parent)]
+        )
+        projects = service.discover_projects()
+        project_id = projects[0].project_id
+
+        response = app_client.get(
+            f"/api/v1/projects/{project_id}/audit?eventType=cli.invocation.end"
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert len(data["items"]) == 1
+        assert data["items"][0]["event"] == "cli.invocation.end"
+
     def test_activity_limit(
         self, app_client: TestClient, edison_project_with_audit: Path
     ) -> None:
