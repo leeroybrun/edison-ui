@@ -5,6 +5,7 @@ Provides utilities for detecting local network IPs and Tailscale status.
 
 from __future__ import annotations
 
+import json
 import shutil
 import socket
 import subprocess
@@ -66,8 +67,6 @@ def get_tailscale_status() -> TailscaleStatus:
         if result.returncode != 0:
             # Tailscale installed but not running
             return TailscaleStatus(installed=True, running=False, hostname=None, ip=None)
-
-        import json
 
         status = json.loads(result.stdout)
 

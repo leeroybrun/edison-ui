@@ -65,6 +65,7 @@ export function ActivityPageClient({
     useState<ActivityItem[]>(initialActivityItems);
   const [auditItems, setAuditItems] = useState<AuditEvent[]>(initialAuditItems);
   const [loading, setLoading] = useState(false);
+  const [clientError, setClientError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [filters, setFilters] = useState<AuditFiltersState>(initialFilters);
   const [offset, setOffset] = useState(
@@ -133,6 +134,7 @@ export function ActivityPageClient({
       append: boolean = false,
     ) => {
       setLoading(true);
+      setClientError(null);
 
       try {
         const params = new URLSearchParams();
@@ -172,7 +174,11 @@ export function ActivityPageClient({
         setHasMore(data.hasMore);
         setOffset(fetchOffset + data.items.length);
       } catch (err) {
-        console.error("Error fetching data:", err);
+        setClientError(
+          err instanceof Error
+            ? `Failed to load data: ${err.message}`
+            : "Failed to load data. Please try again.",
+        );
       } finally {
         setLoading(false);
       }
@@ -181,22 +187,22 @@ export function ActivityPageClient({
   );
 
   const handleFiltersChange = useCallback(
-    (newFilters: Partial<AuditFiltersState>) => {
+    async (newFilters: Partial<AuditFiltersState>) => {
       const updatedFilters = { ...filters, ...newFilters };
       setFilters(updatedFilters);
       setOffset(0);
       updateURL(updatedFilters, view);
-      fetchData(updatedFilters, view, 0, false);
+      await fetchData(updatedFilters, view, 0, false);
     },
     [filters, view, updateURL, fetchData],
   );
 
   const handleViewChange = useCallback(
-    (newView: "activity" | "audit") => {
+    async (newView: "activity" | "audit") => {
       setView(newView);
       setOffset(0);
       updateURL(filters, newView);
-      fetchData(filters, newView, 0, false);
+      await fetchData(filters, newView, 0, false);
     },
     [filters, updateURL, fetchData],
   );
@@ -252,6 +258,24 @@ export function ActivityPageClient({
           tasks={tasks}
         />
       </div>
+
+      {clientError ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-medium">Failed to load</p>
+              <p className="text-sm">{clientError}</p>
+            </div>
+            <button
+              className="rounded-md bg-white px-3 py-2 text-sm font-medium text-red-700 shadow-sm ring-1 ring-red-200 hover:bg-red-50"
+              onClick={() => fetchData(filters, view, 0, false)}
+              type="button"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {/* Content */}
       {view === "activity" ? (
