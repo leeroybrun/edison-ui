@@ -1,6 +1,7 @@
-"""Activity endpoints (T044).
+"""Activity endpoints (T044, T078).
 
 Implements activity and audit endpoints for project activity timeline.
+T078: Reads from Edison JSONL audit logs with filtering + pagination.
 """
 
 from __future__ import annotations
@@ -10,10 +11,13 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException, Query
 
 from api.schemas.activity import (
+    ActivityItem,
     ActivityResponse,
+    AuditEvent,
     AuditResponse,
 )
 from core.settings import get_settings
+from services.audit_reader import AuditReaderService
 from services.project_discovery import ProjectDiscoveryService
 
 router = APIRouter(prefix="/projects/{project_id}", tags=["activity"])
@@ -58,20 +62,45 @@ async def get_activity(
         str | None, Query(description="Filter events since timestamp")
     ] = None,
     limit: Annotated[int, Query(ge=1, le=500, description="Max items")] = 50,
+    offset: Annotated[int, Query(ge=0, description="Items to skip")] = 0,
 ) -> ActivityResponse:
     """Get activity timeline for a project.
 
     Returns a list of recent activity items for the project, optionally
     filtered by session, task, or event type.
 
-    Phase 1 (T044): Returns empty list for UI scaffolding.
-    Phase 2 (T078): Will read from Edison JSONL audit logs.
+    Reads from Edison JSONL audit logs and converts CLI invocations
+    into high-level activity items.
     """
-    # Validate project exists
-    validate_project_exists(project_id)
+    # Validate project exists and get path
+    project_path = validate_project_exists(project_id)
 
-    # Phase 1: Empty response for UI scaffolding (see T078 for data implementation)
-    return ActivityResponse(items=[], hasMore=False)
+    # Read activity from audit logs
+    reader = AuditReaderService(project_path)
+    result = reader.read_activity(
+        session_id=sessionId,
+        task_id=taskId,
+        event_type=eventType,
+        since=since,
+        limit=limit,
+        offset=offset,
+    )
+
+    # Convert to API schema
+    items = [
+        ActivityItem(
+            timestamp=item.timestamp,
+            eventType=item.event_type,
+            summary=item.summary,
+            sessionId=item.session_id,
+            taskId=item.task_id,
+            invocationId=item.invocation_id,
+            actor=None,  # Edison audit logs don't include actor info
+        )
+        for item in result.items
+    ]
+
+    return ActivityResponse(items=items, hasMore=result.has_more)
 
 
 @router.get("/audit", response_model=AuditResponse)
@@ -81,21 +110,50 @@ async def get_audit(
     invocationId: Annotated[
         str | None, Query(description="Filter by invocation ID")
     ] = None,
+    eventType: Annotated[str | None, Query(description="Filter by event type")] = None,
     since: Annotated[
         str | None, Query(description="Filter events since timestamp")
     ] = None,
     limit: Annotated[int, Query(ge=1, le=500, description="Max items")] = 50,
+    offset: Annotated[int, Query(ge=0, description="Items to skip")] = 0,
 ) -> AuditResponse:
     """Get raw audit events for a project.
 
     Returns a list of audit events from the Edison audit log,
     optionally filtered by session or invocation.
 
-    Phase 1 (T044): Returns empty list for UI scaffolding.
-    Phase 2 (T078): Will read from Edison JSONL audit logs.
+    Reads directly from Edison JSONL audit logs with automatic
+    redaction of sensitive paths.
     """
-    # Validate project exists
-    validate_project_exists(project_id)
+    # Validate project exists and get path
+    project_path = validate_project_exists(project_id)
 
-    # Phase 1: Empty response for UI scaffolding (see T078 for data implementation)
-    return AuditResponse(items=[], hasMore=False)
+    # Read audit events
+    reader = AuditReaderService(project_path)
+    result = reader.read_audit_events(
+        session_id=sessionId,
+        invocation_id=invocationId,
+        event_type=eventType,
+        since=since,
+        limit=limit,
+        offset=offset,
+    )
+
+    # Convert to API schema
+    items = [
+        AuditEvent(
+            ts=item.ts,
+            event=item.event,
+            invocationId=item.invocation_id,
+            sessionId=item.session_id,
+            taskId=item.task_id,
+            command=item.command,
+            exitCode=item.exit_code,
+            durationMs=item.duration_ms,
+            projectRoot=item.project_root,
+            pid=item.pid,
+        )
+        for item in result.items
+    ]
+
+    return AuditResponse(items=items, hasMore=result.has_more)

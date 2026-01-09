@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-export type SessionDetailTab = "tasks" | "qa" | "context" | "next";
+export type SessionDetailTab = "tasks" | "qa" | "activity" | "context" | "next";
 
 export interface SessionDetailTabsProps {
   /** Currently active tab */
@@ -19,7 +19,7 @@ export interface SessionDetailTabsProps {
 
 /**
  * Tab navigation component for session detail page.
- * Provides links to switch between Tasks, QA, Context, and Next views.
+ * Provides links to switch between Tasks, QA, Activity, Context, and Next views.
  */
 export function SessionDetailTabs({
   activeTab,
@@ -85,6 +85,16 @@ export function SessionDetailTabs({
             role="tab"
           >
             Next
+          </Link>
+        </li>
+        <li role="presentation">
+          <Link
+            aria-selected={activeTab === "activity"}
+            className={getTabClasses("activity")}
+            href={`${baseUrl}?tab=activity`}
+            role="tab"
+          >
+            Activity
           </Link>
         </li>
       </ul>

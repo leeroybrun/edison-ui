@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import {
@@ -18,7 +18,9 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export interface ActivityPageClientProps {
   /** Initial activity items */
-  initialItems: ActivityItem[];
+  initialActivityItems: ActivityItem[];
+  /** Initial audit items */
+  initialAuditItems: AuditEvent[];
   /** Initial hasMore state */
   hasMore: boolean;
   /** Project ID */
@@ -45,7 +47,8 @@ export interface ActivityPageClientProps {
  * - URL state sync
  */
 export function ActivityPageClient({
-  initialItems,
+  initialActivityItems,
+  initialAuditItems,
   hasMore: initialHasMore,
   projectId,
   sessions,
@@ -59,11 +62,69 @@ export function ActivityPageClient({
 
   const [view, setView] = useState<"activity" | "audit">(initialView);
   const [activityItems, setActivityItems] =
-    useState<ActivityItem[]>(initialItems);
-  const [auditItems, setAuditItems] = useState<AuditEvent[]>([]);
+    useState<ActivityItem[]>(initialActivityItems);
+  const [auditItems, setAuditItems] = useState<AuditEvent[]>(initialAuditItems);
   const [loading, setLoading] = useState(false);
+  const [clientError, setClientError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [filters, setFilters] = useState<AuditFiltersState>(initialFilters);
+  const [offset, setOffset] = useState(
+    initialView === "audit"
+      ? initialAuditItems.length
+      : initialActivityItems.length,
+  );
+
+  // Track if this is the initial mount to avoid double-fetching
+  const isInitialMount = useRef(true);
+
+  const availableEventTypes = useMemo(() => {
+    const fromItems =
+      view === "activity"
+        ? activityItems.map((item) => item.eventType)
+        : auditItems.map((item) => item.event);
+
+    const unique = Array.from(new Set(fromItems)).filter(Boolean).sort();
+
+    if (filters.eventType && !unique.includes(filters.eventType)) {
+      unique.unshift(filters.eventType);
+    }
+
+    return unique;
+  }, [activityItems, auditItems, filters.eventType, view]);
+
+  // Sync state from URL changes (browser back/forward)
+  useEffect(() => {
+    // Skip on initial mount since we have server-provided data
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    // Read current URL state
+    const urlView =
+      searchParams.get("view") === "audit" ? "audit" : "activity";
+    const urlFilters: AuditFiltersState = {
+      sessionId: searchParams.get("sessionId") || undefined,
+      taskId: searchParams.get("taskId") || undefined,
+      eventType: searchParams.get("eventType") || undefined,
+      since: searchParams.get("since") || undefined,
+    };
+
+    // Update state if URL changed
+    const viewChanged = urlView !== view;
+    const filtersChanged =
+      urlFilters.sessionId !== filters.sessionId ||
+      urlFilters.taskId !== filters.taskId ||
+      urlFilters.eventType !== filters.eventType ||
+      urlFilters.since !== filters.since;
+
+    if (viewChanged || filtersChanged) {
+      setView(urlView);
+      setFilters(urlFilters);
+      setOffset(0);
+      fetchData(urlFilters, urlView, 0, false);
+    }
+  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateURL = useCallback(
     (newFilters: AuditFiltersState, newView: "activity" | "audit") => {
@@ -84,8 +145,11 @@ export function ActivityPageClient({
     async (
       currentFilters: AuditFiltersState,
       currentView: "activity" | "audit",
+      fetchOffset: number = 0,
+      append: boolean = false,
     ) => {
       setLoading(true);
+      setClientError(null);
 
       try {
         const params = new URLSearchParams();
@@ -96,6 +160,7 @@ export function ActivityPageClient({
           params.set("eventType", currentFilters.eventType);
         if (currentFilters.since) params.set("since", currentFilters.since);
         params.set("limit", "50");
+        params.set("offset", String(fetchOffset));
 
         const endpoint = currentView === "audit" ? "audit" : "activity";
         const url = `${API_BASE_URL}/api/v1/projects/${projectId}/${endpoint}?${params.toString()}`;
@@ -109,13 +174,26 @@ export function ActivityPageClient({
         const data = await response.json();
 
         if (currentView === "audit") {
-          setAuditItems(data.items);
+          if (append) {
+            setAuditItems((prev) => [...prev, ...data.items]);
+          } else {
+            setAuditItems(data.items);
+          }
         } else {
-          setActivityItems(data.items);
+          if (append) {
+            setActivityItems((prev) => [...prev, ...data.items]);
+          } else {
+            setActivityItems(data.items);
+          }
         }
         setHasMore(data.hasMore);
+        setOffset(fetchOffset + data.items.length);
       } catch (err) {
-        console.error("Error fetching data:", err);
+        setClientError(
+          err instanceof Error
+            ? `Failed to load data: ${err.message}`
+            : "Failed to load data. Please try again.",
+        );
       } finally {
         setLoading(false);
       }
@@ -124,29 +202,29 @@ export function ActivityPageClient({
   );
 
   const handleFiltersChange = useCallback(
-    (newFilters: Partial<AuditFiltersState>) => {
+    async (newFilters: Partial<AuditFiltersState>) => {
       const updatedFilters = { ...filters, ...newFilters };
       setFilters(updatedFilters);
+      setOffset(0);
       updateURL(updatedFilters, view);
-      fetchData(updatedFilters, view);
+      await fetchData(updatedFilters, view, 0, false);
     },
     [filters, view, updateURL, fetchData],
   );
 
   const handleViewChange = useCallback(
-    (newView: "activity" | "audit") => {
+    async (newView: "activity" | "audit") => {
       setView(newView);
+      setOffset(0);
       updateURL(filters, newView);
-      fetchData(filters, newView);
+      await fetchData(filters, newView, 0, false);
     },
     [filters, updateURL, fetchData],
   );
 
   const handleLoadMore = useCallback(async () => {
-    // In a real implementation, this would use cursor-based pagination
-    // For now, just refetch
-    await fetchData(filters, view);
-  }, [filters, view, fetchData]);
+    await fetchData(filters, view, offset, true);
+  }, [filters, view, offset, fetchData]);
 
   if (error) {
     return (
@@ -189,12 +267,31 @@ export function ActivityPageClient({
 
         {/* Filters */}
         <AuditFilters
+          eventTypes={availableEventTypes}
           filters={filters}
           onChange={handleFiltersChange}
           sessions={sessions}
           tasks={tasks}
         />
       </div>
+
+      {clientError ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-medium">Failed to load</p>
+              <p className="text-sm">{clientError}</p>
+            </div>
+            <button
+              className="rounded-md bg-white px-3 py-2 text-sm font-medium text-red-700 shadow-sm ring-1 ring-red-200 hover:bg-red-50"
+              onClick={() => fetchData(filters, view, 0, false)}
+              type="button"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {/* Content */}
       {view === "activity" ? (

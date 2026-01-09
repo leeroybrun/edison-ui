@@ -24,7 +24,7 @@ class ActivityItem(BaseModel):
     sessionId: str | None = None
     taskId: str | None = None
     invocationId: str | None = None
-    actor: Actor
+    actor: Actor | None = None
 
 
 class ActivityResponse(BaseModel):
@@ -39,11 +39,14 @@ class AuditEvent(BaseModel):
 
     ts: str
     event: str
-    invocationId: str
+    invocationId: str | None = None
     sessionId: str | None = None
-    command: str
-    exitCode: int
-    durationMs: int
+    taskId: str | None = None
+    command: str | None = None
+    exitCode: int | None = None
+    durationMs: float | None = None
+    projectRoot: str | None = None
+    pid: int | None = None
 
 
 class AuditResponse(BaseModel):

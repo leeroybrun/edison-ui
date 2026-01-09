@@ -11,6 +11,7 @@ import type {
   QARecord,
   QAListResponse,
 } from "../../../../../components/QA/types";
+import { EntityAuditPanel } from "../../../../../components/Activity";
 import { SessionContextPanel } from "../../../../../components/Sessions/SessionContextPanel";
 import { SessionNextPanel } from "../../../../../components/Sessions/SessionNextPanel";
 import { SessionDetailTabs, type SessionDetailTab } from "./SessionDetailTabs";
@@ -149,7 +150,7 @@ async function fetchSessionQA(
  * Determine active tab from search params.
  */
 function getActiveTab(tab?: string): SessionDetailTab {
-  if (tab === "qa" || tab === "context" || tab === "next") {
+  if (tab === "qa" || tab === "activity" || tab === "context" || tab === "next") {
     return tab;
   }
   return "tasks";
@@ -190,9 +191,6 @@ export default async function SessionDetailPage(props: SessionDetailPageProps) {
       verdict: activeTab === "qa" ? searchParams.verdict : undefined,
     }),
   ]);
-
-  // Use relevant error based on active tab
-  const error = sessionError || (activeTab === "tasks" ? tasksError : qaError);
 
   // Determine initial view mode for tasks
   const tasksInitialView =
@@ -243,7 +241,7 @@ export default async function SessionDetailPage(props: SessionDetailPageProps) {
       {/* Tab content */}
       {activeTab === "tasks" && (
         <TasksView
-          error={error}
+          error={sessionError || tasksError}
           initialView={tasksInitialView}
           lockedSessionId={params.sessionId}
           sessions={[]}
@@ -251,12 +249,21 @@ export default async function SessionDetailPage(props: SessionDetailPageProps) {
         />
       )}
       {activeTab === "qa" && (
+      )}
+      {activeTab === "qa" && (
         <QAView
-          error={error}
+          error={sessionError || qaError}
           initialView={qaInitialView}
           lockedSessionId={params.sessionId}
           qaRecords={qaRecords}
           sessions={[]}
+        />
+      )}
+      {activeTab === "activity" && (
+        <EntityAuditPanel
+          entityId={params.sessionId}
+          entityType="session"
+          projectId={params.projectId}
         />
       )}
       {activeTab === "context" && (

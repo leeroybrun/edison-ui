@@ -1,6 +1,8 @@
 import { ActivityPageClient } from "./ActivityPageClient";
 import type {
   ActivityItem,
+  AuditEvent,
+  AuditResponse,
   Session,
   TaskRef,
   ActivityResponse,
@@ -114,6 +116,50 @@ async function fetchTasks(projectId: string): Promise<TaskRef[]> {
 }
 
 /**
+ * Fetch audit events for a project from the API
+ */
+async function fetchAudit(
+  projectId: string,
+  options: {
+    sessionId?: string;
+    invocationId?: string;
+    since?: string;
+  } = {},
+): Promise<{ items: AuditEvent[]; hasMore: boolean; error?: string }> {
+  try {
+    const params = new URLSearchParams();
+    if (options.sessionId) params.set("sessionId", options.sessionId);
+    if (options.invocationId) params.set("invocationId", options.invocationId);
+    if (options.since) params.set("since", options.since);
+    params.set("limit", "50");
+
+    const queryString = params.toString();
+    const url = `${API_BASE_URL}/api/v1/projects/${projectId}/audit${queryString ? `?${queryString}` : ""}`;
+
+    const response = await fetch(url, {
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return {
+        items: [],
+        hasMore: false,
+        error: `Failed to fetch audit: ${response.statusText}`,
+      };
+    }
+
+    const data: AuditResponse = await response.json();
+    return { items: data.items, hasMore: data.hasMore };
+  } catch (err) {
+    return {
+      items: [],
+      hasMore: false,
+      error: err instanceof Error ? err.message : "Failed to fetch audit",
+    };
+  }
+}
+
+/**
  * Activity page - displays project activity timeline.
  *
  * This is a Server Component that fetches data and passes it to
@@ -123,20 +169,33 @@ export default async function ActivityPage(props: ActivityPageProps) {
   const params = await props.params;
   const searchParams = await props.searchParams;
 
-  // Fetch activity, sessions, and tasks in parallel
-  const [{ items, hasMore, error }, sessions, tasks] = await Promise.all([
-    fetchActivity(params.projectId, {
-      sessionId: searchParams.sessionId,
-      taskId: searchParams.taskId,
-      eventType: searchParams.eventType,
-      since: searchParams.since,
-    }),
+  // Determine initial view mode
+  const initialView = searchParams.view === "audit" ? "audit" : "activity";
+
+  // Fetch data based on the view
+  const [activityResult, auditResult, sessions, tasks] = await Promise.all([
+    initialView === "activity"
+      ? fetchActivity(params.projectId, {
+          sessionId: searchParams.sessionId,
+          taskId: searchParams.taskId,
+          eventType: searchParams.eventType,
+          since: searchParams.since,
+        })
+      : Promise.resolve({ items: [] as ActivityItem[], hasMore: false, error: undefined }),
+    initialView === "audit"
+      ? fetchAudit(params.projectId, {
+          sessionId: searchParams.sessionId,
+          since: searchParams.since,
+        })
+      : Promise.resolve({ items: [] as AuditEvent[], hasMore: false, error: undefined }),
     fetchSessions(params.projectId),
     fetchTasks(params.projectId),
   ]);
 
-  // Determine initial view mode
-  const initialView = searchParams.view === "audit" ? "audit" : "activity";
+  // Get the appropriate items, hasMore, and error based on view
+  const items = initialView === "audit" ? auditResult.items : activityResult.items;
+  const hasMore = initialView === "audit" ? auditResult.hasMore : activityResult.hasMore;
+  const error = initialView === "audit" ? auditResult.error : activityResult.error;
 
   return (
     <div className="space-y-4">
@@ -147,13 +206,14 @@ export default async function ActivityPage(props: ActivityPageProps) {
       <ActivityPageClient
         error={error}
         hasMore={hasMore}
+        initialActivityItems={initialView === "activity" ? items as ActivityItem[] : []}
+        initialAuditItems={initialView === "audit" ? items as AuditEvent[] : []}
         initialFilters={{
           sessionId: searchParams.sessionId,
           taskId: searchParams.taskId,
           eventType: searchParams.eventType,
           since: searchParams.since,
         }}
-        initialItems={items}
         initialView={initialView}
         projectId={params.projectId}
         sessions={sessions}
