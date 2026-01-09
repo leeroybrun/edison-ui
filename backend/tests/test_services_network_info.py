@@ -6,17 +6,22 @@ missing/failed system dependencies (e.g., tailscale CLI).
 
 from __future__ import annotations
 
+import pytest
+
 from services import network_info
 
 
 def test_get_tailscale_status_handles_oserror_without_nameerror(
-    monkeypatch,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Should return a non-running status when the tailscale CLI call errors."""
 
-    monkeypatch.setattr(network_info.shutil, "which", lambda _: "/usr/bin/tailscale")
+    def fake_which(_command: str) -> str:
+        return "/usr/bin/tailscale"
 
-    def raise_oserror(*_args, **_kwargs):
+    monkeypatch.setattr(network_info.shutil, "which", fake_which)
+
+    def raise_oserror(*_args: object, **_kwargs: object) -> None:
         raise OSError("boom")
 
     monkeypatch.setattr(network_info.subprocess, "run", raise_oserror)
@@ -25,4 +30,3 @@ def test_get_tailscale_status_handles_oserror_without_nameerror(
 
     assert status.installed is True
     assert status.running is False
-
