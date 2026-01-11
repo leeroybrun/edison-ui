@@ -20,13 +20,18 @@ def anyio_backend() -> str:
 
 
 @pytest.fixture(autouse=True)
-def setup_localhost_auth(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Automatically set up localhost mode for all tests to bypass auth.
+def isolate_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Auto-applied fixture to isolate settings from user's global config.
 
-    This fixture ensures that tests run in localhost mode where no authentication
-    is required. It creates a temporary settings file with exposure_mode set to
-    'localhost' and sets the SETTINGS_FILE environment variable.
+    This ensures tests use localhost mode by default (no auth required) and
+    don't interfere with the user's actual ~/.edison-ui/settings.json.
+
+    The SETTINGS_FILE env var points to a non-existent temp path, causing
+    SettingsManager to use defaults (exposure_mode="localhost").
+
+    Returns:
+        Path to the settings file (which doesn't exist, triggering defaults).
     """
-    settings_file = tmp_path / "test_settings.json"
-    settings_file.write_text('{"exposureMode": "localhost", "firstRunComplete": true}')
-    monkeypatch.setenv("SETTINGS_FILE", str(settings_file))
+    settings_path = tmp_path / "test-settings.json"
+    monkeypatch.setenv("SETTINGS_FILE", str(settings_path))
+    return settings_path
