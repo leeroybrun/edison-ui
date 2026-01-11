@@ -1,0 +1,15 @@
+# Worktree overrides for edison-ui.
+#
+# This repo relies on Edison defaults; this file only adds meta worktree excludes
+# to keep runtime-only artifacts (locks/snapshots/transactions) from polluting the
+# meta branch status.
+worktrees:
+  sharedState:
+    gitExcludes:
+      meta:
+        - "+"
+        - ".project/qa/locks/"
+        - ".project/qa/evidence-snapshots/"
+        - ".project/qa/score-history/"
+        - ".project/qa/validation-evidence/"
+        - ".project/sessions/_tx/"

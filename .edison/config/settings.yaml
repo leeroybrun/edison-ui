@@ -1,0 +1,13 @@
+# Edison UI: Claude Code settings overrides
+#
+# Purpose:
+# - Keep core Edison permissions conservative.
+# - Add repo-specific allowances for common backend venv activation patterns.
+
+settings:
+  claude:
+    permissions:
+      allow:
+        - "+"
+        - "Bash(. backend/.venv/bin/activate:*)"
+        - "Bash(source backend/.venv/bin/activate:*)"

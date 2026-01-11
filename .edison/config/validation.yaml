@@ -11,8 +11,7 @@ validation:
       blocking_validators:
       - global-claude
       - browser-e2e
-      description: Minimal validation with global-codex, global-claude, and browser-e2e
-        only
+      description: Minimal validation with global-codex, global-claude, and browser-e2e only
       name: custom-minimal
       required_evidence:
       - command-type-check.txt
