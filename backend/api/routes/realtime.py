@@ -41,7 +41,9 @@ def get_settings_manager() -> SettingsManager:
     return SettingsManager(settings_file=settings_file)
 
 
-def extract_websocket_token(websocket: WebSocket, token_param: str | None) -> str | None:
+def extract_websocket_token(
+    websocket: WebSocket, token_param: str | None
+) -> str | None:
     """Extract authentication token from WebSocket connection.
 
     Checks in order:

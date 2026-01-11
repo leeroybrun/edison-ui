@@ -35,6 +35,7 @@ def localhost_app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient
     (tmp_path / "projects").mkdir()
 
     from core.settings import get_settings
+
     get_settings.cache_clear()
 
     app = create_app()
@@ -62,6 +63,7 @@ def network_app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     (tmp_path / "projects").mkdir()
 
     from core.settings import get_settings
+
     get_settings.cache_clear()
 
     app = create_app()
@@ -80,11 +82,13 @@ class TestWebSocketAuthLocalhostMode:
             websocket.send_json({"type": "ping"})
             # Connection should be established (no immediate close)
             # Just verify we can subscribe
-            websocket.send_json({
-                "type": "subscribe",
-                "subscriptionId": "test-sub",
-                "resource": "projects",
-            })
+            websocket.send_json(
+                {
+                    "type": "subscribe",
+                    "subscriptionId": "test-sub",
+                    "resource": "projects",
+                }
+            )
             response = websocket.receive_json()
             assert response["type"] == "snapshot"
 
@@ -114,17 +118,14 @@ class TestWebSocketAuthNetworkMode:
             assert response["type"] == "error"
             assert response["code"] == "AUTH_REQUIRED"
 
-    def test_websocket_connects_with_valid_token(
-        self, network_app: TestClient
-    ) -> None:
+    def test_websocket_connects_with_valid_token(self, network_app: TestClient) -> None:
         """Should allow WebSocket connection with valid token."""
         # First, get a valid token via pairing
         start_response = network_app.post("/api/v1/pairing/start")
         display_code = start_response.json()["displayCode"]
 
         complete_response = network_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         token = complete_response.json()["token"]
 
@@ -133,11 +134,13 @@ class TestWebSocketAuthNetworkMode:
             f"/api/v1/ws/realtime?token={token}"
         ) as websocket:
             # Should be able to subscribe
-            websocket.send_json({
-                "type": "subscribe",
-                "subscriptionId": "test-sub",
-                "resource": "projects",
-            })
+            websocket.send_json(
+                {
+                    "type": "subscribe",
+                    "subscriptionId": "test-sub",
+                    "resource": "projects",
+                }
+            )
             response = websocket.receive_json()
             assert response["type"] == "snapshot"
 
@@ -150,16 +153,14 @@ class TestWebSocketAuthNetworkMode:
         display_code = start_response.json()["displayCode"]
 
         complete_response = network_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         token = complete_response.json()["token"]
 
         # Revoke the token (need to use localhost for this since we don't have auth)
         # Actually, we already have a token, so we can use it to revoke itself
         network_app.delete(
-            "/api/v1/pairing/token",
-            headers={"Authorization": f"Bearer {token}"}
+            "/api/v1/pairing/token", headers={"Authorization": f"Bearer {token}"}
         )
 
         # Try to connect with revoked token
@@ -179,7 +180,10 @@ class TestWebSocketAuthNetworkMode:
             response = websocket.receive_json()
             assert response["type"] == "error"
             assert response["code"] == "AUTH_REQUIRED"
-            assert "Authorization" in response["message"] or "authorization" in response["message"].lower()
+            assert (
+                "Authorization" in response["message"]
+                or "authorization" in response["message"].lower()
+            )
 
 
 class TestWebSocketAuthTokenInHeader:
@@ -194,21 +198,21 @@ class TestWebSocketAuthTokenInHeader:
         display_code = start_response.json()["displayCode"]
 
         complete_response = network_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         token = complete_response.json()["token"]
 
         # Connect using token in subprotocol header
         # Format: "bearer.{token}"
         with network_app.websocket_connect(
-            "/api/v1/ws/realtime",
-            subprotocols=[f"bearer.{token}"]
+            "/api/v1/ws/realtime", subprotocols=[f"bearer.{token}"]
         ) as websocket:
-            websocket.send_json({
-                "type": "subscribe",
-                "subscriptionId": "test-sub",
-                "resource": "projects",
-            })
+            websocket.send_json(
+                {
+                    "type": "subscribe",
+                    "subscriptionId": "test-sub",
+                    "resource": "projects",
+                }
+            )
             response = websocket.receive_json()
             assert response["type"] == "snapshot"

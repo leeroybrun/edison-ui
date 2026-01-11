@@ -36,6 +36,7 @@ def clean_app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> TestClient:
     (tmp_path / "projects").mkdir()
 
     from core.settings import get_settings
+
     get_settings.cache_clear()
 
     app = create_app()
@@ -63,6 +64,7 @@ def network_exposed_app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Test
     (tmp_path / "projects").mkdir()
 
     from core.settings import get_settings
+
     get_settings.cache_clear()
 
     app = create_app()
@@ -72,6 +74,7 @@ def network_exposed_app(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Test
 # =============================================================================
 # T060: Server Exposure Modes Tests
 # =============================================================================
+
 
 class TestExposureModeSettings:
     """Tests for exposure mode configuration."""
@@ -95,31 +98,24 @@ class TestExposureModeSettings:
         display_code = start_response.json()["displayCode"]
 
         complete_response = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         token = complete_response.json()["token"]
 
         # Now we can access settings with the token
         response = network_exposed_app.get(
-            "/api/v1/settings",
-            headers={"Authorization": f"Bearer {token}"}
+            "/api/v1/settings", headers={"Authorization": f"Bearer {token}"}
         )
         data = response.json()
 
         assert response.status_code == 200
         assert data["exposureMode"] == "network"
 
-    def test_cannot_update_exposure_mode_via_patch(
-        self, clean_app: TestClient
-    ) -> None:
+    def test_cannot_update_exposure_mode_via_patch(self, clean_app: TestClient) -> None:
         """Should not allow exposureMode update via PATCH (not in allowlist)."""
         # Note: SettingsUpdateRequest schema doesn't include exposureMode
         # The field will be ignored by Pydantic
-        response = clean_app.patch(
-            "/api/v1/settings",
-            json={"exposureMode": "network"}
-        )
+        response = clean_app.patch("/api/v1/settings", json={"exposureMode": "network"})
 
         # Request succeeds but exposureMode is not updated (not in schema)
         assert response.status_code == 200
@@ -132,13 +128,10 @@ class TestExposureModeSettings:
 class TestExposureModeUpdate:
     """Tests for dedicated exposure mode update endpoint."""
 
-    def test_update_exposure_mode_to_network(
-        self, clean_app: TestClient
-    ) -> None:
+    def test_update_exposure_mode_to_network(self, clean_app: TestClient) -> None:
         """Should be able to update exposureMode to 'network' via dedicated endpoint."""
         response = clean_app.post(
-            "/api/v1/settings/exposure-mode",
-            json={"exposureMode": "network"}
+            "/api/v1/settings/exposure-mode", json={"exposureMode": "network"}
         )
 
         assert response.status_code == 200
@@ -150,14 +143,12 @@ class TestExposureModeUpdate:
         start_response = clean_app.post("/api/v1/pairing/start")
         display_code = start_response.json()["displayCode"]
         complete_response = clean_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         token = complete_response.json()["token"]
 
         settings_response = clean_app.get(
-            "/api/v1/settings",
-            headers={"Authorization": f"Bearer {token}"}
+            "/api/v1/settings", headers={"Authorization": f"Bearer {token}"}
         )
         assert settings_response.json()["exposureMode"] == "network"
 
@@ -170,8 +161,7 @@ class TestExposureModeUpdate:
         prevent remote clients from disabling network mode without auth.
         """
         response = network_exposed_app.post(
-            "/api/v1/settings/exposure-mode",
-            json={"exposureMode": "localhost"}
+            "/api/v1/settings/exposure-mode", json={"exposureMode": "localhost"}
         )
 
         assert response.status_code == 401
@@ -186,8 +176,7 @@ class TestExposureModeUpdate:
         display_code = start_response.json()["displayCode"]
 
         complete_response = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         token = complete_response.json()["token"]
 
@@ -195,20 +184,17 @@ class TestExposureModeUpdate:
         response = network_exposed_app.post(
             "/api/v1/settings/exposure-mode",
             json={"exposureMode": "localhost"},
-            headers={"Authorization": f"Bearer {token}"}
+            headers={"Authorization": f"Bearer {token}"},
         )
 
         assert response.status_code == 200
         data = response.json()
         assert data["exposureMode"] == "localhost"
 
-    def test_update_exposure_mode_invalid_value(
-        self, clean_app: TestClient
-    ) -> None:
+    def test_update_exposure_mode_invalid_value(self, clean_app: TestClient) -> None:
         """Should reject invalid exposureMode values."""
         response = clean_app.post(
-            "/api/v1/settings/exposure-mode",
-            json={"exposureMode": "invalid"}
+            "/api/v1/settings/exposure-mode", json={"exposureMode": "invalid"}
         )
 
         assert response.status_code == 400
@@ -217,6 +203,7 @@ class TestExposureModeUpdate:
 # =============================================================================
 # T060: Auth Enforcement Tests
 # =============================================================================
+
 
 class TestAuthEnforcementInLocalhostMode:
     """Tests that auth is NOT required in localhost mode."""
@@ -235,9 +222,7 @@ class TestAuthEnforcementInLocalhostMode:
         response = clean_app.get("/api/v1/projects")
         assert response.status_code == 200
 
-    def test_health_endpoint_no_auth_in_localhost(
-        self, clean_app: TestClient
-    ) -> None:
+    def test_health_endpoint_no_auth_in_localhost(self, clean_app: TestClient) -> None:
         """Should access health without auth in localhost mode."""
         response = clean_app.get("/api/v1/health")
         assert response.status_code == 200
@@ -281,8 +266,7 @@ class TestAuthEnforcementInNetworkMode:
     ) -> None:
         """Pairing complete endpoint should be accessible without auth."""
         response = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": "ABC123"}
+            "/api/v1/pairing/complete", json={"displayCode": "ABC123"}
         )
         # Should fail with invalid code, not auth error
         assert response.status_code != 401
@@ -291,6 +275,7 @@ class TestAuthEnforcementInNetworkMode:
 # =============================================================================
 # T061: Pairing Service Tests
 # =============================================================================
+
 
 class TestPairingStart:
     """Tests for POST /pairing/start endpoint."""
@@ -368,8 +353,7 @@ class TestPairingComplete:
 
         # Complete pairing
         complete_response = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
 
         assert complete_response.status_code == 200
@@ -383,8 +367,7 @@ class TestPairingComplete:
     ) -> None:
         """Should reject invalid display codes."""
         response = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": "INVALID"}
+            "/api/v1/pairing/complete", json={"displayCode": "INVALID"}
         )
 
         assert response.status_code == 400
@@ -401,13 +384,13 @@ class TestPairingComplete:
         # Mock time to be past expiration
         # We need to manually expire the pairing
         from services.pairing_service import get_pairing_service
+
         service = get_pairing_service()
         service._expire_all_pairings()  # Test helper to expire all pairings
 
         # Attempt complete
         complete_response = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
 
         assert complete_response.status_code == 400
@@ -422,8 +405,7 @@ class TestPairingComplete:
         display_code = start_response.json()["displayCode"]
 
         complete_response = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
 
         data = complete_response.json()
@@ -444,15 +426,13 @@ class TestPairingComplete:
 
         # Complete pairing first time
         complete_response1 = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         assert complete_response1.status_code == 200
 
         # Try to complete again with same code
         complete_response2 = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         assert complete_response2.status_code == 400
 
@@ -460,9 +440,7 @@ class TestPairingComplete:
 class TestPairingRevoke:
     """Tests for DELETE /pairing/{pairingId} endpoint."""
 
-    def test_revoke_pairing_success(
-        self, clean_app: TestClient
-    ) -> None:
+    def test_revoke_pairing_success(self, clean_app: TestClient) -> None:
         """Should revoke an active pairing in localhost mode."""
         # Start pairing
         start_response = clean_app.post("/api/v1/pairing/start")
@@ -473,17 +451,13 @@ class TestPairingRevoke:
 
         assert revoke_response.status_code == 200
 
-    def test_revoke_pairing_not_found(
-        self, clean_app: TestClient
-    ) -> None:
+    def test_revoke_pairing_not_found(self, clean_app: TestClient) -> None:
         """Should return 404 for unknown pairing ID."""
         response = clean_app.delete("/api/v1/pairing/nonexistent")
 
         assert response.status_code == 404
 
-    def test_revoked_pairing_cannot_be_completed(
-        self, clean_app: TestClient
-    ) -> None:
+    def test_revoked_pairing_cannot_be_completed(self, clean_app: TestClient) -> None:
         """Should not allow completing a revoked pairing."""
         # Start pairing
         start_response = clean_app.post("/api/v1/pairing/start")
@@ -496,8 +470,7 @@ class TestPairingRevoke:
 
         # Try to complete
         complete_response = clean_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
 
         assert complete_response.status_code == 400
@@ -506,36 +479,29 @@ class TestPairingRevoke:
 class TestTokenValidation:
     """Tests for token validation in network mode."""
 
-    def test_valid_token_grants_access(
-        self, network_exposed_app: TestClient
-    ) -> None:
+    def test_valid_token_grants_access(self, network_exposed_app: TestClient) -> None:
         """Should grant access with valid token."""
         # Start and complete pairing
         start_response = network_exposed_app.post("/api/v1/pairing/start")
         display_code = start_response.json()["displayCode"]
 
         complete_response = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         token = complete_response.json()["token"]
 
         # Access protected endpoint with token
         settings_response = network_exposed_app.get(
-            "/api/v1/settings",
-            headers={"Authorization": f"Bearer {token}"}
+            "/api/v1/settings", headers={"Authorization": f"Bearer {token}"}
         )
 
         assert settings_response.status_code == 200
 
-    def test_invalid_token_denied(
-        self, network_exposed_app: TestClient
-    ) -> None:
+    def test_invalid_token_denied(self, network_exposed_app: TestClient) -> None:
         """Should deny access with invalid token."""
         # Use projects endpoint since settings is now exempt from auth
         response = network_exposed_app.get(
-            "/api/v1/projects",
-            headers={"Authorization": "Bearer invalid-token"}
+            "/api/v1/projects", headers={"Authorization": "Bearer invalid-token"}
         )
 
         assert response.status_code == 401
@@ -546,20 +512,16 @@ class TestTokenValidation:
         """Should deny access with malformed auth header."""
         # Use projects endpoint since settings is now exempt from auth
         response = network_exposed_app.get(
-            "/api/v1/projects",
-            headers={"Authorization": "NotBearer token"}
+            "/api/v1/projects", headers={"Authorization": "NotBearer token"}
         )
 
         assert response.status_code == 401
 
-    def test_revoke_token_denies_access(
-        self, clean_app: TestClient
-    ) -> None:
+    def test_revoke_token_denies_access(self, clean_app: TestClient) -> None:
         """Should deny access after token is revoked."""
         # First, switch to network mode
         clean_app.post(
-            "/api/v1/settings/exposure-mode",
-            json={"exposureMode": "network"}
+            "/api/v1/settings/exposure-mode", json={"exposureMode": "network"}
         )
 
         # Start and complete pairing
@@ -568,29 +530,25 @@ class TestTokenValidation:
         display_code = data["displayCode"]
 
         complete_response = clean_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         token = complete_response.json()["token"]
 
         # Verify token works (use projects endpoint since settings is exempt)
         projects_response1 = clean_app.get(
-            "/api/v1/projects",
-            headers={"Authorization": f"Bearer {token}"}
+            "/api/v1/projects", headers={"Authorization": f"Bearer {token}"}
         )
         assert projects_response1.status_code == 200
 
         # Revoke via token endpoint
         revoke_response = clean_app.delete(
-            "/api/v1/pairing/token",
-            headers={"Authorization": f"Bearer {token}"}
+            "/api/v1/pairing/token", headers={"Authorization": f"Bearer {token}"}
         )
         assert revoke_response.status_code == 200
 
         # Token should no longer work
         projects_response2 = clean_app.get(
-            "/api/v1/projects",
-            headers={"Authorization": f"Bearer {token}"}
+            "/api/v1/projects", headers={"Authorization": f"Bearer {token}"}
         )
         assert projects_response2.status_code == 401
 
@@ -598,24 +556,20 @@ class TestTokenValidation:
 class TestPairingList:
     """Tests for listing active pairings."""
 
-    def test_list_active_pairings(
-        self, network_exposed_app: TestClient
-    ) -> None:
+    def test_list_active_pairings(self, network_exposed_app: TestClient) -> None:
         """Should list all active paired devices."""
         # Start and complete a pairing
         start_response = network_exposed_app.post("/api/v1/pairing/start")
         display_code = start_response.json()["displayCode"]
 
         complete_response = network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
         token = complete_response.json()["token"]
 
         # List pairings (requires auth)
         list_response = network_exposed_app.get(
-            "/api/v1/pairing",
-            headers={"Authorization": f"Bearer {token}"}
+            "/api/v1/pairing", headers={"Authorization": f"Bearer {token}"}
         )
 
         assert list_response.status_code == 200
@@ -662,8 +616,7 @@ class TestPairingStatus:
 
         # Complete pairing
         network_exposed_app.post(
-            "/api/v1/pairing/complete",
-            json={"displayCode": display_code}
+            "/api/v1/pairing/complete", json={"displayCode": display_code}
         )
 
         # Check status - should be completed
@@ -678,9 +631,7 @@ class TestPairingStatus:
         assert status_data["status"] == "completed"
         assert status_data["completed"] is True
 
-    def test_status_revoked(
-        self, clean_app: TestClient
-    ) -> None:
+    def test_status_revoked(self, clean_app: TestClient) -> None:
         """Should return 'revoked' status after pairing is revoked."""
         # Start pairing
         start_response = clean_app.post("/api/v1/pairing/start")
@@ -691,22 +642,16 @@ class TestPairingStatus:
         clean_app.delete(f"/api/v1/pairing/{pairing_id}")
 
         # Check status - should be revoked
-        status_response = clean_app.get(
-            f"/api/v1/pairing/{pairing_id}/status"
-        )
+        status_response = clean_app.get(f"/api/v1/pairing/{pairing_id}/status")
 
         assert status_response.status_code == 200
         status_data = status_response.json()
 
         assert status_data["status"] == "revoked"
 
-    def test_status_not_found(
-        self, clean_app: TestClient
-    ) -> None:
+    def test_status_not_found(self, clean_app: TestClient) -> None:
         """Should return 404 for non-existent pairing."""
-        status_response = clean_app.get(
-            "/api/v1/pairing/nonexistent-id/status"
-        )
+        status_response = clean_app.get("/api/v1/pairing/nonexistent-id/status")
 
         assert status_response.status_code == 404
 

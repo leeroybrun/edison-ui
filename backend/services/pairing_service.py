@@ -73,9 +73,7 @@ class PairingService:
         if storage_path:
             self.storage_path = Path(storage_path).expanduser().resolve()
         else:
-            self.storage_path = (
-                Path("~/.edison-ui/pairing.json").expanduser().resolve()
-            )
+            self.storage_path = Path("~/.edison-ui/pairing.json").expanduser().resolve()
 
         self._data: PairingData | None = None
 
@@ -155,9 +153,7 @@ class PairingService:
 
     def _generate_display_code(self) -> str:
         """Generate a human-readable display code."""
-        return "".join(
-            secrets.choice(self.CODE_CHARS) for _ in range(self.CODE_LENGTH)
-        )
+        return "".join(secrets.choice(self.CODE_CHARS) for _ in range(self.CODE_LENGTH))
 
     def _generate_token(self) -> str:
         """Generate a secure token."""
@@ -405,14 +401,16 @@ class PairingService:
             if device.revoked or now > device.expires_at:
                 continue
 
-            result.append({
-                "pairingId": device.pairing_id,
-                "createdAt": device.created_at.isoformat().replace("+00:00", "Z"),
-                "expiresAt": device.expires_at.isoformat().replace("+00:00", "Z"),
-                "lastUsed": device.last_used.isoformat().replace("+00:00", "Z")
-                if device.last_used
-                else None,
-            })
+            result.append(
+                {
+                    "pairingId": device.pairing_id,
+                    "createdAt": device.created_at.isoformat().replace("+00:00", "Z"),
+                    "expiresAt": device.expires_at.isoformat().replace("+00:00", "Z"),
+                    "lastUsed": device.last_used.isoformat().replace("+00:00", "Z")
+                    if device.last_used
+                    else None,
+                }
+            )
 
         return result
 

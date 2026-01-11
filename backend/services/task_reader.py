@@ -209,7 +209,11 @@ class TaskReaderService:
 
         parent_id_raw = fm.get("parent_id")
         if parent_id is None and parent_id_raw is not None:
-            parent_id = str(parent_id_raw) if not isinstance(parent_id_raw, str) else parent_id_raw
+            parent_id = (
+                str(parent_id_raw)
+                if not isinstance(parent_id_raw, str)
+                else parent_id_raw
+            )
 
         session_id_raw = fm.get("session_id")
         session_id: str | None = None

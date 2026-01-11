@@ -76,9 +76,7 @@ class PairingStatusResponse(BaseModel):
     """Response for GET /pairing/{pairingId}/status."""
 
     pairing_id: str = Field(..., alias="pairingId")
-    status: str = Field(
-        ..., description="pending | completed | expired | revoked"
-    )
+    status: str = Field(..., description="pending | completed | expired | revoked")
     expires_at: str = Field(..., alias="expiresAt")
     completed: bool
 
