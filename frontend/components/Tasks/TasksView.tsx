@@ -575,81 +575,85 @@ export function TasksView({
         {/* List View */}
         {viewMode === "list" && filteredTasks.length > 0 && (
           <div className="overflow-hidden rounded-lg border bg-white">
-            <table
-              aria-activedescendant={
-                selectedTaskId ? `row-${selectedTaskId}` : undefined
-              }
-              className="min-w-full divide-y divide-gray-200"
-            >
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    ID
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    Title
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    State
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    Session
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    Updated
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {filteredTasks.map((task, index) => {
-                  const isSelected = selectedIndex === index;
-                  return (
-                    <tr
-                      aria-selected={isSelected}
-                      className={`hover:bg-gray-50 ${isSelected ? "bg-blue-50" : ""}`}
-                      data-selected={isSelected || undefined}
-                      id={`row-${task.taskId}`}
-                      key={task.taskId}
+            <div className="overflow-x-auto">
+              <table
+                aria-activedescendant={
+                  selectedTaskId ? `row-${selectedTaskId}` : undefined
+                }
+                className="min-w-full table-fixed divide-y divide-gray-200"
+              >
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th
+                      className="w-72 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
                     >
-                      <td className="whitespace-nowrap px-4 py-3 font-mono text-sm text-gray-900">
-                        {task.taskId}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-900">
-                        {task.title}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3">
-                        <span
-                          className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATE_COLORS[task.state]}`}
-                        >
-                          {task.state}
+                      ID
+                    </th>
+                    <th
+                      className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      Title
+                    </th>
+                    <th
+                      className="w-28 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      State
+                    </th>
+                    <th
+                      className="w-40 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      Session
+                    </th>
+                    <th
+                      className="w-28 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      Updated
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {filteredTasks.map((task, index) => {
+                    const isSelected = selectedIndex === index;
+                    return (
+                      <tr
+                        aria-selected={isSelected}
+                        className={`hover:bg-gray-50 ${isSelected ? "bg-blue-50" : ""}`}
+                        data-selected={isSelected || undefined}
+                        id={`row-${task.taskId}`}
+                        key={task.taskId}
+                      >
+                      <td className="px-4 py-3 font-mono text-sm text-gray-900">
+                        <span className="block truncate" title={task.taskId}>
+                          {task.taskId}
                         </span>
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
-                        {task.sessionId || "-"}
-                      </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
-                        {formatDate(task.updatedAt)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900 break-words">
+                          {task.title}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3">
+                          <span
+                            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${STATE_COLORS[task.state]}`}
+                          >
+                            {task.state}
+                          </span>
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                          {task.sessionId || "-"}
+                        </td>
+                        <td className="whitespace-nowrap px-4 py-3 text-sm text-gray-500">
+                          {formatDate(task.updatedAt)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

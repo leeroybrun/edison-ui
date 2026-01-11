@@ -228,7 +228,7 @@ export default function ProjectLayout({ children }: ProjectLayoutProps) {
         </div>
 
         {/* Main content area */}
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col">
           {/* Mobile header - visible on small screens only */}
           <header className="flex h-14 items-center border-b px-4 md:hidden">
             <a
@@ -285,7 +285,9 @@ export default function ProjectLayout({ children }: ProjectLayoutProps) {
           </nav>
 
           {/* Main content */}
-          <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
+          <main className="min-w-0 flex-1 overflow-auto p-4 md:p-6">
+            {children}
+          </main>
         </div>
       </div>
     </KeyboardShortcutsProvider>

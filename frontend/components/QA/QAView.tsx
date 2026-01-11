@@ -404,61 +404,66 @@ export function QAView({
         {/* List View */}
         {viewMode === "list" && filteredRecords.length > 0 && (
           <div className="overflow-hidden rounded-lg border bg-white">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    QA ID
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    Task
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    State
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    Verdict
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    Round
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    Validators
-                  </th>
-                  <th
-                    className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                    scope="col"
-                  >
-                    Updated
-                  </th>
-                </tr>
-              </thead>
+            <div className="overflow-x-auto">
+              <table className="min-w-full table-fixed divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th
+                      className="w-64 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      QA ID
+                    </th>
+                    <th
+                      className="w-72 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      Task
+                    </th>
+                    <th
+                      className="w-24 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      State
+                    </th>
+                    <th
+                      className="w-24 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      Verdict
+                    </th>
+                    <th
+                      className="w-20 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      Round
+                    </th>
+                    <th
+                      className="w-56 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      Validators
+                    </th>
+                    <th
+                      className="w-28 px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                      scope="col"
+                    >
+                      Updated
+                    </th>
+                  </tr>
+                </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 {filteredRecords.map((record) => (
                   <tr className="hover:bg-gray-50" key={record.qaId}>
-                    <td className="whitespace-nowrap px-4 py-3 font-mono text-sm text-gray-900">
-                      {record.qaId}
+                    <td className="px-4 py-3 font-mono text-sm text-gray-900">
+                      <span className="block truncate" title={record.qaId}>
+                        {record.qaId}
+                      </span>
                     </td>
-                    <td className="whitespace-nowrap px-4 py-3 font-mono text-sm text-gray-900">
-                      {record.taskId}
+                    <td className="px-4 py-3 font-mono text-sm text-gray-900">
+                      <span className="block truncate" title={record.taskId}>
+                        {record.taskId}
+                      </span>
                     </td>
                     <td className="whitespace-nowrap px-4 py-3">
                       <span
@@ -492,7 +497,8 @@ export function QAView({
                   </tr>
                 ))}
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
         )}
 

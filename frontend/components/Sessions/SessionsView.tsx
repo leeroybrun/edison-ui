@@ -278,73 +278,77 @@ export function SessionsView({
       {/* List view */}
       {initialView === "list" && filteredSessions.length > 0 && (
         <div className="overflow-hidden rounded-lg border bg-white">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                  scope="col"
-                >
-                  Session ID
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                  scope="col"
-                >
-                  State
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                  scope="col"
-                >
-                  Phase
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                  scope="col"
-                >
-                  Tasks
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
-                  scope="col"
-                >
-                  Last Active
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 bg-white">
-              {filteredSessions.map((session) => (
-                <tr
-                  key={session.sessionId}
-                  className="cursor-pointer transition-colors hover:bg-gray-50"
-                  onClick={() => handleSessionClick(session.sessionId)}
-                  onKeyDown={(e) => handleRowKeyDown(e, session.sessionId)}
-                  tabIndex={0}
-                >
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
-                    {session.sessionId}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATE_COLORS[session.state]}`}
-                    >
-                      {session.state}
-                    </span>
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                    {session.phase}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                    {session.taskCount}
-                  </td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                    {formatRelativeTime(session.lastActiveAt)}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-fixed divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th
+                    className="w-72 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                    scope="col"
+                  >
+                    Session ID
+                  </th>
+                  <th
+                    className="w-28 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                    scope="col"
+                  >
+                    State
+                  </th>
+                  <th
+                    className="w-48 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                    scope="col"
+                  >
+                    Phase
+                  </th>
+                  <th
+                    className="w-20 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                    scope="col"
+                  >
+                    Tasks
+                  </th>
+                  <th
+                    className="w-28 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500"
+                    scope="col"
+                  >
+                    Last Active
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {filteredSessions.map((session) => (
+                  <tr
+                    key={session.sessionId}
+                    className="cursor-pointer transition-colors hover:bg-gray-50"
+                    onClick={() => handleSessionClick(session.sessionId)}
+                    onKeyDown={(e) => handleRowKeyDown(e, session.sessionId)}
+                    tabIndex={0}
+                  >
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      <span className="block truncate" title={session.sessionId}>
+                        {session.sessionId}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm">
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATE_COLORS[session.state]}`}
+                      >
+                        {session.state}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      {session.phase}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      {session.taskCount}
+                    </td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                      {formatRelativeTime(session.lastActiveAt)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
