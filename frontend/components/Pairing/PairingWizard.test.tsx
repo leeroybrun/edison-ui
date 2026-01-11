@@ -45,9 +45,7 @@ describe("PairingWizard", () => {
 
     it("shows network exposure warning on first step", () => {
       render(<PairingWizard {...defaultProps} />);
-      expect(
-        screen.getByText(/exposing.*network/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/exposing.*network/i)).toBeInTheDocument();
     });
 
     it("displays warning icon", () => {

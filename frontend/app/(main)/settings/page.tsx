@@ -34,7 +34,8 @@ export default function SettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [settings, setSettings] = useState<SettingsResponse | null>(null);
   const [exposureMode, setExposureMode] = useState<string>("localhost");
-  const [tailscaleStatus, setTailscaleStatus] = useState<TailscaleStatus | null>(null);
+  const [tailscaleStatus, setTailscaleStatus] =
+    useState<TailscaleStatus | null>(null);
   const [updating, setUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [wizardOpen, setWizardOpen] = useState(false);
@@ -67,7 +68,7 @@ export default function SettingsPage() {
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to load settings"
+          err instanceof Error ? err.message : "Failed to load settings",
         );
       } finally {
         setLoading(false);
@@ -92,7 +93,7 @@ export default function SettingsPage() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ exposureMode: newMode }),
-          }
+          },
         );
 
         if (!response.ok) {
@@ -103,7 +104,7 @@ export default function SettingsPage() {
         setExposureMode(newMode);
       } catch (err) {
         setUpdateError(
-          err instanceof Error ? err.message : "Failed to update exposure mode"
+          err instanceof Error ? err.message : "Failed to update exposure mode",
         );
         // Revert the select back to current mode
         setExposureMode(exposureMode);
@@ -111,7 +112,7 @@ export default function SettingsPage() {
         setUpdating(false);
       }
     },
-    [apiBaseUrl, exposureMode]
+    [apiBaseUrl, exposureMode],
   );
 
   // Handle pairing completion
@@ -122,7 +123,7 @@ export default function SettingsPage() {
       // Hide success message after 5 seconds
       setTimeout(() => setPairingSuccess(false), 5000);
     },
-    []
+    [],
   );
 
   if (loading) {
@@ -175,13 +176,18 @@ export default function SettingsPage() {
               <option value="localhost">Localhost only</option>
               <option value="network">Network (LAN access)</option>
               {tailscaleStatus?.running && (
-                <option value="tailscale">Tailscale ({tailscaleStatus.hostname || tailscaleStatus.ip})</option>
+                <option value="tailscale">
+                  Tailscale ({tailscaleStatus.hostname || tailscaleStatus.ip})
+                </option>
               )}
             </select>
             <p className="mt-1 text-xs text-gray-500">
-              {exposureMode === "localhost" && "Only local connections are allowed"}
-              {exposureMode === "network" && "Devices on your local network can connect after pairing"}
-              {exposureMode === "tailscale" && "Devices on your Tailscale network can connect after pairing"}
+              {exposureMode === "localhost" &&
+                "Only local connections are allowed"}
+              {exposureMode === "network" &&
+                "Devices on your local network can connect after pairing"}
+              {exposureMode === "tailscale" &&
+                "Devices on your Tailscale network can connect after pairing"}
             </p>
           </div>
 

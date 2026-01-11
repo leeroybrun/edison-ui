@@ -249,8 +249,6 @@ export default async function SessionDetailPage(props: SessionDetailPageProps) {
         />
       )}
       {activeTab === "qa" && (
-      )}
-      {activeTab === "qa" && (
         <QAView
           error={sessionError || qaError}
           initialView={qaInitialView}

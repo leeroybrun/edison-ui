@@ -8,15 +8,23 @@ global.fetch = mockFetch;
 
 // Mock PairingWizard
 vi.mock("../../../components/Pairing", () => ({
-  PairingWizard: ({ open, onClose, onPaired }: {
+  PairingWizard: ({
+    open,
+    onClose,
+    onPaired,
+  }: {
     open: boolean;
     onClose: () => void;
-    onPaired: (result: { token: string; expiresAt: string }) => void
+    onPaired: (result: { token: string; expiresAt: string }) => void;
   }) =>
     open ? (
       <div data-testid="pairing-wizard">
         <button onClick={onClose}>Close Wizard</button>
-        <button onClick={() => onPaired({ token: "test-token", expiresAt: "2026-01-05" })}>
+        <button
+          onClick={() =>
+            onPaired({ token: "test-token", expiresAt: "2026-01-05" })
+          }
+        >
           Complete Pairing
         </button>
       </div>
@@ -59,7 +67,10 @@ describe("SettingsPage", () => {
     };
   }
 
-  function setupMocksForSettingsLoad(exposureMode: string, tailscaleRunning = false) {
+  function setupMocksForSettingsLoad(
+    exposureMode: string,
+    tailscaleRunning = false,
+  ) {
     mockFetch.mockImplementation((url: string) => {
       if (url.includes("/settings/tailscale-status")) {
         return Promise.resolve(mockTailscaleStatusResponse(tailscaleRunning));
@@ -167,7 +178,10 @@ describe("SettingsPage", () => {
   test("changes exposure mode via dropdown", async () => {
     let requestCount = 0;
     mockFetch.mockImplementation((url: string, options?: RequestInit) => {
-      if (url.includes("/settings/exposure-mode") && options?.method === "POST") {
+      if (
+        url.includes("/settings/exposure-mode") &&
+        options?.method === "POST"
+      ) {
         return Promise.resolve({
           ok: true,
           json: async () => ({ exposureMode: "network" }),
@@ -198,14 +212,17 @@ describe("SettingsPage", () => {
         expect.objectContaining({
           method: "POST",
           body: JSON.stringify({ exposureMode: "network" }),
-        })
+        }),
       );
     });
   });
 
   test("shows error when exposure mode change fails", async () => {
     mockFetch.mockImplementation((url: string, options?: RequestInit) => {
-      if (url.includes("/settings/exposure-mode") && options?.method === "POST") {
+      if (
+        url.includes("/settings/exposure-mode") &&
+        options?.method === "POST"
+      ) {
         return Promise.resolve({
           ok: false,
           json: async () => ({ detail: "Failed to update" }),
@@ -248,7 +265,9 @@ describe("SettingsPage", () => {
     fireEvent.click(screen.getByText("Complete Pairing"));
 
     await waitFor(() => {
-      expect(screen.getByText(/Device paired successfully/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Device paired successfully/),
+      ).toBeInTheDocument();
     });
   });
 
@@ -259,7 +278,7 @@ describe("SettingsPage", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(/Control how this server can be accessed/)
+        screen.getByText(/Control how this server can be accessed/),
       ).toBeInTheDocument();
     });
   });
@@ -277,7 +296,7 @@ describe("SettingsPage", () => {
     const select = screen.getByRole("combobox");
     const options = select.querySelectorAll("option");
     const tailscaleOption = Array.from(options).find((opt) =>
-      opt.textContent?.includes("Tailscale")
+      opt.textContent?.includes("Tailscale"),
     );
     expect(tailscaleOption).toBeInTheDocument();
   });
@@ -295,7 +314,7 @@ describe("SettingsPage", () => {
     const select = screen.getByRole("combobox");
     const options = select.querySelectorAll("option");
     const tailscaleOption = Array.from(options).find((opt) =>
-      opt.textContent?.includes("Tailscale")
+      opt.textContent?.includes("Tailscale"),
     );
     expect(tailscaleOption).toBeUndefined();
   });

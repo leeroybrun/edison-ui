@@ -134,7 +134,6 @@ export function PairingWizard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isExpired, step]);
 
-
   // Handle backdrop click
   const handleBackdropClick = useCallback(
     (event: MouseEvent<HTMLDivElement>) => {
@@ -185,7 +184,7 @@ export function PairingWizard({
     const pollStatus = async () => {
       try {
         const response = await fetch(
-          `${baseUrl}/pairing/${pairingData.pairingId}/status`
+          `${baseUrl}/pairing/${pairingData.pairingId}/status`,
         );
 
         if (!response.ok) {

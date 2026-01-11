@@ -51,7 +51,9 @@ export default function PairPage() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ displayCode: displayCode.trim().toUpperCase() }),
+          body: JSON.stringify({
+            displayCode: displayCode.trim().toUpperCase(),
+          }),
         });
 
         if (!response.ok) {
@@ -68,12 +70,14 @@ export default function PairPage() {
           localStorage.setItem("edison_pairing_expires", data.expiresAt);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to complete pairing");
+        setError(
+          err instanceof Error ? err.message : "Failed to complete pairing",
+        );
       } finally {
         setLoading(false);
       }
     },
-    [apiBaseUrl]
+    [apiBaseUrl],
   );
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -150,7 +154,8 @@ export default function PairPage() {
           Pair Device
         </h1>
         <p className="mb-6 text-center text-gray-600">
-          Enter the pairing code shown on the host computer to connect this device.
+          Enter the pairing code shown on the host computer to connect this
+          device.
         </p>
 
         <form onSubmit={handleFormSubmit}>
