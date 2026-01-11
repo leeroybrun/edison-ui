@@ -6,10 +6,13 @@ Provides utilities for detecting local network IPs and Tailscale status.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import socket
 import subprocess
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -20,6 +23,50 @@ class TailscaleStatus:
     running: bool
     hostname: str | None
     ip: str | None
+
+
+def _parse_comma_list(value: str) -> list[str]:
+    if not value:
+        return []
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def resolve_tailscale_cli_path() -> str | None:
+    """Resolve a usable tailscale CLI path.
+
+    Resolution order:
+    - `tailscale` on PATH
+    - explicit candidates via env var `TAILSCALE_CLI_CANDIDATES` (comma-separated)
+    - macOS app-bundle defaults (darwin only)
+    """
+    tailscale_on_path = shutil.which("tailscale")
+    if tailscale_on_path:
+        return tailscale_on_path
+
+    candidates: list[str] = []
+
+    # Allow explicit overrides/extra candidates (useful for packaging + tests).
+    candidates.extend(_parse_comma_list(os.environ.get("TAILSCALE_CLI_CANDIDATES", "")))
+
+    # Common macOS app-bundle locations (prefer the CLI name first).
+    if sys.platform == "darwin":
+        candidates.extend(
+            [
+                "/Applications/Tailscale.app/Contents/MacOS/tailscale",
+                "/Applications/Tailscale.app/Contents/MacOS/Tailscale",
+            ]
+        )
+
+    for candidate in candidates:
+        p = Path(candidate).expanduser()
+        try:
+            if p.exists() and p.is_file() and os.access(p, os.X_OK):
+                return str(p)
+        except OSError:
+            # Treat unreadable/unstat-able paths as non-existent.
+            continue
+
+    return None
 
 
 def get_local_ip() -> str | None:
@@ -51,14 +98,14 @@ def get_tailscale_status() -> TailscaleStatus:
         TailscaleStatus with installation and connection info.
     """
     # Check if tailscale CLI is installed
-    tailscale_path = shutil.which("tailscale")
-    if not tailscale_path:
+    tailscale_path = resolve_tailscale_cli_path()
+    if tailscale_path is None:
         return TailscaleStatus(installed=False, running=False, hostname=None, ip=None)
 
     # Try to get tailscale status
     try:
         result = subprocess.run(
-            ["tailscale", "status", "--json"],
+            [tailscale_path, "status", "--json"],
             capture_output=True,
             text=True,
             timeout=5,
@@ -66,7 +113,9 @@ def get_tailscale_status() -> TailscaleStatus:
 
         if result.returncode != 0:
             # Tailscale installed but not running
-            return TailscaleStatus(installed=True, running=False, hostname=None, ip=None)
+            return TailscaleStatus(
+                installed=True, running=False, hostname=None, ip=None
+            )
 
         status = json.loads(result.stdout)
 
@@ -74,7 +123,9 @@ def get_tailscale_status() -> TailscaleStatus:
         # BackendState == "Running" and Self is populated
         backend_state = status.get("BackendState", "")
         if backend_state != "Running":
-            return TailscaleStatus(installed=True, running=False, hostname=None, ip=None)
+            return TailscaleStatus(
+                installed=True, running=False, hostname=None, ip=None
+            )
 
         # Get self info
         self_info = status.get("Self", {})

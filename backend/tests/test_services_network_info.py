@@ -6,9 +6,52 @@ missing/failed system dependencies (e.g., tailscale CLI).
 
 from __future__ import annotations
 
+import os
+from pathlib import Path
+
 import pytest
 
 from services import network_info
+
+
+def _write_executable_tailscale_stub(path: Path, *, hostname: str) -> None:
+    path.write_text(
+        "\n".join(
+            [
+                "#!/bin/sh",
+                'if [ "$1" = "status" ] && [ "$2" = "--json" ]; then',
+                "  echo '{\"BackendState\":\"Running\",\"Self\":{\"DNSName\":\""
+                + hostname
+                + ".\",\"TailscaleIPs\":[\"100.64.0.1\"]}}'",
+                "  exit 0",
+                "fi",
+                "exit 1",
+                "",
+            ]
+        )
+    )
+    path.chmod(0o755)
+
+
+def test_get_tailscale_status_uses_configured_cli_candidates_when_not_on_path(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """If tailscale isn't on PATH, we should still detect it via configured candidates."""
+    empty_path_dir = tmp_path / "empty-path"
+    empty_path_dir.mkdir()
+    monkeypatch.setenv("PATH", str(empty_path_dir))
+
+    candidate = tmp_path / "tailscale-stub"
+    _write_executable_tailscale_stub(candidate, hostname="host.tailnet.ts.net")
+    monkeypatch.setenv("TAILSCALE_CLI_CANDIDATES", str(candidate))
+
+    status = network_info.get_tailscale_status()
+
+    assert status.installed is True
+    assert status.running is True
+    assert status.hostname == "host.tailnet.ts.net"
+    assert status.ip == "100.64.0.1"
 
 
 def test_get_tailscale_status_handles_oserror_without_nameerror(
